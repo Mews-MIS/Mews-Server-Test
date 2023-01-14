@@ -62,7 +62,5 @@ jobs:
           username: ubuntu
           key: ${{ secrets.EC2_KEY }}
           script: |
-            docker rm -f $(docker ps -qa)
-            docker rmi ${{ secrets.DOCKER_USERNAME }}/mews_dev
             docker pull ${{ secrets.DOCKER_USERNAME }}/mews_dev
             docker-compose up -d
