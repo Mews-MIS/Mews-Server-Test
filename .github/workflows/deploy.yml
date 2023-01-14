@@ -64,5 +64,7 @@ jobs:
           script: |
             docker logout
             docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+            docker rm -f $(docker ps -qa)
+            docker rmi ${{ secrets.DOCKER_USERNAME }}/mews_dev            
             docker pull ${{ secrets.DOCKER_USERNAME }}/mews_dev
             docker-compose up -d
