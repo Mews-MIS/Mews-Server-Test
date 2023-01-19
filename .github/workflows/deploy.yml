@@ -36,17 +36,17 @@ jobs:
             ${{ runner.os }}-gradle-
             
       # main 설정 파일 생성 및 write
-      - name: Set .yml for main
+      - name: Set .properties for main/dev
         run: |
           # main 설정 파일 디렉토리로 이동
           cd ./src/main/resources
-          touch ./application-database.yaml
-          echo "${{ secrets.MAIN_DATABASE_YML }}" >> ./application-database.yml
+          touch ./application-database.properties
+          echo "${{ secrets.MAIN_DATABASE_YML }}" >> ./application-database.properties
         shell: bash
 
       # Gradle build
       - name: Build with Gradle
-        run: ./gradlew bootJar
+        run: ./gradlew bootJar -Djasypt.encryptor.password=${{secrets.JASYPT_PASSWORD}}
 
       # Spring 어플리케이션 Docker Image 빌드
       - name: Build Docker Image For Spring
