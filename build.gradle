@@ -14,6 +14,8 @@ repositories {
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	// validation 사용
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
 
 	//테스트에서 lombok 사용
 	testCompileOnly 'org.projectlombok:lombok'
