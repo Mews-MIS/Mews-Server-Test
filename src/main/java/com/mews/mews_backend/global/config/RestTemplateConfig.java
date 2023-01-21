@@ -23,6 +23,7 @@ public class RestTemplateConfig {
                 ).additionalMessageConverters(
                         new StringHttpMessageConverter(
                                 StandardCharsets.UTF_8
+
                         )).build();
     }
 }
