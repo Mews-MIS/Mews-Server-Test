@@ -41,19 +41,17 @@ public class UserDto implements Serializable {
         private boolean isOpen;
     }
 
-//    @Data
-//    @Builder
-//    public static class loginResponse {
-//        private final int id;
-//        private final String atk;
-//        private final String rtk;
-//
-//        public static loginResponse response(int id, String atk, String rtk) {
-//            return loginResponse.builder()
-//                    .id(id)
-//                    .atk(atk)
-//                    .rtk(rtk)
-//                    .build();
-//        }
-//    }
+    @Data
+    @Builder
+    public static class tokenResponse {
+        private final String atk;
+        private final String rtk;
+
+        public static tokenResponse response(String atk, String rtk) {
+            return tokenResponse.builder()
+                    .atk(atk)
+                    .rtk(rtk)
+                    .build();
+        }
+    }
 }

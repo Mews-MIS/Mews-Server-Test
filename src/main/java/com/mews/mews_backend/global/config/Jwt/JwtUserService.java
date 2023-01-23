@@ -30,10 +30,8 @@ public class JwtUserService implements UserDetailsService {
 
 
     private UserDetails createUser(com.mews.mews_backend.domain.user.entity.User user){
-        log.info("createUser 실행됨1");
         GrantedAuthority grantedAuthority =
                 new SimpleGrantedAuthority(user.getUserType().toString());
-        log.info("createUser 실행됨2");
         return new User(user.getUserEmail(),user.getSocial(), Collections.singleton(grantedAuthority));
     }
 

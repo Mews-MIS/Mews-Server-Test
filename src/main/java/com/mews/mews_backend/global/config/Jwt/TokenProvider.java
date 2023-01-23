@@ -3,6 +3,7 @@ package com.mews.mews_backend.global.config.Jwt;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -15,6 +16,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
+import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
@@ -22,6 +24,7 @@ import java.util.stream.Collectors;
 
 //토큰 생성 부분
 @Component
+@Slf4j
 public class TokenProvider implements InitializingBean {
 
     private static final String AUTHORITIES_KEY = "auth";
@@ -60,6 +63,7 @@ public class TokenProvider implements InitializingBean {
         return Jwts.builder()
                 .setSubject(authentication.getName())
                 .claim(AUTHORITIES_KEY, authorities)
+                .setIssuedAt(Date.from(ZonedDateTime.now().toInstant()))
                 .signWith(key, SignatureAlgorithm.HS512)
                 .setExpiration(validity)
                 .compact();
@@ -89,9 +93,22 @@ public class TokenProvider implements InitializingBean {
         Date validity = new Date(now + this.refreshTokenValidityInMilliseconds);
         return Jwts.builder()
                 .setSubject(username)
+                .setIssuedAt(Date.from(ZonedDateTime.now().toInstant()))
                 .setExpiration(validity)
                 .signWith(key, SignatureAlgorithm.HS512)
                 .compact();
+    }
+
+    //refreshToken 정보 가져오기
+    public String getRefreshTokenInfo(String token) {
+        Claims claims = Jwts
+                .parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+
+        return claims.getSubject();
     }
 
     //토큰 검증

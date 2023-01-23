@@ -3,14 +3,13 @@ package com.mews.mews_backend.domain.user.service;
 import com.mews.mews_backend.api.user.dto.GoogleOauthToken;
 import com.mews.mews_backend.api.user.dto.GoogleUser;
 import com.mews.mews_backend.api.user.dto.UserDto;
-import com.mews.mews_backend.domain.user.entity.Gender;
 import com.mews.mews_backend.domain.user.entity.User;
 import com.mews.mews_backend.domain.user.entity.UserType;
 import com.mews.mews_backend.domain.user.repository.UserRepository;
 import com.mews.mews_backend.domain.user.service.social.GoogleOauth;
+import com.mews.mews_backend.global.Exception.ServerException;
 import com.mews.mews_backend.global.config.Jwt.RedisDao;
 import com.mews.mews_backend.global.config.Jwt.TokenProvider;
-import com.mews.mews_backend.global.config.response.BaseResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -22,10 +21,14 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.Duration;
+import java.util.Objects;
+
+import static com.mews.mews_backend.global.Exception.CustomErrorCode.REFRESH_TOKEN_IS_BAD_REQUEST;
 
 @Service
 @RequiredArgsConstructor
@@ -57,17 +60,12 @@ public class OauthService {
     }
 
     public ResponseEntity<UserDto.socialLoginResponse> Login(String name, String email, String img, int userId) throws IOException {
-        log.info("===0===");
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(email, "google");
-        log.info("===1===");
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
-        System.out.println(authentication.isAuthenticated());
-        log.info("===2===");
+        log.info("authenticated 되었나용?"+ authentication.isAuthenticated());
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        log.info("===3===");
         String atk = tokenProvider.createToken(authentication);
         String rtk = tokenProvider.createRefreshToken(email);
-        log.info("===4===");
         redisDao.setValues(email, rtk, Duration.ofDays(14));
 
         HttpHeaders httpHeaders = new HttpHeaders();
@@ -116,7 +114,6 @@ public class OauthService {
         User user = User.builder()
                 .userName(request.getUserName())
                 .userEmail(request.getUserEmail())
-                .gender(Gender.MALE)
                 .imgUrl(request.getImgUrl())
                 .introduction(request.getIntroduction())
                 .likeCount(0)
@@ -130,6 +127,21 @@ public class OauthService {
         int userId = userRepository.save(user).getId();
 
         return Login(user.getUserName(),user.getUserEmail(), user.getImgUrl(), userId);
+    }
+
+    //accessToken 재발급
+    @Transactional
+    public ResponseEntity<UserDto.tokenResponse> reissue(String rtk) {
+        String username = tokenProvider.getRefreshTokenInfo(rtk);
+        String rtkInRedis = redisDao.getValues(username);
+
+        if (Objects.isNull(rtkInRedis) || !rtkInRedis.equals(rtk))
+            throw new ServerException(REFRESH_TOKEN_IS_BAD_REQUEST); // 410
+
+        return new ResponseEntity<>(UserDto.tokenResponse.response(
+                tokenProvider.reCreateToken(username),
+                null
+        ), HttpStatus.OK);
     }
 
 }

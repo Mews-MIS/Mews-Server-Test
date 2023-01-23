@@ -14,5 +14,4 @@ public class GoogleOauthToken {
     private String scope;
     private String token_type;
     private String id_token;
-
 }

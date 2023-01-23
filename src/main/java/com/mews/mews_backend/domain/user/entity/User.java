@@ -36,10 +36,6 @@ public class User extends BaseTimeEntity {
     @Column(name = "introduction",columnDefinition = "TEXT")
     private String introduction;
 
-    @Column(name = "gender")
-    @Enumerated(EnumType.STRING)
-    private Gender gender;
-
     @Column(name = "like_count")
     private int likeCount;
 

@@ -2,7 +2,6 @@ package com.mews.mews_backend.api.user.controller;
 
 import com.mews.mews_backend.api.user.dto.UserDto;
 import com.mews.mews_backend.domain.user.service.OauthService;
-import com.mews.mews_backend.global.config.response.BaseResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -34,12 +33,20 @@ public class OauthController {
         return oauthService.oauthLogin(socialLoginType,code);
     }
 
-    //성별, 어드민인지 아닌지 여부 어떻게 받나?
-    //사용자가 로그인 진행
+    //사용자 로그인 진행
     @PostMapping(value = "/sign-up")
     public ResponseEntity<UserDto.socialLoginResponse> singUp(@RequestBody final UserDto.register request) throws IOException {
         log.info("회원가입 진행");
         return  oauthService.socialRegister(request);
+    }
+
+    //토큰 재발급
+    @GetMapping("/regenerateToken")
+    public ResponseEntity<UserDto.tokenResponse> reissue(
+            @RequestHeader(value = "REFRESH_TOKEN") String rtk
+    ) {
+        log.info("refresh 토큰 재발급");
+        return oauthService.reissue(rtk);
     }
 
 }
