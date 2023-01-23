@@ -19,4 +19,8 @@ public class PostArticleReq {
     @NotBlank
     @ApiModelProperty(notes = "마크다운 내용", example = "<h2>기사 내용</h2>")
     private String content; // 마크다운 내용
+
+    @NotBlank
+    @ApiModelProperty(notes = "타입", example = "article")
+    private String type; // 타입
 }
