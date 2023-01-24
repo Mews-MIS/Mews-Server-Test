@@ -25,6 +25,15 @@ public class Article extends BaseTimeEntity {
     @ColumnDefault("0")
     private Integer like_count; // 좋아요 수
 
+    @OneToOne
+    @JoinColumn(name = "views_id")
+    private Views views;
+
+    public void setViews(Views views){
+        this.views = views;
+        this.views.setArticle(this);
+    }
+
     @Builder
     public Article(String title, String content, String type, Integer like_count){
         this.title = title;
