@@ -7,7 +7,6 @@ import java.time.LocalDate;
 
 @Entity
 @Getter
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "Calendar")
@@ -26,5 +25,12 @@ public class Calendar {
 
     @Column(name = "inform")
     private String inform;
+
+    @Builder
+    public Calendar(String title, String inform, LocalDate date) {
+        this.title = title;
+        this.inform = inform;
+        this.date = date;
+    }
 }
 
