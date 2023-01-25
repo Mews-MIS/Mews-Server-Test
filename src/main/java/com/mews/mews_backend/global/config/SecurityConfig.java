@@ -49,11 +49,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
                 .and()
                 .authorizeRequests()
-                .antMatchers(
-                        "/auth/**"
-                )
-                .permitAll()
-                .anyRequest().authenticated()
+//                .antMatchers(
+//                        "/auth/**"
+//                ).permitAll()
+                .anyRequest().permitAll()
+                //.anyRequest().authenticated()
 
                 .and()
                 //.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
