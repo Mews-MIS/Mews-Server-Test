@@ -7,7 +7,6 @@ import com.mews.mews_backend.domain.user.entity.User;
 import com.mews.mews_backend.domain.user.entity.UserType;
 import com.mews.mews_backend.domain.user.repository.UserRepository;
 import com.mews.mews_backend.domain.user.service.social.GoogleOauth;
-import com.mews.mews_backend.global.Exception.ServerException;
 import com.mews.mews_backend.global.config.Jwt.RedisDao;
 import com.mews.mews_backend.global.config.Jwt.TokenProvider;
 import com.mews.mews_backend.global.error.exception.BaseException;
@@ -29,7 +28,6 @@ import java.io.IOException;
 import java.time.Duration;
 import java.util.Objects;
 
-import static com.mews.mews_backend.global.Exception.CustomErrorCode.REFRESH_TOKEN_IS_BAD_REQUEST;
 import static com.mews.mews_backend.global.error.ErrorCode.*;
 
 @Service
@@ -127,6 +125,11 @@ public class OauthService {
             throw new BaseException(USERS_INVALID_EMAIL);
         }
 
+        //2-3. 이메일 중복 체크
+        if(userRepository.existsByUserEmail(request.getUserEmail())) {
+            throw new BaseException(USERS_EXISTS_EMAIL);
+        }
+
         //3. 프로필 이미지
         if(request.getImgUrl()==null) {
             throw new BaseException(USERS_EMPTY_IMG);
@@ -136,6 +139,7 @@ public class OauthService {
 
     public ResponseEntity<UserDto.socialLoginResponse> socialRegister(UserDto.register request) throws IOException {
         log.info("service 안에 들어옴");
+
         //validation 처리
         REGISTER_VALIDATION(request);
 
@@ -164,7 +168,7 @@ public class OauthService {
         String rtkInRedis = redisDao.getValues(username);
 
         if (Objects.isNull(rtkInRedis) || !rtkInRedis.equals(rtk))
-            throw new ServerException(REFRESH_TOKEN_IS_BAD_REQUEST); // 410
+            throw new BaseException(REFRESH_TOKEN_BAD_REQUEST); // 410
 
         return new ResponseEntity<>(UserDto.tokenResponse.response(
                 tokenProvider.reCreateToken(username),
