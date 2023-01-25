@@ -16,7 +16,7 @@ import java.io.IOException;
 
 @Slf4j
 @RequiredArgsConstructor
-public class JwtFilter extends GenericFilterBean {
+public class JwtFilter extends GenericFilterBean  {
     private final RedisDao redisDao;
 
     private final TokenProvider tokenProvider;
