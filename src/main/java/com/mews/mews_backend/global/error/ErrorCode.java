@@ -21,7 +21,11 @@ public enum ErrorCode {
     NOT_EXIST_USER(HttpStatus.BAD_REQUEST, 2004,"사용자를 찾을 수 없습니다."),
 
     // users
-    USERS_EMPTY_USER_ID(HttpStatus.BAD_REQUEST, 2010, "유저 아이디 값을 확인해주세요."),
+    USERS_EMPTY_USER_NAME(HttpStatus.BAD_REQUEST, 2010, "유저 닉네임 값을 확인해주세요."),
+    USERS_EMPTY_EMAIL(HttpStatus.BAD_REQUEST, 2011, "유저 이메일 값을 확인해주세요."),
+    USERS_INVALID_EMAIL(HttpStatus.BAD_REQUEST, 2012, "잘못된 이메일 형식입니다."),
+    USERS_EMPTY_IMG(HttpStatus.BAD_REQUEST, 2013, "유저 프로필 이미지 값을 확인해주세요."),
+
 
     // [POST] /users
     POST_USERS_EMPTY_CERTIFY_IMG(HttpStatus.BAD_REQUEST,2014,"소속 인증을 위한 이미지를 등록해주세요."),
