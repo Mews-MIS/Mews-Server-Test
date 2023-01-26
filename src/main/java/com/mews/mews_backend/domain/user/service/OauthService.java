@@ -177,23 +177,5 @@ public class OauthService {
         ), HttpStatus.OK);
     }
 
-    // 로그아웃
-    public ResponseEntity<String> logout(String auth) {
-        String atk = auth.substring(7);
-
-        String email =  SecurityContextHolder.getContext()
-                .getAuthentication()
-                .getName();
-
-        if (redisDao.getValues(email) != null) {
-            redisDao.deleteValues(email);
-        }
-
-        redisDao.setValues(atk, "logout", Duration.ofMillis(
-                tokenProvider.getExpiration(atk)
-        ));
-
-        return new ResponseEntity<>("LOGOUT SEUCCESS", HttpStatus.OK);
-    }
 
 }

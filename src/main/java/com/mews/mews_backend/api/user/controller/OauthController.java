@@ -34,7 +34,7 @@ public class OauthController {
         return oauthService.oauthLogin(socialLoginType,code);
     }
 
-    //사용자 로그인 진행
+    //회원가입
     @PostMapping(value = "/sign-up")
     public ResponseEntity<UserDto.socialLoginResponse> signUp(@RequestBody final UserDto.register request) throws IOException {
         log.info("회원가입 진행");
@@ -50,11 +50,5 @@ public class OauthController {
         return oauthService.reissue(rtk);
     }
 
-    //로그아웃
-    @PatchMapping("/logout")
-    public ResponseEntity<String> logout(
-            @RequestHeader(value = "Authorization") String auth
-    ) {
-        return oauthService.logout(auth);
-    }
+
 }

@@ -56,6 +56,10 @@ public class User extends BaseTimeEntity {
 
     @Column(name = "status")
     private String status; //ACTIVE, DELETED(탈퇴회원)
+
+    public void updateStatus(){
+        this.status = "DELETED";
+    }
     public User(String userEmail, String userName, Set<GrantedAuthority> singleton) {
     }
 }
