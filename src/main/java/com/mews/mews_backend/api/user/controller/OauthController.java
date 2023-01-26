@@ -5,6 +5,7 @@ import com.mews.mews_backend.domain.user.service.OauthService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -49,4 +50,11 @@ public class OauthController {
         return oauthService.reissue(rtk);
     }
 
+    //로그아웃
+    @PatchMapping("/logout")
+    public ResponseEntity<String> logout(
+            @RequestHeader(value = "Authorization") String auth
+    ) {
+        return oauthService.logout(auth);
+    }
 }

@@ -54,6 +54,8 @@ public class User extends BaseTimeEntity {
     @Column(name = "social")
     private String social; //pwd로 사용할 google 값
 
+    @Column(name = "status")
+    private String status; //ACTIVE, DELETED(탈퇴회원)
     public User(String userEmail, String userName, Set<GrantedAuthority> singleton) {
     }
 }
