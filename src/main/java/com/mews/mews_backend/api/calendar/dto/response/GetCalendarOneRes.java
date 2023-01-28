@@ -10,19 +10,14 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 @Data
-@Builder
 public class GetCalendarOneRes {
 
-    @NotNull
     private Integer id;
 
-    @NotBlank
     private String title;
 
-    @NotBlank
     private LocalDate date;
 
-    @NotBlank
     private String inform;
 
     // Entity to DTO

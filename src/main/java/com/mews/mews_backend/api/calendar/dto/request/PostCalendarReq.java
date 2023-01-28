@@ -1,5 +1,6 @@
 package com.mews.mews_backend.api.calendar.dto.request;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.mews.mews_backend.domain.calendar.entity.Calendar;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -24,6 +25,7 @@ public class PostCalendarReq {
 
     @NotBlank
     @ApiModelProperty(notes = "날짜(년-월-일)", example = "2023-02-06")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
     private LocalDate date;
 
     public Calendar toEntity(PostCalendarReq postCalendarReq) {

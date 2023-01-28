@@ -1,7 +1,8 @@
 package com.mews.mews_backend.domain.calendar.service;
 
 import com.mews.mews_backend.api.calendar.dto.request.PostCalendarReq;
-import com.mews.mews_backend.api.calendar.dto.response.GetCalendarListRes;
+import com.mews.mews_backend.api.calendar.dto.response.GetCalendarDayRes;
+import com.mews.mews_backend.api.calendar.dto.response.GetCalendarMonthRes;
 import com.mews.mews_backend.api.calendar.dto.response.GetCalendarOneRes;
 import com.mews.mews_backend.domain.calendar.repository.CalendarRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,9 +56,16 @@ public class CalendarService {
     }
 
     // 특정 날짜의 학사 일정 DB SELECT
-    public List<GetCalendarListRes> getCalendarDay(LocalDate date) {
-        return calendarRepository.findByDate(date).stream()
-                .map(GetCalendarListRes::new)
+    public List<GetCalendarDayRes> getCalendarDay(LocalDate date) {
+        return calendarRepository.findAllByDate(date).stream()
+                .map(GetCalendarDayRes::new)
+                .collect(Collectors.toList());
+    }
+
+    // 특정 년월의 학사 일정 DB SELECT
+    public List<GetCalendarMonthRes> getCalendarMonth(LocalDate date) {
+        return calendarRepository.findAllByDate(date).stream()
+                .map(GetCalendarMonthRes::new)
                 .collect(Collectors.toList());
     }
 }

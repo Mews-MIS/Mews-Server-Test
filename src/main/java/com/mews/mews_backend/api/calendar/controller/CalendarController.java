@@ -1,9 +1,9 @@
 package com.mews.mews_backend.api.calendar.controller;
 
 import com.mews.mews_backend.api.calendar.dto.request.PostCalendarReq;
-import com.mews.mews_backend.api.calendar.dto.response.GetCalendarListRes;
+import com.mews.mews_backend.api.calendar.dto.response.GetCalendarDayRes;
+import com.mews.mews_backend.api.calendar.dto.response.GetCalendarMonthRes;
 import com.mews.mews_backend.api.calendar.dto.response.GetCalendarOneRes;
-import com.mews.mews_backend.domain.calendar.entity.Calendar;
 import com.mews.mews_backend.domain.calendar.service.CalendarService;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -25,7 +24,7 @@ public class CalendarController {
 
     // 세부 일정 등록 API
     @PostMapping("/write")
-    public ResponseEntity<String> writeDayCalendar(@PathVariable("yyyy_mm_dd") String yearMonthDay, @Valid @RequestBody PostCalendarReq postCalendarReq) {
+    public ResponseEntity<String> writeDayCalendar(@Valid @RequestBody PostCalendarReq postCalendarReq) {
         calendarService.save(postCalendarReq);
 
         return ResponseEntity.ok("Post Success");
@@ -33,7 +32,7 @@ public class CalendarController {
 
     // 세부 일정 수정 API
     @PutMapping("/{calendar_id)/update")
-    public ResponseEntity<String> updateDayCalendar(@PathVariable("yyyy_mm_dd") String yearMonthDay, @PathVariable("calendar_id") Integer id, @RequestBody PostCalendarReq postCalendarReq) {
+    public ResponseEntity<String> updateDayCalendar(@PathVariable("calendar_id") Integer id, @RequestBody PostCalendarReq postCalendarReq) {
         calendarService.update(id, postCalendarReq);
 
 
@@ -58,12 +57,23 @@ public class CalendarController {
 
     // 해당 날짜의 일정 조회 API
     @GetMapping("/{yyyy_MM_dd}")
-    public ResponseEntity<List<GetCalendarListRes>> getCalendarDay(@PathVariable("yyyy_MM_dd") String string) {
+    public ResponseEntity<List<GetCalendarDayRes>> getCalendarDay(@PathVariable("yyyy_MM_dd") String string) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy_MM_dd");
         LocalDate date = LocalDate.parse(string, formatter);
 
-        List<GetCalendarListRes> getCalendarListRes = calendarService.getCalendarDay(date);
+        List<GetCalendarDayRes> getCalendarDayRes = calendarService.getCalendarDay(date);
 
-        return ResponseEntity.ok(getCalendarListRes);
+        return ResponseEntity.ok(getCalendarDayRes);
+    }
+
+    // 해당 년월의 일정 조회 API
+    @GetMapping("/{yyyy_MM}")
+    public ResponseEntity<List<GetCalendarMonthRes>> getCalendarMonth(@PathVariable("yyyy_MM") String string) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy_MM");
+        LocalDate date = LocalDate.parse(string, formatter);
+
+        List<GetCalendarMonthRes> getCalendarMonthRes = calendarService.getCalendarMonth(date);
+
+        return ResponseEntity.ok(getCalendarMonthRes);
     }
 }

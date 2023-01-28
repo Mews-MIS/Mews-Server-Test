@@ -14,7 +14,8 @@ import java.util.List;
 public interface CalendarRepository extends JpaRepository<Calendar, Integer> {
 
     // 특정 날짜에 해당하는 일정 조회
-    List<Calendar> findByDate(LocalDate date);
+    List<Calendar> findAllByDate(LocalDate date);
+
 
 //    // 특정 달에 해당하는 일정들 불러오기
 //    List<com.mews.mews_backend.domain.calendar.entity.Calendar> findAllByDateBetween(LocalDate startDate, LocalDate endDate);

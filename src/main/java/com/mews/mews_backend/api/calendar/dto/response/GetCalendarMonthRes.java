@@ -4,18 +4,21 @@ import com.mews.mews_backend.domain.calendar.entity.Calendar;
 import lombok.Builder;
 import lombok.Data;
 
+import java.time.LocalDate;
 
 
 @Data
-@Builder
-public class GetCalendarListRes {
+public class GetCalendarMonthRes {
+
     private Integer id;
 
-    private String title;
+    private LocalDate date;
+
 
     // Entity to DTO
-    public GetCalendarListRes(Calendar calendar) {
+    public GetCalendarMonthRes(Calendar calendar) {
         this.id = calendar.getId();
-        this.title = calendar.getTitle();
+        this.date = calendar.getDate();
     }
+
 }
