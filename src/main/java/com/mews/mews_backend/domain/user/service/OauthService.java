@@ -32,6 +32,7 @@ import static com.mews.mews_backend.global.error.ErrorCode.*;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 @Slf4j
 public class OauthService {
 
@@ -59,7 +60,7 @@ public class OauthService {
         }
     }
 
-    public ResponseEntity<UserDto.socialLoginResponse> Login(String name, String email, String img) throws IOException {
+    public ResponseEntity<UserDto.socialLoginResponse> Login(String name, String email, String img, int id) throws IOException {
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(email, "google");
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
         log.info("authenticated 되었나용?"+ authentication.isAuthenticated());
@@ -72,7 +73,7 @@ public class OauthService {
         httpHeaders.add("Authorization", "Bearer " + atk);
 
         return new ResponseEntity<>(UserDto.socialLoginResponse.response(
-               name, email, img, atk, rtk
+               name, email, img, id, atk, rtk
         ), HttpStatus.OK);
 
     }
@@ -96,15 +97,16 @@ public class OauthService {
         String name = googleUser.getName();
         String img = googleUser.getPicture();
 
+        User user = userRepository.findByUserEmail(email).orElseThrow();
         // 첫 로그인시 사용자 정보를 보내줌
-        if (!userRepository.existsByUserEmail(email)) {
+        if (user!=null) {
             return new ResponseEntity<>(UserDto.socialLoginResponse.response(
-                    name, email, img, null, null
+                    name, email, img, 0,null, null
             ), HttpStatus.OK);
         } else { //이메일이 존재할 시 바로 로그인
             log.info("이메일 존재함");
             // 이메일이 존재할시 로그인
-            return Login(name, email, img);
+            return Login(name, email, img,user.getId());
         }
     }
 
@@ -157,9 +159,9 @@ public class OauthService {
                 .status("ACTIVE")
                 .build();
 
-        userRepository.save(user);
+        Integer id = userRepository.save(user).getId();
 
-        return Login(user.getUserName(),user.getUserEmail(), user.getImgUrl());
+        return Login(user.getUserName(),user.getUserEmail(), user.getImgUrl(), id);
     }
 
     //accessToken 재발급

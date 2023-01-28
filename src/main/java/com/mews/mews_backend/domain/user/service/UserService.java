@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.time.Duration;
@@ -22,6 +23,7 @@ import static com.mews.mews_backend.global.error.ErrorCode.*;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 @Slf4j
 public class UserService {
 
@@ -70,5 +72,4 @@ public class UserService {
 
         return new ResponseEntity<>("USER STATUS DELETED", HttpStatus.OK);
     }
-
 }
