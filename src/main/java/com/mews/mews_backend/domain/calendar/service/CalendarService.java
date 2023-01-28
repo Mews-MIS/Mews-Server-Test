@@ -36,8 +36,7 @@ public class CalendarService {
     public void update(Integer id, PostCalendarReq postCalendarReq) {
         Calendar calendar = postCalendarReq.toEntity(postCalendarReq);
 
-        // UPDATE는 SAVE 사용 X
-        //calendarRepository.save(calendar);
+        calendarRepository.updateById(calendar.getTitle(), calendar.getInform(), calendar.getDate());
     }
 
     // 학사 일정 DB DELETE

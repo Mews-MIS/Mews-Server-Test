@@ -23,7 +23,6 @@ public class PostCalendarReq {
     @ApiModelProperty(name = "일정 정보", example = "수강 신청 사전 선택 일자는 2023-02-06이다.")
     private String inform;
 
-    @NotBlank
     @ApiModelProperty(notes = "날짜(년-월-일)", example = "2023-02-06")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
     private LocalDate date;

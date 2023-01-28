@@ -1,5 +1,6 @@
 package com.mews.mews_backend.domain.calendar.entity;
 
+import com.mews.mews_backend.domain.common.BaseTimeEntity;
 import lombok.*;
 
 import javax.persistence.*;
@@ -7,10 +8,10 @@ import java.time.LocalDate;
 
 @Entity
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Table(name = "Calendar")
-public class Calendar {
+public class Calendar extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

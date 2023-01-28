@@ -31,7 +31,7 @@ public class CalendarController {
     }
 
     // 세부 일정 수정 API
-    @PutMapping("/{calendar_id)/update")
+    @PutMapping("/{calendar_id}/update")
     public ResponseEntity<String> updateDayCalendar(@PathVariable("calendar_id") Integer id, @RequestBody PostCalendarReq postCalendarReq) {
         calendarService.update(id, postCalendarReq);
 
@@ -40,7 +40,7 @@ public class CalendarController {
     }
 
     // 세부 일정 삭제 API
-    @DeleteMapping("/{calendar_id)/delete")
+    @DeleteMapping("/{calendar_id}/delete")
     public ResponseEntity<String> deleteDayCalendar(@PathVariable("calendar_id") Integer id) {
         calendarService.delete(id);
 
@@ -48,7 +48,7 @@ public class CalendarController {
     }
 
     // 세부 일정 조회 API
-    @GetMapping("/{calendar_id}")
+    @GetMapping("/getone/{calendar_id}")
     public ResponseEntity<GetCalendarOneRes> getCalendarOne(@PathVariable("calendar_id") Integer id) {
         GetCalendarOneRes getCalendarOneRes = calendarService.getCalendarOne(id);
 
@@ -56,9 +56,9 @@ public class CalendarController {
     }
 
     // 해당 날짜의 일정 조회 API
-    @GetMapping("/{yyyy_MM_dd}")
+    @GetMapping("/getday/{yyyy_MM_dd}")
     public ResponseEntity<List<GetCalendarDayRes>> getCalendarDay(@PathVariable("yyyy_MM_dd") String string) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy_MM_dd");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         LocalDate date = LocalDate.parse(string, formatter);
 
         List<GetCalendarDayRes> getCalendarDayRes = calendarService.getCalendarDay(date);
@@ -67,9 +67,9 @@ public class CalendarController {
     }
 
     // 해당 년월의 일정 조회 API
-    @GetMapping("/{yyyy_MM}")
+    @GetMapping("/getmonth/{yyyy_MM}")
     public ResponseEntity<List<GetCalendarMonthRes>> getCalendarMonth(@PathVariable("yyyy_MM") String string) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy_MM");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM");
         LocalDate date = LocalDate.parse(string, formatter);
 
         List<GetCalendarMonthRes> getCalendarMonthRes = calendarService.getCalendarMonth(date);
