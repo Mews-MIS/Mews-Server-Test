@@ -18,7 +18,7 @@ public class ViewsService {
     }
 
     public int getViewId(Integer articleId){
-        // todo : 에러 처리 테스트
+        // todo : 에러 처리 보완 및 조회수 중복 방지
         return articleRepository.findById(articleId).orElseThrow(() ->
                 new IllegalArgumentException("해당 게시글이 존재하지 않습니다")).getViews().getViews_id();
     }

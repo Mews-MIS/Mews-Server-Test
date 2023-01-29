@@ -21,7 +21,7 @@ public class Views extends BaseTimeEntity {
     @ColumnDefault("0")
     private Integer views; // 조회수
 
-    @OneToOne(mappedBy = "views")
+    @OneToOne(mappedBy = "views", orphanRemoval = true)
     private Article article;
 
     @Builder

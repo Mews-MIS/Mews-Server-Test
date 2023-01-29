@@ -23,7 +23,7 @@ public class ArticleService {
     }
 
     // 뉴스, 조회수 db 등록
-    public void register(PostArticleReq postArticleReq){
+    public void postArticle(PostArticleReq postArticleReq){
         Article article = buildArticle(postArticleReq);
         Views views = buildViews();
         article.setViews(views);
@@ -35,6 +35,12 @@ public class ArticleService {
     public GetArticleRes viewArticle(Integer articleId){
         Article article = articleRepository.findById(articleId).get();
         return GetArticleRes.from(article);
+    }
+
+    // 뉴스 삭제
+    public void deleteArticle(Integer articleId){
+        Article article = articleRepository.findById(articleId).get();
+        articleRepository.delete(article);
     }
 
     private Article buildArticle(PostArticleReq postArticleReq){

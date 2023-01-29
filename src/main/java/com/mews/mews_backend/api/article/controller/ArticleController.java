@@ -23,16 +23,23 @@ public class ArticleController {
     @ApiOperation("뉴스 게시글 작성")
     @PostMapping("/post")
     public ResponseEntity<String> postArticle(@Valid @RequestBody PostArticleReq postArticleReq){
-        articleService.register(postArticleReq);
+        articleService.postArticle(postArticleReq);
         return ResponseEntity.ok("post success");
     }
 
-    @ApiOperation("게시글 조회(조회수 증가)")
+    @ApiOperation("뉴스 게시글 조회(조회수 증가)")
     @GetMapping("{id}")
     public ResponseEntity<GetArticleRes> getArticle(@PathVariable("id") Integer articleId){
         Integer viewId = viewsService.getViewId(articleId);
         viewsService.updateView(viewId); // 조회수 증가
         GetArticleRes getArticleRes = articleService.viewArticle(articleId);
         return ResponseEntity.ok(getArticleRes);
+    }
+
+    @ApiOperation("뉴스 게시글 삭제")
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<String> deleteArticle(@PathVariable("id") Integer articleId){
+        articleService.deleteArticle(articleId);
+        return ResponseEntity.ok("delete success");
     }
 }

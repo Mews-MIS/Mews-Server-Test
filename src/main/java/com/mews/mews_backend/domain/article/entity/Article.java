@@ -25,7 +25,7 @@ public class Article extends BaseTimeEntity {
     @ColumnDefault("0")
     private Integer like_count; // 좋아요 수
 
-    @OneToOne
+    @OneToOne(orphanRemoval = true)
     @JoinColumn(name = "views_id")
     private Views views;
 
