@@ -34,6 +34,13 @@ public class Article extends BaseTimeEntity {
         this.views.setArticle(this);
     }
 
+    public Article update(String title, String content, String type){
+        this.title = title;
+        this.content = content;
+        this.type = type;
+        return this;
+    }
+
     @Builder
     public Article(String title, String content, String type, Integer like_count){
         this.title = title;

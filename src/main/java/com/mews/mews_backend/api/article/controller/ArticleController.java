@@ -36,6 +36,13 @@ public class ArticleController {
         return ResponseEntity.ok(getArticleRes);
     }
 
+    @ApiOperation("뉴스 게시글 수정")
+    @PutMapping("/update")
+    public ResponseEntity<String> updateArticle(@Valid @RequestBody PostArticleReq postArticleReq){
+        articleService.updateArticle(postArticleReq);
+        return ResponseEntity.ok("update success");
+    }
+
     @ApiOperation("뉴스 게시글 삭제")
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<String> deleteArticle(@PathVariable("id") Integer articleId){

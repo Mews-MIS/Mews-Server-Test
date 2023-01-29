@@ -12,6 +12,9 @@ import javax.validation.constraints.NotBlank;
 @Getter
 public class PostArticleReq {
 
+    @ApiModelProperty(notes = "뉴스 게시물 번호", example = "1")
+    private Integer id; // 기사 아이디
+
     @NotBlank
     @ApiModelProperty(notes = "뉴스 제목", example = "속보 mews 조회수 500만 돌파")
     private String title; // 제목

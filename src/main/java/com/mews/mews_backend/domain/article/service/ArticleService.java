@@ -37,6 +37,13 @@ public class ArticleService {
         return GetArticleRes.from(article);
     }
 
+    // 뉴스 수정
+    public void updateArticle(PostArticleReq postArticleReq){
+        Article originArticle = articleRepository.findById(postArticleReq.getId()).get();
+        Article newArticle = originArticle.update(postArticleReq.getTitle(), postArticleReq.getContent(), postArticleReq.getType());
+        articleRepository.save(newArticle);
+    }
+
     // 뉴스 삭제
     public void deleteArticle(Integer articleId){
         Article article = articleRepository.findById(articleId).get();
