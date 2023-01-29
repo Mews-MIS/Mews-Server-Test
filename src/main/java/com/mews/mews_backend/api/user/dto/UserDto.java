@@ -12,16 +12,14 @@ public class UserDto implements Serializable {
         private final String userName;
         private final String userEmail;
         private final String imgUrl;
-        private final int userId;
         private final String atk;
         private final String rtk;
 
-        public static socialLoginResponse response(String userName, String userEmail, String imgUrl, int id, String atk, String rtk) {
+        public static socialLoginResponse response(String userName, String userEmail, String imgUrl, String atk, String rtk) {
             return socialLoginResponse.builder()
                     .userName(userName)
                     .userEmail(userEmail)
                     .imgUrl(imgUrl)
-                    .userId(id)
                     .atk(atk)
                     .rtk(rtk)
                     .build();
@@ -34,11 +32,11 @@ public class UserDto implements Serializable {
     @AllArgsConstructor
     @Builder
     public static class register {
-        private String userName;
-        private String userEmail;
-        private String imgUrl;
-        private String introduction;
-        private boolean isOpen;
+        private String userName; //닉네임
+        private String userEmail; //이메일-무조건 있어야 DB에서 구별가능
+        private String imgUrl; //프로필 이미지
+        private String introduction; //자기소개
+        private boolean isOpen; //공개 비공개 여부
     }
 
     @Data

@@ -21,7 +21,11 @@ public enum ErrorCode {
     NOT_EXIST_USER(HttpStatus.BAD_REQUEST, 2004,"사용자를 찾을 수 없습니다."),
 
     // users
-    USERS_EMPTY_USER_ID(HttpStatus.BAD_REQUEST, 2010, "유저 아이디 값을 확인해주세요."),
+    USERS_EMPTY_USER_NAME(HttpStatus.BAD_REQUEST, 2010, "유저 닉네임 값을 확인해주세요."),
+    USERS_EMPTY_EMAIL(HttpStatus.BAD_REQUEST, 2011, "유저 이메일 값을 확인해주세요."),
+    USERS_INVALID_EMAIL(HttpStatus.BAD_REQUEST, 2012, "잘못된 이메일 형식입니다."),
+    USERS_EMPTY_IMG(HttpStatus.BAD_REQUEST, 2013, "유저 프로필 이미지 값을 확인해주세요."),
+    USERS_EXISTS_EMAIL(HttpStatus.BAD_REQUEST, 2017, "중복된 이메일입니다."),
 
     // [POST] /users
     POST_USERS_EMPTY_CERTIFY_IMG(HttpStatus.BAD_REQUEST,2014,"소속 인증을 위한 이미지를 등록해주세요."),
@@ -39,7 +43,6 @@ public enum ErrorCode {
     POST_SESSION_NOT_ADMIN(HttpStatus.BAD_REQUEST, 2040, "해당 유저가 그룹의 관리자가 아닙니다."),
 
     //auth
-
     PATCH_USER_CERTIFIED_FAIL(HttpStatus.BAD_REQUEST,2080,"certify실패"),
     CHECK_USER_CERTIFIED_FAIL(HttpStatus.BAD_REQUEST,2081,"certified 값 불러오기 실패 또는 유효하지 않은 값"),
     GET_UNCERTIFICATION_USER_FAIL(HttpStatus.BAD_REQUEST,2082,"미인증 유저 리스트 불러오기 실패"),
@@ -49,6 +52,7 @@ public enum ErrorCode {
     NOT_LOGIN(HttpStatus.BAD_REQUEST,2086,"로그인 해주세요."),
     REFRESH_LOGOUT(HttpStatus.BAD_REQUEST,2087,"리프레시 토큰이 아닌 엑세스 토큰을 사용해주세요."),
     ALREADY_LOGOUT(HttpStatus.BAD_REQUEST,2088,"이미 로그아웃한 상태입니다."),
+    REFRESH_TOKEN_BAD_REQUEST(HttpStatus.BAD_REQUEST,2089,"잘못된 RefreshToken 입니다 : null 이거나  not equals"),
 
 
     /*

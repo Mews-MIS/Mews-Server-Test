@@ -5,6 +5,7 @@ import com.mews.mews_backend.domain.user.service.OauthService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -33,9 +34,9 @@ public class OauthController {
         return oauthService.oauthLogin(socialLoginType,code);
     }
 
-    //사용자 로그인 진행
+    //회원가입
     @PostMapping(value = "/sign-up")
-    public ResponseEntity<UserDto.socialLoginResponse> singUp(@RequestBody final UserDto.register request) throws IOException {
+    public ResponseEntity<UserDto.socialLoginResponse> signUp(@RequestBody final UserDto.register request) throws IOException {
         log.info("회원가입 진행");
         return  oauthService.socialRegister(request);
     }
@@ -48,5 +49,6 @@ public class OauthController {
         log.info("refresh 토큰 재발급");
         return oauthService.reissue(rtk);
     }
+
 
 }
