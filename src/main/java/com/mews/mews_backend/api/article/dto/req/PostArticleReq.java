@@ -1,4 +1,4 @@
-package com.mews.mews_backend.api.article.dto;
+package com.mews.mews_backend.api.article.dto.req;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;

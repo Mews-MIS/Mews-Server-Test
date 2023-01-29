@@ -5,6 +5,7 @@ import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -16,6 +17,7 @@ public class Views extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer views_id; // 조회수 id
 
+    @NotNull
     @ColumnDefault("0")
     private Integer views; // 조회수
 

@@ -1,6 +1,7 @@
 package com.mews.mews_backend.domain.article.service;
 
-import com.mews.mews_backend.api.article.dto.PostArticleReq;
+import com.mews.mews_backend.api.article.dto.req.PostArticleReq;
+import com.mews.mews_backend.api.article.dto.res.GetArticleRes;
 import com.mews.mews_backend.domain.article.entity.Article;
 import com.mews.mews_backend.domain.article.entity.Views;
 import com.mews.mews_backend.domain.article.repository.ArticleRepository;
@@ -28,6 +29,12 @@ public class ArticleService {
         article.setViews(views);
         articleRepository.save(article);
         viewsRepository.save(views);
+    }
+
+    // 뉴스 조회
+    public GetArticleRes viewArticle(Integer articleId){
+        Article article = articleRepository.findById(articleId).get();
+        return GetArticleRes.from(article);
     }
 
     private Article buildArticle(PostArticleReq postArticleReq){
