@@ -30,16 +30,12 @@ public class Calendar extends BaseTimeEntity {
     @Column(name = "type")
     private String type;
 
-    @Column(name = "inform")
-    private String inform;
-
     @Builder
-    public Calendar(LocalDate startDate, LocalDate endDate,String title, String type, String inform) {
+    public Calendar(LocalDate startDate, LocalDate endDate,String title, String type) {
         this.startDate = startDate;
         this.endDate = endDate;
         this.title = title;
         this.type = type;
-        this.inform = inform;
     }
 }
 
