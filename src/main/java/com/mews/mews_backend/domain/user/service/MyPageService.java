@@ -1,15 +1,21 @@
 package com.mews.mews_backend.domain.user.service;
 
 import com.mews.mews_backend.api.user.dto.UserDto;
+import com.mews.mews_backend.domain.article.repository.ArticleRepository;
+import com.mews.mews_backend.domain.user.entity.Bookmark;
 import com.mews.mews_backend.domain.user.entity.User;
+import com.mews.mews_backend.domain.user.repository.BookmarkRepository;
 import com.mews.mews_backend.domain.user.repository.UserRepository;
+import com.mews.mews_backend.global.config.response.BaseException;
+import com.mews.mews_backend.global.config.response.BaseResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
+
+import static com.mews.mews_backend.global.error.ErrorCode.REQUEST_NOT_EXIST;
 
 @Service
 @RequiredArgsConstructor
@@ -18,6 +24,8 @@ import java.util.Optional;
 public class MyPageService {
 
     private final UserRepository userRepository;
+    private final BookmarkRepository bookmarkRepository;
+    private final ArticleRepository articleRepository;
 
     //프로필 편집
     public void updateUser(Integer userId, UserDto.updateProfile profile){
@@ -41,8 +49,17 @@ public class MyPageService {
 
             userRepository.save(user);
         });
+    }
+
+    //북마크 추가
+    public void insertBookmark(Integer userId, Integer articleId) {
 
 
+        Bookmark bookmark = Bookmark.builder()
+                .user(userRepository.findById(userId).orElseThrow())
+                .article(articleRepository.findById(articleId).orElseThrow())
+                .build();
 
+        bookmarkRepository.save(bookmark);
     }
 }

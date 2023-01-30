@@ -19,6 +19,7 @@ public enum ErrorCode {
      */
     // Common
     NOT_EXIST_USER(HttpStatus.BAD_REQUEST, 2004,"사용자를 찾을 수 없습니다."),
+    REQUEST_NOT_EXIST(HttpStatus.BAD_REQUEST, 2004,"값이 존재하지 않습니다."),
 
     // users
     USERS_EMPTY_USER_NAME(HttpStatus.BAD_REQUEST, 2010, "유저 닉네임 값을 확인해주세요."),
@@ -54,12 +55,14 @@ public enum ErrorCode {
     ALREADY_LOGOUT(HttpStatus.BAD_REQUEST,2088,"이미 로그아웃한 상태입니다."),
     REFRESH_TOKEN_BAD_REQUEST(HttpStatus.BAD_REQUEST,2089,"잘못된 RefreshToken 입니다 : null 이거나  not equals"),
 
-
+    //jwt
+    JWT_TIMEOUT(HttpStatus.BAD_REQUEST,403,"만료된 JWT 토큰입니다."),
     /*
      * 3000 : Response 오류
      */
     // Common
     RESPONSE_ERROR(HttpStatus.BAD_REQUEST, 3000, "값을 불러오는데 실패하였습니다."),
+
 
     // [POST] /users
     DUPLICATED_EMAIL(HttpStatus.BAD_REQUEST, 3013, "중복된 이메일입니다."),

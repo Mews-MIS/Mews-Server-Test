@@ -6,11 +6,13 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.util.function.Supplier;
+
 import static com.mews.mews_backend.global.config.response.BaseResponseStatus.SUCCESS;
 @Getter
 @AllArgsConstructor
 @JsonPropertyOrder({"isSuccess", "code", "message", "result"})
-public class BaseResponse<T> {
+public class BaseResponse<T> implements Supplier<X> {
     @JsonProperty("isSuccess")
     private final Boolean isSuccess;
     private final String message;
