@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 
 @RestController
-@RequestMapping("app")
+@RequestMapping("user")
 @RequiredArgsConstructor
 @Slf4j
 public class UserController {
@@ -32,4 +32,6 @@ public class UserController {
     ){
         return userService.delete(auth);
     }
+
+
 }

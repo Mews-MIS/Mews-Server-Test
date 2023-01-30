@@ -1,5 +1,6 @@
 package com.mews.mews_backend.global.config.Jwt;
 
+import com.mews.mews_backend.global.error.exception.BaseException;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
