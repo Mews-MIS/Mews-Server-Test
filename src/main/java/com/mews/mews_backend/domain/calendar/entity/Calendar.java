@@ -18,20 +18,28 @@ public class Calendar extends BaseTimeEntity {
     @Column(name = "calender_id")
     private Integer id;
 
-    @Column(name = "calendar_date")
-    private LocalDate date;
+    @Column(name = "start_date")
+    private LocalDate startDate;
+
+    @Column(name = "end_date")
+    private LocalDate endDate;
 
     @Column(name = "title")
     private String title;
+
+    @Column(name = "type")
+    private String type;
 
     @Column(name = "inform")
     private String inform;
 
     @Builder
-    public Calendar(String title, String inform, LocalDate date) {
+    public Calendar(LocalDate startDate, LocalDate endDate,String title, String type, String inform) {
+        this.startDate = startDate;
+        this.endDate = endDate;
         this.title = title;
+        this.type = type;
         this.inform = inform;
-        this.date = date;
     }
 }
 
