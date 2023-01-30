@@ -1,5 +1,6 @@
 package com.mews.mews_backend.domain.article.service;
 
+import com.mews.mews_backend.api.article.dto.req.PatchArticleReq;
 import com.mews.mews_backend.api.article.dto.req.PostArticleReq;
 import com.mews.mews_backend.api.article.dto.res.GetArticleRes;
 import com.mews.mews_backend.domain.article.entity.Article;
@@ -38,9 +39,14 @@ public class ArticleService {
     }
 
     // 뉴스 수정
-    public void updateArticle(PostArticleReq postArticleReq){
-        Article originArticle = articleRepository.findById(postArticleReq.getId()).get();
-        Article newArticle = originArticle.update(postArticleReq.getTitle(), postArticleReq.getContent(), postArticleReq.getType());
+    public void updateArticle(PatchArticleReq patchArticleReq){
+        Article originArticle = articleRepository.findById(patchArticleReq.getId()).get();
+
+        String title = (patchArticleReq.getTitle() == null? originArticle.getTitle() : patchArticleReq.getTitle());
+        String content = (patchArticleReq.getContent() == null? originArticle.getContent() : patchArticleReq.getContent());
+        String type = (patchArticleReq.getType() == null? originArticle.getType() : patchArticleReq.getType());
+
+        Article newArticle = originArticle.update(title, content, type);
         articleRepository.save(newArticle);
     }
 

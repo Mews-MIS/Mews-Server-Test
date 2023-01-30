@@ -1,5 +1,6 @@
 package com.mews.mews_backend.api.article.controller;
 
+import com.mews.mews_backend.api.article.dto.req.PatchArticleReq;
 import com.mews.mews_backend.api.article.dto.req.PostArticleReq;
 import com.mews.mews_backend.api.article.dto.res.GetArticleRes;
 import com.mews.mews_backend.domain.article.service.ArticleService;
@@ -37,9 +38,9 @@ public class ArticleController {
     }
 
     @ApiOperation("뉴스 게시글 수정")
-    @PutMapping("/update")
-    public ResponseEntity<String> updateArticle(@Valid @RequestBody PostArticleReq postArticleReq){
-        articleService.updateArticle(postArticleReq);
+    @PatchMapping("/update")
+    public ResponseEntity<String> updateArticle(@Valid @RequestBody PatchArticleReq patchArticleReq){
+        articleService.updateArticle(patchArticleReq);
         return ResponseEntity.ok("update success");
     }
 
