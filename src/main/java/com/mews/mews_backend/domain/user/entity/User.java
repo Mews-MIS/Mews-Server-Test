@@ -22,7 +22,7 @@ public class User extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
-    private int id;
+    private Integer id;
 
     @Column(name = "user_name", nullable = false)
     private String userName;
@@ -60,6 +60,13 @@ public class User extends BaseTimeEntity {
     public void updateStatus(){
         this.status = "DELETED";
     }
+    public void changeName(String name) {this.userName = name;}
+
+    public void changeImg(String img) {this.imgUrl = img;}
+
+    public void changeIntroduction(String introduction) {this.introduction= introduction;}
+
+    public void changeIsOpen(boolean open) {this.isOpen = open;}
     public User(String userEmail, String userName, Set<GrantedAuthority> singleton) {
     }
 }
