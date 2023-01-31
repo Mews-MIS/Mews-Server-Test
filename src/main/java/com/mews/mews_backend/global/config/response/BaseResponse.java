@@ -12,7 +12,7 @@ import static com.mews.mews_backend.global.config.response.BaseResponseStatus.SU
 @Getter
 @AllArgsConstructor
 @JsonPropertyOrder({"isSuccess", "code", "message", "result"})
-public class BaseResponse<T> implements Supplier<X> {
+public class BaseResponse<T> {
     @JsonProperty("isSuccess")
     private final Boolean isSuccess;
     private final String message;
