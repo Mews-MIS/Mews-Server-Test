@@ -10,15 +10,18 @@ import java.time.LocalDate;
 @Data
 public class GetCalendarMonthRes {
 
-    private Integer id;
+    private LocalDate startDate;
 
-    private LocalDate date;
+    private LocalDate endDate;
+
+    private String category;
 
 
     // Entity to DTO
     public GetCalendarMonthRes(Calendar calendar) {
-        this.id = calendar.getId();
-        this.date = calendar.getDate();
+        this.startDate = calendar.getStartDate();
+        this.endDate = calendar.getEndDate();
+        this.category = calendar.getCategory();
     }
 
 }

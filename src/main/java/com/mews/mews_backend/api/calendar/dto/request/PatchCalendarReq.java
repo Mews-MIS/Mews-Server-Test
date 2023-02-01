@@ -2,25 +2,32 @@ package com.mews.mews_backend.api.calendar.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.mews.mews_backend.domain.calendar.entity.Calendar;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-public class PostCalendarReq {
+public class PatchCalendarReq {
+
+    @NotNull
+    @ApiModelProperty(notes = "id", example = "1")
+    private Integer id;
 
     @NotBlank
     @ApiModelProperty(notes = "제목", example = "수강 신청 사전 선택")
     private String title;
 
     @NotBlank
-    @ApiModelProperty(notes = "활동종류", example = "동국대학교")
+    @ApiModelProperty(name = "종류", example = "동국대학교")
     private String category;
 
     @ApiModelProperty(notes = "날짜(년-월-일)", example = "2023-02-06")
@@ -31,15 +38,13 @@ public class PostCalendarReq {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
     private LocalDate endDate;
 
-    public Calendar toEntity(PostCalendarReq postCalendarReq) {
+    public Calendar toEntity(PatchCalendarReq patchCalendarReq) {
         Calendar calendar = Calendar.builder()
-                .title(postCalendarReq.getTitle())
-                .category(postCalendarReq.getCategory())
-                .startDate(postCalendarReq.getStartDate())
-                .endDate(postCalendarReq.getEndDate())
+                .title(patchCalendarReq.getTitle())
+                .category(patchCalendarReq.getCategory())
+                .startDate(patchCalendarReq.getStartDate())
+                .endDate(patchCalendarReq.getEndDate())
                 .build();
-
-        System.out.println(calendar.getId() + calendar.getTitle());
 
         return calendar;
     }

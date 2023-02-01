@@ -16,15 +16,18 @@ public class GetCalendarOneRes {
 
     private String title;
 
-    private LocalDate date;
+    private String category;
 
-    private String inform;
+    private LocalDate startDate;
+
+    private LocalDate endDate;
 
     // Entity to DTO
     public GetCalendarOneRes(Calendar calendar) {
         this.id = calendar.getId();
-        this.title = calendar.getTitle();;
-        this.inform = calendar.getInform();;
-        this.date = calendar.getDate();
+        this.title = calendar.getTitle();
+        this.category = calendar.getCategory();
+        this.startDate = calendar.getStartDate();
+        this.endDate = calendar.getStartDate();
     }
 }
