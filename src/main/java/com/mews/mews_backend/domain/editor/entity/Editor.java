@@ -1,5 +1,6 @@
 package com.mews.mews_backend.domain.editor.entity;
 
+import com.mews.mews_backend.domain.common.BaseTimeEntity;
 import lombok.*;
 
 import javax.persistence.*;
@@ -9,7 +10,7 @@ import javax.persistence.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Table(name = "Editor")
-public class Editor {
+public class Editor extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
