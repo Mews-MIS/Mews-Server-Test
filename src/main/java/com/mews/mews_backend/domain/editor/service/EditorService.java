@@ -1,5 +1,6 @@
 package com.mews.mews_backend.domain.editor.service;
 
+import com.mews.mews_backend.api.Editor.dto.request.PatchEditorReq;
 import com.mews.mews_backend.api.Editor.dto.request.PostEditorReq;
 import com.mews.mews_backend.domain.editor.entity.Editor;
 import com.mews.mews_backend.domain.editor.repository.EditorRepository;
@@ -23,5 +24,19 @@ public class EditorService {
         Editor editor = postEditorReq.toEntity(postEditorReq);
 
         editorRepository.save(editor);
+    }
+
+    public void update(PatchEditorReq patchEditorReq) {
+        Editor editor = editorRepository.findById(patchEditorReq.getId()).get();
+
+        String inputName = (patchEditorReq.getName() == null? editor.getName() : patchEditorReq.getName());
+        String inputImgUrl = (patchEditorReq.getImgUrl() == null? editor.getImgUrl() : patchEditorReq.getImgUrl());
+        String inputIntroduction = (patchEditorReq.getIntroduction() == null? editor.getIntroduction() : patchEditorReq.getIntroduction());
+
+        editorRepository.updateById(patchEditorReq.getId(), inputName, inputImgUrl, inputIntroduction);
+    }
+
+    public void delete(Integer id) {
+        editorRepository.deleteById(id);
     }
 }

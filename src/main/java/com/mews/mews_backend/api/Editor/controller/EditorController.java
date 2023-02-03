@@ -1,15 +1,13 @@
 package com.mews.mews_backend.api.Editor.controller;
 
 
+import com.mews.mews_backend.api.Editor.dto.request.PatchEditorReq;
 import com.mews.mews_backend.api.Editor.dto.request.PostEditorReq;
 import com.mews.mews_backend.domain.editor.service.EditorService;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
@@ -27,5 +25,19 @@ public class EditorController {
         editorService.save(postEditorReq);
 
         return ResponseEntity.ok("Post Success");
+    }
+
+    @PatchMapping("/update")
+    public ResponseEntity<String> updateEditor(@Valid @RequestBody PatchEditorReq patchEditorReq) {
+        editorService.update(patchEditorReq);
+
+        return ResponseEntity.ok("Patch Success");
+    }
+
+    @DeleteMapping("/delete/{editor_id}")
+    public ResponseEntity<String> deleteEditor(@PathVariable("editor_id") Integer id) {
+        editorService.delete(id);
+
+        return ResponseEntity.ok("Delete Success");
     }
 }
