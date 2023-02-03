@@ -114,27 +114,27 @@ public class OauthService {
 
         //1. 닉네임 null 체크
         if(request.getUserName()==null){
-            throw new BaseException(USERS_EMPTY_USER_NAME);
+            throw new BaseException(EMPTY_USERNAME);
         }
 
         //2. 이메일 null 체크
         if(request.getUserEmail()==null){
-            throw new BaseException(USERS_EMPTY_EMAIL);
+            throw new BaseException(EMPTY_EMAIL);
         }
 
         //2-2. 이메일 형식 체크
         if(!request.getUserEmail().contains("@")){
-            throw new BaseException(USERS_INVALID_EMAIL);
+            throw new BaseException(INVALID_EMAIL);
         }
 
         //2-3. 이메일 중복 체크
         if(userRepository.existsByUserEmail(request.getUserEmail())) {
-            throw new BaseException(USERS_EXISTS_EMAIL);
+            throw new BaseException(USER_EMAIL_EXISTS);
         }
 
         //3. 프로필 이미지
         if(request.getImgUrl()==null) {
-            throw new BaseException(USERS_EMPTY_IMG);
+            throw new BaseException(EMPTY_IMG);
         }
     }
 

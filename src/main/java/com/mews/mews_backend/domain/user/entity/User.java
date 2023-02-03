@@ -67,6 +67,8 @@ public class User extends BaseTimeEntity {
     public void changeIntroduction(String introduction) {this.introduction= introduction;}
 
     public void changeIsOpen(boolean open) {this.isOpen = open;}
+
+    public void updateBookmark(){this.bookmarkCount++;}
     public User(String userEmail, String userName, Set<GrantedAuthority> singleton) {
     }
 }
