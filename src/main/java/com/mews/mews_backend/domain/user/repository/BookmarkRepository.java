@@ -11,4 +11,7 @@ public interface BookmarkRepository extends JpaRepository<Bookmark, Integer> {
 
     @Query("select b from Bookmark b where b.user.id = :userId and b.article.article_id = :articleId")
     List<Bookmark> existsByIdAndArticleId(Integer userId, Integer articleId);
+
+    @Query("select b from Bookmark b where b.user.id = :userId ORDER BY b.modifiedAt DESC")
+    List<Bookmark> findAllByUserId(Integer userId);
 }

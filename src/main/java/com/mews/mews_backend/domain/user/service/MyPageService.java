@@ -1,5 +1,6 @@
 package com.mews.mews_backend.domain.user.service;
 
+import com.mews.mews_backend.api.user.dto.GetMyPageBookmarkReq;
 import com.mews.mews_backend.api.user.dto.UserDto;
 import com.mews.mews_backend.domain.article.entity.Article;
 import com.mews.mews_backend.domain.article.repository.ArticleRepository;
@@ -10,11 +11,13 @@ import com.mews.mews_backend.domain.user.repository.UserRepository;
 import com.mews.mews_backend.global.error.exception.BaseException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -92,5 +95,23 @@ public class MyPageService {
         //user bookmarkcnt +1증가
         user.updateBookmark();
         userRepository.save(user);
+    }
+
+    //내 북마크 글 가져오기
+    public List<GetMyPageBookmarkReq> getMyBookmark(Integer userId){
+        List<Bookmark> findMyBookmark = bookmarkRepository.findAllByUserId(userId);
+        List<GetMyPageBookmarkReq> getMyPageBookmarkReqs = new ArrayList<>();
+
+        for(Bookmark bookmark : findMyBookmark){
+            GetMyPageBookmarkReq dto = GetMyPageBookmarkReq.builder()
+                    .id(bookmark.getArticle().getArticle_id())
+                    .title(bookmark.getArticle().getTitle())
+                    .likeCount(bookmark.getArticle().getLike_count())
+                    .editors("일단 X")
+                    .img("일단 X")
+                    .build();
+            getMyPageBookmarkReqs.add(dto);
+        }
+        return getMyPageBookmarkReqs;
     }
 }
