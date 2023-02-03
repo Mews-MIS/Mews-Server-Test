@@ -17,12 +17,17 @@ import java.util.List;
 public interface CalendarRepository extends JpaRepository<Calendar, Integer> {
 
     // 특정 날짜에 해당하는 일정 조회
-    List<Calendar> findAllByDate(LocalDate date);
+    List<Calendar> findAllByStartDate(LocalDate date);
+
+    // 특정 월에 해당하는 일정 조회
+    List<Calendar> findAllByStartDateBetween(LocalDate firstDate, LocalDate lastDate);
 
     // 특정 일정 수정
     @Modifying
-    @Query("update Calendar c set c.title = :inputTitle, c.inform = :inputInform, c.date = :inputDate")
-    Integer updateById(@Param("inputTitle") String title,
-                       @Param("inputInform") String inform,
-                       @Param("inputDate") LocalDate date);
+    @Query("update Calendar c set c.title = :inputTitle, c.category = :inputCategory, c.startDate = :startDate, c.endDate = :endDate where c.id = :inputId")
+    Integer updateById(@Param("inputId") Integer inputId,
+                       @Param("inputTitle") String inputTitle,
+                       @Param("inputCategory") String inputCategory,
+                       @Param("startDate") LocalDate inputStartDate,
+                       @Param("endDate") LocalDate inputEndDate);
 }
