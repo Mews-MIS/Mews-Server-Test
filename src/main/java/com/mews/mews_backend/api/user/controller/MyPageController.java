@@ -41,4 +41,12 @@ public class MyPageController {
         List<GetMyPageBookmarkReq> getMyPageBookmarkReqList = myPageService.getMyBookmark(userId);
         return new ResponseEntity<>(getMyPageBookmarkReqList,HttpStatus.OK);
     }
+
+    //북마크 취소
+    @DeleteMapping(value="/{userId}/bookmark/{articleId}")
+    public ResponseEntity<String> deleteBookmark(@PathVariable("userId") Integer userId, @PathVariable("articleId") Integer articleId){
+        log.info("북마크 취소");
+        myPageService.deleteBookmark(userId, articleId);
+        return new ResponseEntity<>("DELETE BOOKMARK",HttpStatus.OK);
+    }
 }

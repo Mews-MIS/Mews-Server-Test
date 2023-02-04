@@ -114,4 +114,9 @@ public class MyPageService {
         }
         return getMyPageBookmarkReqs;
     }
+
+    //북마크 취소
+    public void deleteBookmark(Integer userId, Integer articleId){
+        bookmarkRepository.deleteByIdAndArticleId(userId, articleId);
+    }
 }
