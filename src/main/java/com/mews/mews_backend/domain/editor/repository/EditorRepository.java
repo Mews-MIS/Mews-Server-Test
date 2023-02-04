@@ -13,7 +13,7 @@ import org.springframework.stereotype.Repository;
 public interface EditorRepository extends JpaRepository<Editor, Integer> {
 
     @Modifying
-    @Query("update Editor e set e.name = :inputName, e.imgUrl = :inputImgUrl, e.introduction = :inputIntroduction where c.id = :inputId")
+    @Query("update Editor e set e.name = :inputName, e.imgUrl = :inputImgUrl, e.introduction = :inputIntroduction where e.id = :inputId")
     Integer updateById(@Param("inputId") Integer inputId,
                        @Param("inputName") String inputName,
                        @Param("inputImgUrl") String inputImgUrl,

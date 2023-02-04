@@ -3,6 +3,7 @@ package com.mews.mews_backend.api.Editor.controller;
 
 import com.mews.mews_backend.api.Editor.dto.request.PatchEditorReq;
 import com.mews.mews_backend.api.Editor.dto.request.PostEditorReq;
+import com.mews.mews_backend.api.Editor.dto.response.GetEditorRes;
 import com.mews.mews_backend.domain.editor.service.EditorService;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -39,5 +41,19 @@ public class EditorController {
         editorService.delete(id);
 
         return ResponseEntity.ok("Delete Success");
+    }
+
+    @GetMapping("/getall")
+    public ResponseEntity<List<GetEditorRes>> getEditorAll() {
+        List<GetEditorRes> getEditorAllRes = editorService.getAll();
+
+        return ResponseEntity.ok(getEditorAllRes);
+    }
+
+    @GetMapping("/getone/{editor_id}")
+    public ResponseEntity<GetEditorRes> getEditor(@PathVariable("editor_id") Integer id) {
+        GetEditorRes getEditorRes = editorService.getOne(id);
+
+        return ResponseEntity.ok(getEditorRes);
     }
 }
