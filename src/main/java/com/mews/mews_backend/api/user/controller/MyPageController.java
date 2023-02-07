@@ -49,4 +49,19 @@ public class MyPageController {
         myPageService.deleteBookmark(userId, articleId);
         return new ResponseEntity<>("DELETE BOOKMARK",HttpStatus.OK);
     }
+
+    //게시글 좋아요
+    @PostMapping("/{userId}/article/{articleId}/like")
+    public ResponseEntity<String> likeArticle(@PathVariable("userId") Integer userId, @PathVariable("articleId") Integer articleId){
+        log.info("좋아요");
+        myPageService.likeArticle(userId, articleId);
+        return new ResponseEntity<>("ADD LIKE",HttpStatus.OK);
+    }
+    //좋아요 취소
+    @DeleteMapping(value="/{userId}/article/{articleId}/like")
+    public ResponseEntity<String> deleteLike(@PathVariable("userId") Integer userId, @PathVariable("articleId") Integer articleId){
+        log.info("좋아요 취소");
+        myPageService.deleteLike(userId, articleId);
+        return new ResponseEntity<>("DELETE LIKE",HttpStatus.OK);
+    }
 }

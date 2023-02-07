@@ -60,6 +60,7 @@ public class User extends BaseTimeEntity {
     public void updateStatus(){
         this.status = "DELETED";
     }
+    //프로필 편집 부분
     public void changeName(String name) {this.userName = name;}
 
     public void changeImg(String img) {this.imgUrl = img;}
@@ -68,7 +69,13 @@ public class User extends BaseTimeEntity {
 
     public void changeIsOpen(boolean open) {this.isOpen = open;}
 
-    public void updateBookmark(){this.bookmarkCount++;}
+    //북마크 추가 및 취소
+    public void upBookmark(){this.bookmarkCount++;}
+    public void downBookmark(){this.bookmarkCount--;}
+
+    //좋아요 추가 및 취소
+    public void upLike(){this.likeCount++;}
+    public void downLike(){this.likeCount--;}
     public User(String userEmail, String userName, Set<GrantedAuthority> singleton) {
     }
 }

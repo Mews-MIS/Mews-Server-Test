@@ -50,4 +50,5 @@ public class ArticleController {
         articleService.deleteArticle(articleId);
         return ResponseEntity.ok("delete success");
     }
+
 }

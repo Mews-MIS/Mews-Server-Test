@@ -5,8 +5,10 @@ import com.mews.mews_backend.api.user.dto.UserDto;
 import com.mews.mews_backend.domain.article.entity.Article;
 import com.mews.mews_backend.domain.article.repository.ArticleRepository;
 import com.mews.mews_backend.domain.user.entity.Bookmark;
+import com.mews.mews_backend.domain.user.entity.Like;
 import com.mews.mews_backend.domain.user.entity.User;
 import com.mews.mews_backend.domain.user.repository.BookmarkRepository;
+import com.mews.mews_backend.domain.user.repository.LikeRepository;
 import com.mews.mews_backend.domain.user.repository.UserRepository;
 import com.mews.mews_backend.global.error.exception.BaseException;
 import lombok.RequiredArgsConstructor;
@@ -21,8 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static com.mews.mews_backend.global.error.ErrorCode.NOT_AUTHENTICATED_USER;
-import static com.mews.mews_backend.global.error.ErrorCode.USER_BOOKMARK_EXISTS;
+import static com.mews.mews_backend.global.error.ErrorCode.*;
 
 @Service
 @RequiredArgsConstructor
@@ -33,6 +34,8 @@ public class MyPageService {
     private final UserRepository userRepository;
     private final BookmarkRepository bookmarkRepository;
     private final ArticleRepository articleRepository;
+
+    private final LikeRepository likeRepository;
 
     //프로필 편집
     public void updateUser(Integer userId, UserDto.updateProfile profile){
@@ -73,6 +76,13 @@ public class MyPageService {
         }
     }
 
+    public void USER_LIKE_VALIDATION(Integer userId, Integer articleId){
+        List<Like> likeValidation = likeRepository.existsByIdAndArticleId(userId, articleId);
+        if(!likeValidation.isEmpty()){
+            throw new BaseException(USER_LIKE_EXISTS);
+        }
+    }
+
     //북마크 추가
     public void insertBookmark(Integer userId, Integer articleId) {
         log.info("=======예외 처리======");
@@ -93,7 +103,7 @@ public class MyPageService {
         bookmarkRepository.save(bookmark);
 
         //user bookmarkcnt +1증가
-        user.updateBookmark();
+        user.upBookmark();
         userRepository.save(user);
     }
 
@@ -116,7 +126,46 @@ public class MyPageService {
     }
 
     //북마크 취소
-    public void deleteBookmark(Integer userId, Integer articleId){
+    public void deleteBookmark(Integer userId, Integer articleId) {
+        User user = userRepository.findById(userId).orElseThrow();
+        //북마크 삭제
         bookmarkRepository.deleteByIdAndArticleId(userId, articleId);
+        //북마크cnt --
+        user.downBookmark();
+        userRepository.save(user);
     }
+
+    //좋아요
+    public void likeArticle(Integer userId, Integer articleId){
+        log.info("=======예외 처리======");
+        //예외 처리 : 토큰 값의 유저와 userId 값이 일치하지 않으면 예외 발생
+        USER_VALIDATION(userId);
+        //예외 처리 : 이미 좋아요된 아티클이면 예외 발생
+        USER_LIKE_VALIDATION(userId, articleId);
+        //좋아요 추가
+        User user = userRepository.findById(userId).orElseThrow();
+        Article article = articleRepository.findById(articleId).orElseThrow();
+
+        Like like = Like.builder()
+                .user(user)
+                .article(article)
+                .build();
+
+        likeRepository.save(like);
+
+        //user likecnt +1증가
+        user.upLike();
+        userRepository.save(user);
+    }
+
+    //좋아요 취소
+    public void deleteLike(Integer userId, Integer articleId) {
+        User user = userRepository.findById(userId).orElseThrow();
+        //좋아요 삭제
+        likeRepository.deleteByIdAndArticleId(userId, articleId);
+        //좋아요 cnt --
+        user.downLike();
+        userRepository.save(user);
+    }
+
 }
