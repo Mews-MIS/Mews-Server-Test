@@ -38,6 +38,7 @@ public class OauthController {
     @PostMapping(value = "/sign-up")
     public ResponseEntity<UserDto.socialLoginResponse> signUp(@RequestBody final UserDto.register request) throws IOException {
         log.info("회원가입 진행");
+        //TODO 회원가입 변경사항 처리
         return  oauthService.socialRegister(request);
     }
 
