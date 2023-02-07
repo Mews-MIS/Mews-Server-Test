@@ -1,6 +1,7 @@
 package com.mews.mews_backend.domain.user.service;
 
-import com.mews.mews_backend.api.user.dto.GetMyPageBookmarkReq;
+import com.mews.mews_backend.api.user.dto.GetMyPageBookmarkRes;
+import com.mews.mews_backend.api.user.dto.GetMyPageRes;
 import com.mews.mews_backend.api.user.dto.UserDto;
 import com.mews.mews_backend.domain.article.entity.Article;
 import com.mews.mews_backend.domain.article.repository.ArticleRepository;
@@ -13,7 +14,6 @@ import com.mews.mews_backend.domain.user.repository.UserRepository;
 import com.mews.mews_backend.global.error.exception.BaseException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -37,6 +37,22 @@ public class MyPageService {
 
     private final LikeRepository likeRepository;
 
+    //프로필
+    public GetMyPageRes getUserInfo(Integer userId){
+        Optional<User> userResult = userRepository.findById(userId);
+        User user = userResult.orElseThrow();
+
+        GetMyPageRes userDto = GetMyPageRes.builder()
+                .imgUrl(user.getImgUrl())
+                .userName(user.getUserName())
+                .introduction(user.getIntroduction())
+                .bookmarkCount(user.getBookmarkCount())
+                .likeCount(user.getLikeCount())
+                .subscribeCount(user.getSubscribeCount())
+                .build();
+
+        return userDto;
+    }
     //프로필 편집
     public void updateUser(Integer userId, UserDto.updateProfile profile){
         Optional<User> userResult = userRepository.findById(userId );
@@ -108,21 +124,21 @@ public class MyPageService {
     }
 
     //내 북마크 글 가져오기
-    public List<GetMyPageBookmarkReq> getMyBookmark(Integer userId){
+    public List<GetMyPageBookmarkRes> getMyBookmark(Integer userId){
         List<Bookmark> findMyBookmark = bookmarkRepository.findAllByUserId(userId);
-        List<GetMyPageBookmarkReq> getMyPageBookmarkReqs = new ArrayList<>();
+        List<GetMyPageBookmarkRes> getMyPageBookmarkRes = new ArrayList<>();
 
         for(Bookmark bookmark : findMyBookmark){
-            GetMyPageBookmarkReq dto = GetMyPageBookmarkReq.builder()
+            GetMyPageBookmarkRes dto = GetMyPageBookmarkRes.builder()
                     .id(bookmark.getArticle().getArticle_id())
                     .title(bookmark.getArticle().getTitle())
                     .likeCount(bookmark.getArticle().getLike_count())
                     .editors("일단 X")
                     .img("일단 X")
                     .build();
-            getMyPageBookmarkReqs.add(dto);
+            getMyPageBookmarkRes.add(dto);
         }
-        return getMyPageBookmarkReqs;
+        return getMyPageBookmarkRes;
     }
 
     //북마크 취소

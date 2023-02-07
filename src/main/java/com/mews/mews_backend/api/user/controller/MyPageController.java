@@ -1,6 +1,7 @@
 package com.mews.mews_backend.api.user.controller;
 
-import com.mews.mews_backend.api.user.dto.GetMyPageBookmarkReq;
+import com.mews.mews_backend.api.user.dto.GetMyPageBookmarkRes;
+import com.mews.mews_backend.api.user.dto.GetMyPageRes;
 import com.mews.mews_backend.api.user.dto.UserDto;
 import com.mews.mews_backend.domain.user.service.MyPageService;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +18,12 @@ import java.util.List;
 @Slf4j
 public class MyPageController {
     private final MyPageService myPageService;
+
+    //프로필 정보
+    @GetMapping(value="/{userId}")
+    public ResponseEntity<GetMyPageRes> getUserInfo(@PathVariable("userId") Integer userId){
+        return new ResponseEntity<>(myPageService.getUserInfo(userId), HttpStatus.OK);
+    }
 
     //프로필 편집
     @PatchMapping(value= "/{userId}")
@@ -36,10 +43,10 @@ public class MyPageController {
 
     //내 북마크 모아보기
     @GetMapping(value="/{userId}/myBookmark")
-    public ResponseEntity<List<GetMyPageBookmarkReq>> getMyBookmark(@PathVariable("userId") Integer userId) {
+    public ResponseEntity<List<GetMyPageBookmarkRes>> getMyBookmark(@PathVariable("userId") Integer userId) {
         log.info("내 북마크 글 가져오기");
-        List<GetMyPageBookmarkReq> getMyPageBookmarkReqList = myPageService.getMyBookmark(userId);
-        return new ResponseEntity<>(getMyPageBookmarkReqList,HttpStatus.OK);
+        List<GetMyPageBookmarkRes> getMyPageBookmarkResList = myPageService.getMyBookmark(userId);
+        return new ResponseEntity<>(getMyPageBookmarkResList,HttpStatus.OK);
     }
 
     //북마크 취소
