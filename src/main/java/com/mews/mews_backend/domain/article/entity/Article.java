@@ -41,10 +41,11 @@ public class Article extends BaseTimeEntity {
         this.views.setArticle(this);
     }
 
-    public Article update(String title, String content, String type){
+    public Article update(String title, String content, String type, List<String> fileUrls){
         this.title = title;
         this.content = content;
         this.type = type;
+        this.fileUrls = fileUrls;
         return this;
     }
 
