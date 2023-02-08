@@ -61,6 +61,7 @@ public class ArticleService {
                 .title(postArticleReq.getTitle())
                 .content(postArticleReq.getContent())
                 .type(postArticleReq.getType())
+                .fileUrls(postArticleReq.getFileUrls())
                 .build();
         return article;
     }
