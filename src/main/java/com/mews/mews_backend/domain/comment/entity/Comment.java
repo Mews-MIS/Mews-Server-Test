@@ -3,10 +3,7 @@ package com.mews.mews_backend.domain.comment.entity;
 import com.mews.mews_backend.domain.article.entity.Article;
 import com.mews.mews_backend.domain.common.BaseTimeEntity;
 import com.mews.mews_backend.domain.user.entity.User;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 
@@ -29,4 +26,11 @@ public class Comment extends BaseTimeEntity {
     private User user; // 댓글 작성 유저
 
     private String content; // 댓글 내용
+
+    @Builder
+    public Comment(Article article, User user, String content){
+        this.article = article;
+        this.user = user;
+        this.content = content;
+    }
 }
