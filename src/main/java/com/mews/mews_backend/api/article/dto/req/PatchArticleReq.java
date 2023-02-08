@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -25,4 +26,7 @@ public class PatchArticleReq {
 
     @ApiModelProperty(notes = "타입", example = "article")
     private String type; // 타입
+
+    @ApiModelProperty(notes = "첨부파일 url", example = "[\"www.google.com\", \"www.naver.com'\"]")
+    private List<String> fileUrls; // 첨부파일 urls
 }
