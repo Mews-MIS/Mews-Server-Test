@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Builder
 @AllArgsConstructor
@@ -24,6 +25,9 @@ public class GetArticleRes {
     @ApiModelProperty(notes = "타입", example = "article")
     private String type; // 타입
 
+    @ApiModelProperty(notes = "첨부파일 url", example = "[\"www.google.com\", \"www.naver.com'\"]")
+    private List<String> fileUrls; // 첨부파일 urls
+
     @ApiModelProperty(notes = "최종 수정 시각", example = "[2023,1,29,14,48,50]")
     private LocalDateTime modifiedAt; // 작성 시각
 
@@ -38,6 +42,7 @@ public class GetArticleRes {
                 .title(article.getTitle())
                 .content(article.getContent())
                 .type(article.getType())
+                .fileUrls(article.getFileUrls())
                 .modifiedAt(article.getModifiedAt())
                 .likeCount(article.getLike_count())
                 .views(article.getViews().getViews())
