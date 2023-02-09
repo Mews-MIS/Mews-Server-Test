@@ -1,5 +1,6 @@
 package com.mews.mews_backend.domain.article.entity;
 
+import com.mews.mews_backend.domain.comment.entity.Comment;
 import com.mews.mews_backend.domain.common.BaseTimeEntity;
 import com.mews.mews_backend.infra.StringListConverter;
 import lombok.*;
@@ -36,6 +37,10 @@ public class Article extends BaseTimeEntity {
     @JoinColumn(name = "views_id")
     private Views views;
 
+    @OneToMany(mappedBy = "article", cascade = CascadeType.REMOVE, fetch = FetchType.EAGER, orphanRemoval = true)
+    @OrderBy("modifiedAt desc")
+    private List<Comment> comments;
+
     public void setViews(Views views){
         this.views = views;
         this.views.setArticle(this);
@@ -46,6 +51,11 @@ public class Article extends BaseTimeEntity {
         this.content = content;
         this.type = type;
         this.fileUrls = fileUrls;
+        return this;
+    }
+
+    public Article updateComment(List<Comment> comments){
+        this.comments = comments;
         return this;
     }
 
