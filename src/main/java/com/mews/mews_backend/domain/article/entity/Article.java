@@ -50,7 +50,7 @@ public class Article extends BaseTimeEntity {
     }
 
     public void upLike(){this.like_count++;}
-    public void downLike(){this.likeCount--;}
+    public void downLike(){this.like_count--;}
 
     // like_count default 값 0으로 설정
     // insert 되기 전 실행
