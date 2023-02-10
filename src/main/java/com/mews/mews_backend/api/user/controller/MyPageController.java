@@ -38,7 +38,7 @@ public class MyPageController {
     public ResponseEntity<String> addBookmark(@PathVariable("userId") Integer userId, @PathVariable("articleId") Integer articleId) {
         log.info("북마크 추가");
         myPageService.insertBookmark(userId,articleId);
-        return new ResponseEntity<>("ADD BOOKMARK", HttpStatus.OK);
+        return new ResponseEntity<>("SUCCESS BOOKMARK", HttpStatus.OK);
     }
 
     //내 북마크 모아보기
@@ -49,26 +49,13 @@ public class MyPageController {
         return new ResponseEntity<>(getMyPageBookmarkResList,HttpStatus.OK);
     }
 
-    //북마크 취소
-    @DeleteMapping(value="/{userId}/bookmark/{articleId}")
-    public ResponseEntity<String> deleteBookmark(@PathVariable("userId") Integer userId, @PathVariable("articleId") Integer articleId){
-        log.info("북마크 취소");
-        myPageService.deleteBookmark(userId, articleId);
-        return new ResponseEntity<>("DELETE BOOKMARK",HttpStatus.OK);
-    }
-
     //게시글 좋아요
     @PostMapping("/{userId}/article/{articleId}/like")
     public ResponseEntity<String> likeArticle(@PathVariable("userId") Integer userId, @PathVariable("articleId") Integer articleId){
         log.info("좋아요");
         myPageService.likeArticle(userId, articleId);
-        return new ResponseEntity<>("ADD LIKE",HttpStatus.OK);
+        return new ResponseEntity<>("SUCCESS LIKE",HttpStatus.OK);
     }
-    //좋아요 취소
-    @DeleteMapping(value="/{userId}/article/{articleId}/like")
-    public ResponseEntity<String> deleteLike(@PathVariable("userId") Integer userId, @PathVariable("articleId") Integer articleId){
-        log.info("좋아요 취소");
-        myPageService.deleteLike(userId, articleId);
-        return new ResponseEntity<>("DELETE LIKE",HttpStatus.OK);
-    }
+
+
 }

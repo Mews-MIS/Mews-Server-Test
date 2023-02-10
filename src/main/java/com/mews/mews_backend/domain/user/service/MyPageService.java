@@ -93,35 +93,37 @@ public class MyPageService {
         }
     }
 
-    public void USER_LIKE_VALIDATION(Integer userId, Integer articleId){
-        List<Like> likeValidation = likeRepository.existsByIdAndArticleId(userId, articleId);
-        if(!likeValidation.isEmpty()){
-            throw new BaseException(USER_LIKE_EXISTS);
-        }
-    }
 
     //북마크 추가
     public void insertBookmark(Integer userId, Integer articleId) {
         log.info("=======예외 처리======");
         //예외 처리 : 토큰 값의 유저와 userId 값이 일치하지 않으면 예외 발생
         USER_VALIDATION(userId);
-        //예외 처리 : 이미 북마크된 아티클이면 예외 발생
-        USER_BOOKMARK_VALIDATION(userId, articleId);
 
-        //북마크 추가
+        List<Bookmark> bookmarkValidation = bookmarkRepository.existsByIdAndArticleId(userId, articleId);
         User user = userRepository.findById(userId).orElseThrow();
         Article article = articleRepository.findById(articleId).orElseThrow();
 
-        Bookmark bookmark = Bookmark.builder()
-                .user(user)
-                .article(article)
-                .build();
+        //북마크 안 되어 있는 글 => 북마크 추가
+        if(bookmarkValidation.isEmpty()){
+            Bookmark bookmark = Bookmark.builder()
+                    .user(user)
+                    .article(article)
+                    .build();
 
-        bookmarkRepository.save(bookmark);
+            bookmarkRepository.save(bookmark);
 
-        //user bookmarkcnt +1증가
-        user.upBookmark();
-        userRepository.save(user);
+            //user bookmarkcnt +1증가
+            user.upBookmark();
+            userRepository.save(user);
+        } else {
+            //북마크 삭제
+            bookmarkRepository.deleteByIdAndArticleId(userId, articleId);
+            //북마크cnt --
+            user.downBookmark();
+            userRepository.save(user);
+        }
+
 
     }
 
@@ -143,56 +145,44 @@ public class MyPageService {
         return getMyPageBookmarkRes;
     }
 
-    //북마크 취소
-    public void deleteBookmark(Integer userId, Integer articleId) {
-        User user = userRepository.findById(userId).orElseThrow();
-        //북마크 삭제
-        bookmarkRepository.deleteByIdAndArticleId(userId, articleId);
-        //북마크cnt --
-        user.downBookmark();
-        userRepository.save(user);
-    }
-
     //좋아요
     public void likeArticle(Integer userId, Integer articleId){
-        log.info("=======예외 처리======");
         //예외 처리 : 토큰 값의 유저와 userId 값이 일치하지 않으면 예외 발생
         USER_VALIDATION(userId);
-        //예외 처리 : 이미 좋아요된 아티클이면 예외 발생
-        USER_LIKE_VALIDATION(userId, articleId);
-        //좋아요 추가
+
+        List<Like> findLikeArticle = likeRepository.existsByIdAndArticleId(userId, articleId);
         User user = userRepository.findById(userId).orElseThrow();
         Article article = articleRepository.findById(articleId).orElseThrow();
 
-        Like like = Like.builder()
-                .user(user)
-                .article(article)
-                .build();
+        //좋아요 한 적 없는 글 => 좋아요 추가
+        if(findLikeArticle.isEmpty()){
 
-        likeRepository.save(like);
+            Like like = Like.builder()
+                    .user(user)
+                    .article(article)
+                    .build();
 
-        //user likecnt +1증가
-        user.upLike();
-        userRepository.save(user);
+            likeRepository.save(like);
 
-        //article likecnt +1증가
-        article.upLike();
-        articleRepository.save(article);
-    }
+            //user likecnt +1증가
+            user.upLike();
+            userRepository.save(user);
 
-    //좋아요 취소
-    public void deleteLike(Integer userId, Integer articleId) {
-        User user = userRepository.findById(userId).orElseThrow();
-        Article article = articleRepository.findById(articleId).orElseThrow();
-        //좋아요 삭제
-        likeRepository.deleteByIdAndArticleId(userId, articleId);
-        //좋아요 cnt --
-        user.downLike();
-        userRepository.save(user);
+            //article likecnt +1증가
+            article.upLike();
+            articleRepository.save(article);
+        } else {     //좋아요 이미 되어 있는 글 => 좋아요 취소
+            //좋아요 삭제
+            likeRepository.deleteByIdAndArticleId(userId, articleId);
 
-        //article cnt --
-        article.downLike();
-        articleRepository.save(article);
+            //user likecnt --
+            user.downLike();
+            userRepository.save(user);
+
+            //article likecnt --
+            article.downLike();
+            articleRepository.save(article);
+        }
     }
 
 }
