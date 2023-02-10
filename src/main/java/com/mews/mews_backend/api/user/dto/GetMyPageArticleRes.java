@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class GetMyPageBookmarkRes {
+public class GetMyPageArticleRes {
     //최신순
     //id
     private Integer id;

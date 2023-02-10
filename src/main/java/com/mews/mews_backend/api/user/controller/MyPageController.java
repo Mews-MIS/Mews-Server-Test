@@ -1,6 +1,6 @@
 package com.mews.mews_backend.api.user.controller;
 
-import com.mews.mews_backend.api.user.dto.GetMyPageBookmarkRes;
+import com.mews.mews_backend.api.user.dto.GetMyPageArticleRes;
 import com.mews.mews_backend.api.user.dto.GetMyPageRes;
 import com.mews.mews_backend.api.user.dto.UserDto;
 import com.mews.mews_backend.domain.user.service.MyPageService;
@@ -43,9 +43,9 @@ public class MyPageController {
 
     //내 북마크 모아보기
     @GetMapping(value="/{userId}/myBookmark")
-    public ResponseEntity<List<GetMyPageBookmarkRes>> getMyBookmark(@PathVariable("userId") Integer userId) {
+    public ResponseEntity<List<GetMyPageArticleRes>> getMyBookmark(@PathVariable("userId") Integer userId) {
         log.info("내 북마크 글 가져오기");
-        List<GetMyPageBookmarkRes> getMyPageBookmarkResList = myPageService.getMyBookmark(userId);
+        List<GetMyPageArticleRes> getMyPageBookmarkResList = myPageService.getMyBookmark(userId);
         return new ResponseEntity<>(getMyPageBookmarkResList,HttpStatus.OK);
     }
 
@@ -57,5 +57,11 @@ public class MyPageController {
         return new ResponseEntity<>("SUCCESS LIKE",HttpStatus.OK);
     }
 
-
+    //내 좋아요 글 모아보기
+    @GetMapping(value="/{userId}/myLikeArticle")
+    public ResponseEntity<List<GetMyPageArticleRes>> getMyLikeArticle(@PathVariable("userId") Integer userId) {
+        log.info("내 좋아요 모아보기");
+        List<GetMyPageArticleRes> getMyPageLikeArticleResList = myPageService.getLikeArticle(userId);
+        return new ResponseEntity<>(getMyPageLikeArticleResList,HttpStatus.OK);
+    }
 }

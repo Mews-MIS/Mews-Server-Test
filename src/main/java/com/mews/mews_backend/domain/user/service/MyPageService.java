@@ -1,6 +1,6 @@
 package com.mews.mews_backend.domain.user.service;
 
-import com.mews.mews_backend.api.user.dto.GetMyPageBookmarkRes;
+import com.mews.mews_backend.api.user.dto.GetMyPageArticleRes;
 import com.mews.mews_backend.api.user.dto.GetMyPageRes;
 import com.mews.mews_backend.api.user.dto.UserDto;
 import com.mews.mews_backend.domain.article.entity.Article;
@@ -128,12 +128,12 @@ public class MyPageService {
     }
 
     //내 북마크 글 가져오기
-    public List<GetMyPageBookmarkRes> getMyBookmark(Integer userId){
+    public List<GetMyPageArticleRes> getMyBookmark(Integer userId){
         List<Bookmark> findMyBookmark = bookmarkRepository.findAllByUserId(userId);
-        List<GetMyPageBookmarkRes> getMyPageBookmarkRes = new ArrayList<>();
+        List<GetMyPageArticleRes> getMyPageBookmarkRes = new ArrayList<>();
 
         for(Bookmark bookmark : findMyBookmark){
-            GetMyPageBookmarkRes dto = GetMyPageBookmarkRes.builder()
+            GetMyPageArticleRes dto = GetMyPageArticleRes.builder()
                     .id(bookmark.getArticle().getArticle_id())
                     .title(bookmark.getArticle().getTitle())
                     .likeCount(bookmark.getArticle().getLike_count())
@@ -143,6 +143,24 @@ public class MyPageService {
             getMyPageBookmarkRes.add(dto);
         }
         return getMyPageBookmarkRes;
+    }
+
+    //내 좋아요 글 가져오기
+    public List<GetMyPageArticleRes> getLikeArticle(Integer userId){
+        List<Like> findAllLike = likeRepository.findAllByUserId(userId);
+        List<GetMyPageArticleRes> getMyPageLikeRes = new ArrayList<>();
+
+        for(Like likeArticle : findAllLike){
+            GetMyPageArticleRes dto = GetMyPageArticleRes.builder()
+                    .id(likeArticle.getArticle().getArticle_id())
+                    .title(likeArticle.getArticle().getTitle())
+                    .likeCount(likeArticle.getArticle().getLike_count())
+                    .editors("일단 X")
+                    .img("일단 X")
+                    .build();
+            getMyPageLikeRes.add(dto);
+        }
+        return getMyPageLikeRes;
     }
 
     //좋아요
