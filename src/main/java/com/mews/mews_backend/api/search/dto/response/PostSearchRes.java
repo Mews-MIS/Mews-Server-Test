@@ -9,5 +9,11 @@ public class PostSearchRes {
 
     private List<PostArticleRes> postArticleRes;
 
-    private List<PostSearchRes> postSearchRes;
+    private List<PostEditorRes> postEditorRes;
+
+    // to DTO
+    public PostSearchRes(List<PostArticleRes> postArticleRes, List<PostEditorRes> postEditorRes) {
+        this.postArticleRes = postArticleRes;
+        this.postEditorRes = postEditorRes;
+    }
 }
