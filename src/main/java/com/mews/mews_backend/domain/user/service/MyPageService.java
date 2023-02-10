@@ -1,5 +1,7 @@
 package com.mews.mews_backend.domain.user.service;
 
+import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.mews.mews_backend.api.user.dto.GetMyPageArticleRes;
 import com.mews.mews_backend.api.user.dto.GetMyPageRes;
 import com.mews.mews_backend.api.user.dto.UserDto;
@@ -14,14 +16,19 @@ import com.mews.mews_backend.domain.user.repository.UserRepository;
 import com.mews.mews_backend.global.error.exception.BaseException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static com.mews.mews_backend.global.error.ErrorCode.*;
 
@@ -36,6 +43,11 @@ public class MyPageService {
     private final ArticleRepository articleRepository;
 
     private final LikeRepository likeRepository;
+
+    private final AmazonS3Client amazonS3Client;
+
+    @Value("${cloud.aws.s3.bucket}")
+    private String bucket;
 
 
     //프로필
@@ -55,7 +67,7 @@ public class MyPageService {
         return userDto;
     }
     //프로필 편집
-    public void updateUser(Integer userId, UserDto.updateProfile profile){
+    public void updateUser(Integer userId, UserDto.updateProfile profile,MultipartFile multipartFile){
         Optional<User> userResult = userRepository.findById(userId );
 
         userResult.ifPresent(user -> {
@@ -64,8 +76,14 @@ public class MyPageService {
                 user.changeName(profile.getUserName());
             }
             //이미지 바꾸기
-            if(profile.getImgUrl()!=null){
-                user.changeImg(profile.getImgUrl());
+            if(multipartFile != null && !multipartFile.isEmpty()){
+                String img = null;
+                try {
+                    img = updateImage(multipartFile);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+                user.changeImg(img);
             }
             //소개 바꾸기
             if(profile.getIntroduction()!=null){
@@ -76,6 +94,22 @@ public class MyPageService {
 
             userRepository.save(user);
         });
+    }
+
+    //이미지 넣기
+    public String updateImage(MultipartFile multipartFile) throws IOException {
+        //이미지 업로드
+        LocalDate now = LocalDate.now();
+        String uuid = UUID.randomUUID()+toString();
+        String fileName = uuid+"_"+multipartFile.getOriginalFilename();
+        String userImg = "user/" + now+"/"+ fileName;
+        ObjectMetadata objMeta = new ObjectMetadata();
+        objMeta.setContentLength(multipartFile.getInputStream().available());
+        amazonS3Client.putObject(bucket, userImg, multipartFile.getInputStream(), objMeta);
+
+        String img = amazonS3Client.getUrl(bucket, fileName).toString();
+
+        return img;
     }
 
     public void USER_VALIDATION(Integer userId){

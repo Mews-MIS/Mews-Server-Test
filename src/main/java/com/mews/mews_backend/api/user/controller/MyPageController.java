@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -27,9 +28,11 @@ public class MyPageController {
 
     //프로필 편집
     @PatchMapping(value= "/{userId}")
-    public ResponseEntity<String> updateMyPage(@PathVariable("userId") Integer userId, @RequestBody UserDto.updateProfile profile) {
+    public ResponseEntity<String> updateMyPage(@PathVariable("userId") Integer userId,
+                                               @RequestPart(value = "data") UserDto.updateProfile profile,
+                                               @RequestPart(value="file", required = false) MultipartFile multipartFile) {
         log.info("유저 프로필 업데이트");
-        myPageService.updateUser(userId, profile);
+        myPageService.updateUser(userId, profile, multipartFile);
         return new ResponseEntity<>("UPDATE USERPROFILE", HttpStatus.OK);
     }
 
