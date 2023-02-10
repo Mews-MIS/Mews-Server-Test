@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @Transactional
 public class ArticleService {
@@ -45,8 +47,9 @@ public class ArticleService {
         String title = (patchArticleReq.getTitle() == null? originArticle.getTitle() : patchArticleReq.getTitle());
         String content = (patchArticleReq.getContent() == null? originArticle.getContent() : patchArticleReq.getContent());
         String type = (patchArticleReq.getType() == null? originArticle.getType() : patchArticleReq.getType());
+        List<String> fileUrls = (patchArticleReq.getFileUrls() == null? originArticle.getFileUrls() : patchArticleReq.getFileUrls());
 
-        Article newArticle = originArticle.update(title, content, type);
+        Article newArticle = originArticle.update(title, content, type, fileUrls);
         articleRepository.save(newArticle);
     }
 
@@ -61,6 +64,7 @@ public class ArticleService {
                 .title(postArticleReq.getTitle())
                 .content(postArticleReq.getContent())
                 .type(postArticleReq.getType())
+                .fileUrls(postArticleReq.getFileUrls())
                 .build();
         return article;
     }

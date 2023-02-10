@@ -6,8 +6,7 @@ import lombok.*;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter
-public class GetMyPageReq {
+public class GetMyPageRes {
 
     private  String imgUrl;
 
@@ -20,8 +19,5 @@ public class GetMyPageReq {
     private  int bookmarkCount;
 
     private  int subscribeCount;
-
-    //리스트 형태로 저장
-    private GetMyPageBookmarkReq req;
 
 }

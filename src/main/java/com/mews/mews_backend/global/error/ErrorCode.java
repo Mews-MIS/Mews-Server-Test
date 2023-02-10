@@ -28,6 +28,7 @@ public enum ErrorCode {
     EMPTY_IMG(HttpStatus.BAD_REQUEST, 2013, "유저 프로필 이미지 값을 확인해주세요."),
     USER_EMAIL_EXISTS(HttpStatus.BAD_REQUEST, 2014, "중복된 이메일입니다."),
     USER_BOOKMARK_EXISTS(HttpStatus.BAD_REQUEST, 2015, "이미 북마크된 아티클입니다."),
+    USER_LIKE_EXISTS(HttpStatus.BAD_REQUEST, 2016, "이미 좋아요된 아티클입니다."),
     NOT_AUTHENTICATED_USER(HttpStatus.BAD_REQUEST, 2016, "인증된 유저가 아닙니다 : 토큰 값 혹은 userId 값 확인해주세요."),
 
     // [POST] /users
