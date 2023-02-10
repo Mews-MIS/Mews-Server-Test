@@ -37,6 +37,7 @@ public class MyPageService {
 
     private final LikeRepository likeRepository;
 
+
     //프로필
     public GetMyPageRes getUserInfo(Integer userId){
         Optional<User> userResult = userRepository.findById(userId);
@@ -121,6 +122,7 @@ public class MyPageService {
         //user bookmarkcnt +1증가
         user.upBookmark();
         userRepository.save(user);
+
     }
 
     //내 북마크 글 가져오기
@@ -172,16 +174,25 @@ public class MyPageService {
         //user likecnt +1증가
         user.upLike();
         userRepository.save(user);
+
+        //article likecnt +1증가
+        article.upLike();
+        articleRepository.save(article);
     }
 
     //좋아요 취소
     public void deleteLike(Integer userId, Integer articleId) {
         User user = userRepository.findById(userId).orElseThrow();
+        Article article = articleRepository.findById(articleId).orElseThrow();
         //좋아요 삭제
         likeRepository.deleteByIdAndArticleId(userId, articleId);
         //좋아요 cnt --
         user.downLike();
         userRepository.save(user);
+
+        //article cnt --
+        article.downLike();
+        articleRepository.save(article);
     }
 
 }

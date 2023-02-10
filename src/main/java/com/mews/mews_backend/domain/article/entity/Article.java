@@ -49,6 +49,9 @@ public class Article extends BaseTimeEntity {
         this.type = type;
     }
 
+    public void upLike(){this.like_count++;}
+    public void downLike(){this.likeCount--;}
+
     // like_count default 값 0으로 설정
     // insert 되기 전 실행
     @PrePersist
