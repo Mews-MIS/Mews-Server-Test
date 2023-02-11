@@ -48,7 +48,6 @@ public class UserDto implements Serializable {
     public static class updateProfile {
         private String userName; //닉네임
         private String userEmail;
-        private String imgUrl; //프로필 이미지
         private String introduction; //자기소개
         private boolean isOpen; //공개 비공개 여부
     }

@@ -1,4 +1,4 @@
-package com.mews.mews_backend.api.user.dto;
+package com.mews.mews_backend.api.user.dto.Res;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,7 +10,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class GetMyPageArticleRes {
-    //최신순
     //id
     private Integer id;
 
@@ -26,4 +25,9 @@ public class GetMyPageArticleRes {
     //이미지
     private String img;
 
+    //북마크 여부
+    private boolean isBookmarked;
+
+    //좋아요 여부
+    private boolean isLiked;
 }
