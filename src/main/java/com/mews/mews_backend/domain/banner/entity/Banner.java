@@ -1,4 +1,4 @@
-package com.mews.mews_backend.domain.show.entity;
+package com.mews.mews_backend.domain.banner.entity;
 
 import lombok.*;
 
@@ -7,8 +7,8 @@ import javax.persistence.*;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "Show")
-public class Show {
+@Table(name = "Banner")
+public class Banner {
 
     @Id
     @GeneratedValue(strategy =  GenerationType.IDENTITY)
@@ -19,7 +19,7 @@ public class Show {
     private Integer article_id;
 
     @Builder
-    public Show(Integer id, Integer article_id) {
+    public Banner(Integer id, Integer article_id) {
         this.id = id;
         this.article_id = article_id;
     }

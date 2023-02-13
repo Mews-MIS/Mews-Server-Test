@@ -1,8 +1,8 @@
 package com.mews.mews_backend.api.show.controller;
 
-import com.mews.mews_backend.api.show.dto.request.PostShowReq;
-import com.mews.mews_backend.api.show.dto.response.GetShowRes;
-import com.mews.mews_backend.domain.show.service.ShowService;
+import com.mews.mews_backend.api.show.dto.request.PostBannerReq;
+import com.mews.mews_backend.api.show.dto.response.GetBannerRes;
+import com.mews.mews_backend.domain.banner.service.BannerService;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -14,29 +14,29 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @Api(tags = {"Mews Main Page Show API"})
-@RequestMapping("/show")
-public class ShowController {
+@RequestMapping("/banner")
+public class BannerController {
 
-    private final ShowService showService;
+    private final BannerService bannerService;
 
     @PostMapping("/register")
-    public ResponseEntity<String> register(@Valid @RequestBody PostShowReq postShowReq) {
-        showService.register(postShowReq);
+    public ResponseEntity<String> register(@Valid @RequestBody PostBannerReq postBannerReq) {
+        bannerService.register(postBannerReq);
 
         return ResponseEntity.ok("Post Success");
     }
 
     @DeleteMapping("/delete/{show_id}")
     public ResponseEntity<String> delete(@PathVariable ("show_id") Integer id) {
-        showService.delete(id);
+        bannerService.delete(id);
 
         return ResponseEntity.ok("Delete Success");
     }
 
     @GetMapping("/getall")
-    public ResponseEntity<List<GetShowRes>> getAll() {
-        List<GetShowRes> getShowResList = showService.getAll();
+    public ResponseEntity<List<GetBannerRes>> getAll() {
+        List<GetBannerRes> getBannerResList = bannerService.getAll();
 
-        return ResponseEntity.ok(getShowResList);
+        return ResponseEntity.ok(getBannerResList);
     }
 }
