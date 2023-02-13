@@ -80,4 +80,11 @@ public class MyPageController {
         List<GetMyPageArticleRes> getMyPageLikeArticleResList = myPageService.getLikeArticle(userId);
         return new ResponseEntity<>(getMyPageLikeArticleResList,HttpStatus.OK);
     }
+
+    //필진 구독하기
+    @PostMapping(value="/{userId}/editor/{editorId}")
+    public ResponseEntity<String> addEditor(@PathVariable("userId") Integer userId, @PathVariable("editorId") Integer editorId){
+        myPageService.insertEditor(userId, editorId);
+        return new ResponseEntity<>("ADD EDITOR",HttpStatus.OK);
+    }
 }
