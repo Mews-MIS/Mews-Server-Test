@@ -1,5 +1,6 @@
 package com.mews.mews_backend.global.config.Jwt;
 
+import com.mews.mews_backend.global.error.exception.BaseException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
@@ -13,6 +14,8 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+
+import static com.mews.mews_backend.global.error.ErrorCode.ALREADY_LOGOUT;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -43,6 +46,8 @@ public class JwtFilter extends GenericFilterBean  {
                 Authentication authentication = tokenProvider.getAuthentication(jwt);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
                 log.info("Security Context에 '{}' 인증 정보를 저장했습니다, uri: {}", authentication.getName(), requestURI);
+            } else{
+                throw new BaseException(ALREADY_LOGOUT);
             }
         } else {
             log.info("유효한 JWT 토큰이 없습니다, uri {}", requestURI);
@@ -50,18 +55,6 @@ public class JwtFilter extends GenericFilterBean  {
         filterChain.doFilter(servletRequest, servletResponse);
     }
 
-//    @Override
-//    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-//        String jwt = resolveToken(request);
-//
-//
-//        if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)) { // 토큰 검증
-//            Authentication authentication = tokenProvider.getAuthentication(jwt);
-//            SecurityContextHolder.getContext().setAuthentication(authentication);
-//        }
-//
-//        filterChain.doFilter(request, response);
-//    }
 
     private String resolveToken(HttpServletRequest request) {
         String bearerToken = request.getHeader("Authorization");

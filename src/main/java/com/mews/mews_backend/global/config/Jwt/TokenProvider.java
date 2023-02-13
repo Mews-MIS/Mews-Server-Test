@@ -1,5 +1,6 @@
 package com.mews.mews_backend.global.config.Jwt;
 
+import com.mews.mews_backend.global.error.exception.BaseException;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -47,7 +48,7 @@ public class TokenProvider implements InitializingBean {
             @Value("${jwt.token-validity-in-seconds}") long tokenValidityInSeconds,
             @Value("${jwt.refresh-token-validity-in-seconds}") long refreshTokenValidityInSeconds) {
         this.secret = secret;
-        this.tokenValidityInMilliseconds = tokenValidityInSeconds * 1000;
+        this.tokenValidityInMilliseconds = tokenValidityInSeconds * 1000 * 2;
         this.refreshTokenValidityInMilliseconds = refreshTokenValidityInSeconds * 1000;
     }
 
@@ -144,5 +145,18 @@ public class TokenProvider implements InitializingBean {
         User principal = new User(claims.getSubject(), "", authorities);
 
         return new UsernamePasswordAuthenticationToken(principal, token, authorities);
+    }
+
+    public Long getExpiration(String accessToken) {
+        // accessToken 남은 유효시간
+        Date expiration = Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(accessToken)
+                .getBody()
+                .getExpiration();
+        // 현재 시간
+        Long now = new Date().getTime();
+        return (expiration.getTime() - now);
     }
 }

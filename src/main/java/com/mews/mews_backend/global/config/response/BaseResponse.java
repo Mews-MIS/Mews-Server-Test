@@ -6,6 +6,8 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.util.function.Supplier;
+
 import static com.mews.mews_backend.global.config.response.BaseResponseStatus.SUCCESS;
 @Getter
 @AllArgsConstructor

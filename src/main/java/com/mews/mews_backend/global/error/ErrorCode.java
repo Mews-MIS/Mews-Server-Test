@@ -19,9 +19,17 @@ public enum ErrorCode {
      */
     // Common
     NOT_EXIST_USER(HttpStatus.BAD_REQUEST, 2004,"사용자를 찾을 수 없습니다."),
+    REQUEST_NOT_EXIST(HttpStatus.BAD_REQUEST, 2004,"값이 존재하지 않습니다."),
 
     // users
-    USERS_EMPTY_USER_ID(HttpStatus.BAD_REQUEST, 2010, "유저 아이디 값을 확인해주세요."),
+    EMPTY_USERNAME(HttpStatus.BAD_REQUEST, 2010, "유저 닉네임 값을 확인해주세요."),
+    EMPTY_EMAIL(HttpStatus.BAD_REQUEST, 2011, "유저 이메일 값을 확인해주세요."),
+    INVALID_EMAIL(HttpStatus.BAD_REQUEST, 2012, "잘못된 이메일 형식입니다."),
+    EMPTY_IMG(HttpStatus.BAD_REQUEST, 2013, "유저 프로필 이미지 값을 확인해주세요."),
+    USER_EMAIL_EXISTS(HttpStatus.BAD_REQUEST, 2014, "중복된 이메일입니다."),
+    USER_BOOKMARK_EXISTS(HttpStatus.BAD_REQUEST, 2015, "이미 북마크된 아티클입니다."),
+    USER_LIKE_EXISTS(HttpStatus.BAD_REQUEST, 2016, "이미 좋아요된 아티클입니다."),
+    NOT_AUTHENTICATED_USER(HttpStatus.BAD_REQUEST, 2016, "인증된 유저가 아닙니다 : 토큰 값 혹은 userId 값 확인해주세요."),
 
     // [POST] /users
     POST_USERS_EMPTY_CERTIFY_IMG(HttpStatus.BAD_REQUEST,2014,"소속 인증을 위한 이미지를 등록해주세요."),
@@ -39,7 +47,6 @@ public enum ErrorCode {
     POST_SESSION_NOT_ADMIN(HttpStatus.BAD_REQUEST, 2040, "해당 유저가 그룹의 관리자가 아닙니다."),
 
     //auth
-
     PATCH_USER_CERTIFIED_FAIL(HttpStatus.BAD_REQUEST,2080,"certify실패"),
     CHECK_USER_CERTIFIED_FAIL(HttpStatus.BAD_REQUEST,2081,"certified 값 불러오기 실패 또는 유효하지 않은 값"),
     GET_UNCERTIFICATION_USER_FAIL(HttpStatus.BAD_REQUEST,2082,"미인증 유저 리스트 불러오기 실패"),
@@ -49,13 +56,17 @@ public enum ErrorCode {
     NOT_LOGIN(HttpStatus.BAD_REQUEST,2086,"로그인 해주세요."),
     REFRESH_LOGOUT(HttpStatus.BAD_REQUEST,2087,"리프레시 토큰이 아닌 엑세스 토큰을 사용해주세요."),
     ALREADY_LOGOUT(HttpStatus.BAD_REQUEST,2088,"이미 로그아웃한 상태입니다."),
+    REFRESH_TOKEN_BAD_REQUEST(HttpStatus.BAD_REQUEST,2089,"잘못된 RefreshToken 입니다 : null이거나 올바르지 않은 값입니다."),
 
-
+    //jwt
+    JWT_TIMEOUT(HttpStatus.BAD_REQUEST,403,"만료된 JWT 토큰입니다."),
+    NO_VALID_JWT(HttpStatus.BAD_REQUEST,403,"유효한 JWT 토큰이 없습니다"),
     /*
      * 3000 : Response 오류
      */
     // Common
     RESPONSE_ERROR(HttpStatus.BAD_REQUEST, 3000, "값을 불러오는데 실패하였습니다."),
+
 
     // [POST] /users
     DUPLICATED_EMAIL(HttpStatus.BAD_REQUEST, 3013, "중복된 이메일입니다."),

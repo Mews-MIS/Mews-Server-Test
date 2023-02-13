@@ -7,9 +7,9 @@ import com.mews.mews_backend.domain.user.entity.User;
 import com.mews.mews_backend.domain.user.entity.UserType;
 import com.mews.mews_backend.domain.user.repository.UserRepository;
 import com.mews.mews_backend.domain.user.service.social.GoogleOauth;
-import com.mews.mews_backend.global.Exception.ServerException;
 import com.mews.mews_backend.global.config.Jwt.RedisDao;
 import com.mews.mews_backend.global.config.Jwt.TokenProvider;
+import com.mews.mews_backend.global.error.exception.BaseException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -27,11 +27,13 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.Objects;
+import java.util.Optional;
 
-import static com.mews.mews_backend.global.Exception.CustomErrorCode.REFRESH_TOKEN_IS_BAD_REQUEST;
+import static com.mews.mews_backend.global.error.ErrorCode.*;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 @Slf4j
 public class OauthService {
 
@@ -59,7 +61,7 @@ public class OauthService {
         }
     }
 
-    public ResponseEntity<UserDto.socialLoginResponse> Login(String name, String email, String img, int userId) throws IOException {
+    public ResponseEntity<UserDto.socialLoginResponse> Login(String name, String email, String img, int id) throws IOException {
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(email, "google");
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
         log.info("authenticated 되었나용?"+ authentication.isAuthenticated());
@@ -72,7 +74,7 @@ public class OauthService {
         httpHeaders.add("Authorization", "Bearer " + atk);
 
         return new ResponseEntity<>(UserDto.socialLoginResponse.response(
-               name, email, img, userId, atk, rtk
+               name, email, img, id, atk, rtk
         ), HttpStatus.OK);
 
     }
@@ -96,21 +98,71 @@ public class OauthService {
         String name = googleUser.getName();
         String img = googleUser.getPicture();
 
-        // 첫 로그인시 사용자 정보를 보내줌
-        if (!userRepository.existsByUserEmail(email)) {
-            return new ResponseEntity<>(UserDto.socialLoginResponse.response(
-                    name, email, img, 0, null, null
-            ), HttpStatus.OK);
+        Optional<User> findUser = userRepository.findByUserEmail(email);
+        // 첫 로그인시 default 값으로 회원가입
+        if (findUser.isEmpty()) {
+            log.info("새 유저 회원가입");
+            User newUser = User.builder()
+                    .userName(name)
+                    .userEmail(email)
+                    .imgUrl(img)
+                    .introduction("")
+                    .likeCount(0)
+                    .bookmarkCount(0)
+                    .subscribeCount(0)
+                    .userType(UserType.ROLE_USER)
+                    .isOpen(true)
+                    .social(passwordEncoder.encode("google"))
+                    .status("ACTIVE")
+                    .build();
+
+            Integer id = userRepository.save(newUser).getId();
+
+            return Login(newUser.getUserName(),newUser.getUserEmail(), newUser.getImgUrl(), id);
+
         } else { //이메일이 존재할 시 바로 로그인
-            int userId = userRepository.findByUserEmail(email).orElseThrow().getId();
             log.info("이메일 존재함");
             // 이메일이 존재할시 로그인
-            return Login(name, email, img, userId);
+            User user = findUser.orElseThrow();
+            return Login(name, email, img, user.getId());
         }
     }
 
+    public void REGISTER_VALIDATION(UserDto.register request) {
+
+        //1. 닉네임 null 체크
+        if(request.getUserName()==null){
+            throw new BaseException(EMPTY_USERNAME);
+        }
+
+        //2. 이메일 null 체크
+        if(request.getUserEmail()==null){
+            throw new BaseException(EMPTY_EMAIL);
+        }
+
+        //2-2. 이메일 형식 체크
+        if(!request.getUserEmail().contains("@")){
+            throw new BaseException(INVALID_EMAIL);
+        }
+
+        //2-3. 이메일 중복 체크
+        if(userRepository.existsByUserEmail(request.getUserEmail())) {
+            throw new BaseException(USER_EMAIL_EXISTS);
+        }
+
+        //3. 프로필 이미지
+        if(request.getImgUrl()==null) {
+            throw new BaseException(EMPTY_IMG);
+        }
+    }
+
+
     public ResponseEntity<UserDto.socialLoginResponse> socialRegister(UserDto.register request) throws IOException {
         log.info("service 안에 들어옴");
+
+        //validation 처리
+        REGISTER_VALIDATION(request);
+
         User user = User.builder()
                 .userName(request.getUserName())
                 .userEmail(request.getUserEmail())
@@ -122,11 +174,12 @@ public class OauthService {
                 .userType(UserType.ROLE_USER)
                 .isOpen(true)
                 .social(passwordEncoder.encode("google"))
+                .status("ACTIVE")
                 .build();
 
-        int userId = userRepository.save(user).getId();
+        Integer id = userRepository.save(user).getId();
 
-        return Login(user.getUserName(),user.getUserEmail(), user.getImgUrl(), userId);
+        return Login(user.getUserName(),user.getUserEmail(), user.getImgUrl(), id);
     }
 
     //accessToken 재발급
@@ -136,12 +189,13 @@ public class OauthService {
         String rtkInRedis = redisDao.getValues(username);
 
         if (Objects.isNull(rtkInRedis) || !rtkInRedis.equals(rtk))
-            throw new ServerException(REFRESH_TOKEN_IS_BAD_REQUEST); // 410
+            throw new BaseException(REFRESH_TOKEN_BAD_REQUEST); // 410
 
         return new ResponseEntity<>(UserDto.tokenResponse.response(
                 tokenProvider.reCreateToken(username),
                 null
         ), HttpStatus.OK);
     }
+
 
 }
