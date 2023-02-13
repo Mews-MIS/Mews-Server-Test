@@ -1,4 +1,4 @@
-package com.mews.mews_backend.api.Editor.dto.response;
+package com.mews.mews_backend.api.editor.dto.response;
 
 import com.mews.mews_backend.domain.editor.entity.Editor;
 import lombok.Getter;
