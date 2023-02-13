@@ -1,5 +1,6 @@
 package com.mews.mews_backend.api.article.dto.res;
 
+import com.mews.mews_backend.api.comment.dto.res.GetCommentRes;
 import com.mews.mews_backend.domain.article.entity.Article;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -10,6 +11,7 @@ import lombok.NoArgsConstructor;
 import javax.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Builder
 @AllArgsConstructor
@@ -37,6 +39,9 @@ public class GetArticleRes {
     @ApiModelProperty(notes = "좋아요 수", example = "500")
     private Integer likeCount; // 좋아요 수
 
+    @ApiModelProperty(notes = "댓글", example = "[]")
+    private List<GetCommentRes> comments; // 뉴스 댓글
+
     public static GetArticleRes from(Article article){
         return GetArticleRes.builder()
                 .title(article.getTitle())
@@ -46,6 +51,7 @@ public class GetArticleRes {
                 .modifiedAt(article.getModifiedAt())
                 .likeCount(article.getLike_count())
                 .views(article.getViews().getViews())
+                .comments(article.getComments().stream().map(GetCommentRes::new).collect(Collectors.toList()))
                 .build();
     }
 }

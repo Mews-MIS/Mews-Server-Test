@@ -3,6 +3,7 @@ package com.mews.mews_backend.api.article.controller;
 import com.mews.mews_backend.api.article.dto.req.PatchArticleReq;
 import com.mews.mews_backend.api.article.dto.req.PostArticleReq;
 import com.mews.mews_backend.api.article.dto.res.GetArticleRes;
+import com.mews.mews_backend.domain.article.entity.Article;
 import com.mews.mews_backend.domain.article.service.ArticleService;
 import com.mews.mews_backend.domain.article.service.ViewsService;
 import io.swagger.annotations.Api;
@@ -12,6 +13,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Positive;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -26,6 +29,13 @@ public class ArticleController {
     public ResponseEntity<String> postArticle(@Valid @RequestBody PostArticleReq postArticleReq){
         articleService.postArticle(postArticleReq);
         return ResponseEntity.ok("post success");
+    }
+
+    @ApiOperation("뉴스 전체 조회(페이지네이션)")
+    @GetMapping("/all")
+    public ResponseEntity<List<Article>> getAllArticle(@Positive @RequestParam Integer page){
+        List<Article> articles = articleService.getAllArticle(page-1); // 0번 페이지부터 시작하므로 -1
+        return ResponseEntity.ok(articles);
     }
 
     @ApiOperation("뉴스 게시글 조회(조회수 증가)")
