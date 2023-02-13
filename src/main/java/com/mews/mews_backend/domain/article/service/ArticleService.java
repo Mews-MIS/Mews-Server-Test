@@ -13,6 +13,8 @@ import com.mews.mews_backend.domain.user.repository.LikeRepository;
 import com.mews.mews_backend.domain.user.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -50,6 +52,14 @@ public class ArticleService {
         article.setViews(views);
         articleRepository.save(article);
         viewsRepository.save(views);
+    }
+
+    // 뉴스 조회(페이지네이션)
+    public List<Article> getAllArticle(Integer page){
+        PageRequest pageRequest = PageRequest.of(page, 10); // size 10으로 고정
+        Page<Article> articleResPage = articleRepository.findAllByOrderById(pageRequest);
+        List<Article> articles = articleResPage.getContent();
+        return articles;
     }
 
     // 뉴스 조회

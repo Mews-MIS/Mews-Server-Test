@@ -1,5 +1,7 @@
 package com.mews.mews_backend.domain.article.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.mews.mews_backend.domain.comment.entity.Comment;
 import com.mews.mews_backend.domain.common.BaseTimeEntity;
 import com.mews.mews_backend.infra.StringListConverter;
@@ -17,7 +19,7 @@ import java.util.List;
 public class Article extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer article_id; // 콘텐츠 id
+    private Integer id; // 콘텐츠 id
 
     private String title; // 제목
 
@@ -33,10 +35,12 @@ public class Article extends BaseTimeEntity {
     @ColumnDefault("0")
     private Integer like_count; // 좋아요 수
 
+    @JsonManagedReference // 순환참조 방지
     @OneToOne(orphanRemoval = true)
     @JoinColumn(name = "views_id")
     private Views views;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "article", cascade = CascadeType.REMOVE, fetch = FetchType.EAGER, orphanRemoval = true)
     @OrderBy("modifiedAt desc")
     private List<Comment> comments;

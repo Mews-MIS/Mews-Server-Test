@@ -16,7 +16,7 @@ public interface LikeRepository extends JpaRepository<Like, Integer> {
 //    List<Like> existsByIdAndArticleId(Integer userId, Integer articleId);
 
     @Modifying
-    @Query("delete from Like l where l.user.id = :userId and l.article.article_id = :articleId")
+    @Query("delete from Like l where l.user.id = :userId and l.article.id = :articleId")
     void deleteByIdAndArticleId(Integer userId, Integer articleId);
 
     @Query("select l from Like l where l.user.id = :userId ORDER BY l.modifiedAt DESC")
