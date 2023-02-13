@@ -1,5 +1,7 @@
 package com.mews.mews_backend.domain.article.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.mews.mews_backend.domain.common.BaseTimeEntity;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
@@ -21,6 +23,7 @@ public class Views extends BaseTimeEntity {
     @ColumnDefault("0")
     private Integer views; // 조회수
 
+    @JsonBackReference
     @OneToOne(mappedBy = "views", orphanRemoval = true)
     private Article article;
 
