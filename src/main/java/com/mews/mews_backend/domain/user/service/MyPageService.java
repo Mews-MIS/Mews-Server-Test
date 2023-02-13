@@ -7,11 +7,15 @@ import com.mews.mews_backend.api.user.dto.Res.GetMyPageArticleRes;
 import com.mews.mews_backend.api.user.dto.Res.GetMyPageRes;
 import com.mews.mews_backend.domain.article.entity.Article;
 import com.mews.mews_backend.domain.article.repository.ArticleRepository;
+import com.mews.mews_backend.domain.editor.entity.Editor;
+import com.mews.mews_backend.domain.editor.repository.EditorRepository;
 import com.mews.mews_backend.domain.user.entity.Bookmark;
 import com.mews.mews_backend.domain.user.entity.Like;
+import com.mews.mews_backend.domain.user.entity.Subscribe;
 import com.mews.mews_backend.domain.user.entity.User;
 import com.mews.mews_backend.domain.user.repository.BookmarkRepository;
 import com.mews.mews_backend.domain.user.repository.LikeRepository;
+import com.mews.mews_backend.domain.user.repository.SubscribeRepository;
 import com.mews.mews_backend.domain.user.repository.UserRepository;
 import com.mews.mews_backend.global.error.exception.BaseException;
 import lombok.RequiredArgsConstructor;
@@ -42,8 +46,9 @@ public class MyPageService {
     private final BookmarkRepository bookmarkRepository;
     private final ArticleRepository articleRepository;
 
+    private final SubscribeRepository subscribeRepository;
+    private final EditorRepository editorRepository;
     private final LikeRepository likeRepository;
-
     private final AmazonS3Client amazonS3Client;
 
     @Value("${cloud.aws.s3.bucket}")
@@ -52,7 +57,6 @@ public class MyPageService {
 
     //프로필
     public GetMyPageRes getUserInfo(Integer userId){
-        //예외 처리 : 토큰 값의 유저와 userId 값이 일치하지 않으면 예외 발생
         User user = USER_VALIDATION(userId);
 
         GetMyPageRes userDto = GetMyPageRes.builder()
@@ -69,7 +73,6 @@ public class MyPageService {
 
     //프로필 편집
     public void updateUserInfo(Integer userId, PatchUserProfileReq profile, MultipartFile multipartFile){
-        //예외 처리 : 토큰 값의 유저와 userId 값이 일치하지 않으면 예외 발생
         User user = USER_VALIDATION(userId);
 
         //이름 바꾸기
@@ -100,7 +103,6 @@ public class MyPageService {
 
     //이미지 넣기
     public String updateImage(MultipartFile multipartFile) throws IOException {
-        //이미지 업로드
         LocalDate now = LocalDate.now();
         String uuid = UUID.randomUUID()+toString();
         String fileName = uuid+"_"+multipartFile.getOriginalFilename();
@@ -114,8 +116,8 @@ public class MyPageService {
         return img;
     }
 
+    //토큰 값의 유저와 userId의 유저가 일치하는지
     public User USER_VALIDATION(Integer userId){
-        //토큰 값의 유저와 userId의 유저가 일치하는지
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = userRepository.findById(userId).orElseThrow();
         if (!authentication.getName().equals(user.getUserEmail())) {
@@ -128,8 +130,6 @@ public class MyPageService {
 
     //북마크 추가
     public boolean insertBookmark(Integer userId, Integer articleId) {
-
-        //예외 처리 : 토큰 값의 유저와 userId 값이 일치하지 않으면 예외 발생
         User user = USER_VALIDATION(userId);
 
         Article article = articleRepository.findById(articleId).orElseThrow();
@@ -165,7 +165,6 @@ public class MyPageService {
 
     //내 북마크 글 가져오기
     public List<GetMyPageArticleRes> getMyBookmark(Integer userId){
-        //예외 처리 : 토큰 값의 유저와 userId 값이 일치하지 않으면 예외 발생
         User user = USER_VALIDATION(userId);
 
         List<Bookmark> findMyBookmark = bookmarkRepository.findAllByUserOrderByModifiedAtDesc(user);
@@ -188,7 +187,6 @@ public class MyPageService {
 
     //내 좋아요 글 가져오기
     public List<GetMyPageArticleRes> getLikeArticle(Integer userId){
-        //예외 처리 : 토큰 값의 유저와 userId 값이 일치하지 않으면 예외 발생
         User user = USER_VALIDATION(userId);
 
         List<Like> findAllLike = likeRepository.findAllByUserOrderByModifiedAtDesc(user);
@@ -211,7 +209,6 @@ public class MyPageService {
 
     //좋아요
     public boolean insertlikeArticle(Integer userId, Integer articleId){
-        //예외 처리 : 토큰 값의 유저와 userId 값이 일치하지 않으면 예외 발생
         User user = USER_VALIDATION(userId);
 
         Article article = articleRepository.findById(articleId).orElseThrow();
@@ -252,4 +249,16 @@ public class MyPageService {
         }
     }
 
+    //필진 구독하기
+    public void insertEditor(Integer userId, Integer editorId){
+        User user = USER_VALIDATION(userId);
+        Editor editor = editorRepository.findById(editorId).orElseThrow();
+
+        Subscribe subscribe = Subscribe.builder()
+                .editor(editor)
+                .user(user)
+                .build();
+
+        subscribeRepository.save(subscribe);
+    }
 }

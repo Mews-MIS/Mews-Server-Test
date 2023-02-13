@@ -60,6 +60,7 @@ public enum ErrorCode {
 
     //jwt
     JWT_TIMEOUT(HttpStatus.BAD_REQUEST,403,"만료된 JWT 토큰입니다."),
+    NO_VALID_JWT(HttpStatus.BAD_REQUEST,403,"유효한 JWT 토큰이 없습니다"),
     /*
      * 3000 : Response 오류
      */
