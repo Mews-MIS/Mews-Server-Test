@@ -172,7 +172,7 @@ public class MyPageService {
 
         for(Bookmark bookmark : findMyBookmark){
             GetMyPageArticleRes dto = GetMyPageArticleRes.builder()
-                    .id(bookmark.getArticle().getArticle_id())
+                    .id(bookmark.getArticle().getId())
                     .title(bookmark.getArticle().getTitle())
                     .likeCount(bookmark.getArticle().getLike_count())
                     .editors("일단 X")
@@ -194,7 +194,7 @@ public class MyPageService {
 
         for(Like likeArticle : findAllLike){
             GetMyPageArticleRes dto = GetMyPageArticleRes.builder()
-                    .id(likeArticle.getArticle().getArticle_id())
+                    .id(likeArticle.getArticle().getId())
                     .title(likeArticle.getArticle().getTitle())
                     .likeCount(likeArticle.getArticle().getLike_count())
                     .editors("일단 X")

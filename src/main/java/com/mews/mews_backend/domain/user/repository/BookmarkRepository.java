@@ -12,7 +12,7 @@ import java.util.Optional;
 
 public interface BookmarkRepository extends JpaRepository<Bookmark, Integer> {
 
-    @Query("select b from Bookmark b where b.user.id = :userId and b.article.article_id = :articleId")
+    @Query("select b from Bookmark b where b.user.id = :userId and b.article.id = :articleId")
     List<Bookmark> existsByIdAndArticleId(Integer userId, Integer articleId);
 
     boolean existsByUserAndArticle(User user, Article article);
@@ -23,6 +23,6 @@ public interface BookmarkRepository extends JpaRepository<Bookmark, Integer> {
     List<Bookmark> findAllByUserOrderByModifiedAtDesc(User user);
 
     @Modifying
-    @Query("delete from Bookmark b where b.user.id = :userId and b.article.article_id = :articleId")
+    @Query("delete from Bookmark b where b.user.id = :userId and b.article.id = :articleId")
     void deleteByIdAndArticleId(Integer userId, Integer articleId);
 }
