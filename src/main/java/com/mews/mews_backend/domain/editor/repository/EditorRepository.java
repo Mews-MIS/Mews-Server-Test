@@ -8,9 +8,14 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 @EnableJpaRepositories
 public interface EditorRepository extends JpaRepository<Editor, Integer> {
+
+
+    List<Editor> findAllByName(String string);
 
     @Modifying
     @Query("update Editor e set e.name = :inputName, e.imgUrl = :inputImgUrl, e.introduction = :inputIntroduction where e.id = :inputId")
