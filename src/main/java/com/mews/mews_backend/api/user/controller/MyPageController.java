@@ -87,4 +87,10 @@ public class MyPageController {
         myPageService.insertEditor(userId, editorId);
         return new ResponseEntity<>("ADD EDITOR",HttpStatus.OK);
     }
+
+    //필진 글 보여주기
+//    @GetMapping(value="/{userId}/editor/{editorId}")
+//    public ResponseEntity<List<GetMyPageArticleRes>> getEditorArticle(@PathVariable("userId") Integer userId, @PathVariable("editorId") Integer editorId){
+//        //return new ResponseEntity<>("GET EDIROT", HttpStatus.OK);
+//    }
 }

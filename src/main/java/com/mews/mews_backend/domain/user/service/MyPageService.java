@@ -135,7 +135,6 @@ public class MyPageService {
         Article article = articleRepository.findById(articleId).orElseThrow();
         boolean bookmarkValidation = bookmarkRepository.existsByUserAndArticle(user, article);
 
-
         //북마크 안 되어 있는 글 => 북마크 추가
         if(bookmarkValidation == false){
             Bookmark bookmark = Bookmark.builder()
