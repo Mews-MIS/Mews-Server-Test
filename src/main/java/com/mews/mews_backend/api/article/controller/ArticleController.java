@@ -9,6 +9,7 @@ import com.mews.mews_backend.domain.article.service.ViewsService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -67,4 +68,15 @@ public class ArticleController {
         return ResponseEntity.ok(articleList);
     }
 
+    //북마크 기능
+    @PostMapping(value="/{articleId}/user/{userId}/bookmark")
+    public ResponseEntity<String> addBookmark(@PathVariable("userId") Integer userId, @PathVariable("articleId") Integer articleId) {
+        return new ResponseEntity<>(articleService.insertBookmark(userId,articleId), HttpStatus.OK);
+    }
+
+    //게시글 좋아요
+    @PostMapping("/{articleId}/user/{userId}/like")
+    public ResponseEntity<String> addlikeArticle(@PathVariable("userId") Integer userId, @PathVariable("articleId") Integer articleId){
+        return new ResponseEntity<>(articleService.insertlikeArticle(userId, articleId), HttpStatus.OK);
+    }
 }

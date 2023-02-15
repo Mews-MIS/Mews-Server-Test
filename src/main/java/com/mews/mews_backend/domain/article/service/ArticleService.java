@@ -11,10 +11,15 @@ import com.mews.mews_backend.domain.article.repository.ArticleRepository;
 import com.mews.mews_backend.domain.article.repository.ViewsRepository;
 import com.mews.mews_backend.domain.editor.entity.Editor;
 import com.mews.mews_backend.domain.editor.repository.EditorRepository;
+import com.mews.mews_backend.domain.user.entity.Bookmark;
+import com.mews.mews_backend.domain.user.entity.Like;
+import com.mews.mews_backend.domain.user.entity.Subscribe;
 import com.mews.mews_backend.domain.user.entity.User;
 import com.mews.mews_backend.domain.user.repository.BookmarkRepository;
 import com.mews.mews_backend.domain.user.repository.LikeRepository;
+import com.mews.mews_backend.domain.user.repository.SubscribeRepository;
 import com.mews.mews_backend.domain.user.repository.UserRepository;
+import com.mews.mews_backend.global.error.exception.BaseException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -26,6 +31,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.mews.mews_backend.global.error.ErrorCode.NOT_AUTHENTICATED_USER;
 
 @Service
 @Transactional
@@ -132,4 +139,90 @@ public class ArticleService {
                 .build();
         return views;
     }
+
+    //토큰 값의 유저와 userId의 유저가 일치하는지
+    public User USER_VALIDATION(Integer userId){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User user = userRepository.findById(userId).orElseThrow();
+        if (!authentication.getName().equals(user.getUserEmail())) {
+            throw new BaseException(NOT_AUTHENTICATED_USER);
+        }
+
+        return user;
+    }
+
+    //북마크 추가
+    public String insertBookmark(Integer userId, Integer articleId) {
+        User user = USER_VALIDATION(userId);
+
+        Article article = articleRepository.findById(articleId).orElseThrow();
+        boolean bookmarkValidation = bookmarkRepository.existsByUserAndArticle(user, article);
+
+        //북마크 안 되어 있는 글 => 북마크 추가
+        if(bookmarkValidation == false){
+            Bookmark bookmark = Bookmark.builder()
+                    .user(user)
+                    .article(article)
+                    .build();
+
+            bookmarkRepository.save(bookmark);
+
+            //user bookmarkcnt +1증가
+            user.upBookmark();
+            userRepository.save(user);
+
+            return "ADD BOOKMARK";
+        } else {
+            //북마크 삭제
+            bookmarkRepository.deleteByIdAndArticleId(userId, articleId);
+            //북마크cnt --
+            user.downBookmark();
+            userRepository.save(user);
+
+            return "DELETE BOOKMARK";
+        }
+
+
+    }
+
+    //좋아요
+    public String insertlikeArticle(Integer userId, Integer articleId){
+        User user = USER_VALIDATION(userId);
+
+        Article article = articleRepository.findById(articleId).orElseThrow();
+        boolean likeValidation = likeRepository.existsByArticleAndUser(article, user);
+
+
+        //좋아요 한 적 없는 글 => 좋아요 추가
+        if(likeValidation == false){
+            Like like = Like.builder()
+                    .user(user)
+                    .article(article)
+                    .build();
+            likeRepository.save(like);
+
+            //user likecnt +1증가
+            user.upLike();
+            userRepository.save(user);
+
+            //article likecnt +1증가
+            article.upLike();
+            articleRepository.save(article);
+
+            return "ADD LIKEARTICLE";
+        } else {     //좋아요 이미 되어 있는 글 => 좋아요 취소
+            //좋아요 삭제
+            likeRepository.deleteByIdAndArticleId(userId, articleId);
+
+            //user likecnt --
+            user.downLike();
+            userRepository.save(user);
+
+            //article likecnt --
+            article.downLike();
+            articleRepository.save(article);
+            return "DELETE LIKEARTICLE";
+        }
+    }
+
 }

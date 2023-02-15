@@ -131,40 +131,6 @@ public class MyPageService {
     }
 
 
-    //북마크 추가
-    public boolean insertBookmark(Integer userId, Integer articleId) {
-        User user = USER_VALIDATION(userId);
-
-        Article article = articleRepository.findById(articleId).orElseThrow();
-        boolean bookmarkValidation = bookmarkRepository.existsByUserAndArticle(user, article);
-
-        //북마크 안 되어 있는 글 => 북마크 추가
-        if(bookmarkValidation == false){
-            Bookmark bookmark = Bookmark.builder()
-                    .user(user)
-                    .article(article)
-                    .build();
-
-            bookmarkRepository.save(bookmark);
-
-            //user bookmarkcnt +1증가
-            user.upBookmark();
-            userRepository.save(user);
-
-            return true;
-        } else {
-            //북마크 삭제
-            bookmarkRepository.deleteByIdAndArticleId(userId, articleId);
-            //북마크cnt --
-            user.downBookmark();
-            userRepository.save(user);
-
-            return false;
-        }
-
-
-    }
-
     //내 북마크 글 가져오기
     public List<GetMyPageArticleRes> getMyBookmark(Integer userId){
         User user = USER_VALIDATION(userId);
@@ -211,46 +177,15 @@ public class MyPageService {
         return getMyPageLikeRes;
     }
 
-    //좋아요
-    public boolean insertlikeArticle(Integer userId, Integer articleId){
-        User user = USER_VALIDATION(userId);
 
-        Article article = articleRepository.findById(articleId).orElseThrow();
-        boolean likeValidation = likeRepository.existsByArticleAndUser(article, user);
-
-
-        //좋아요 한 적 없는 글 => 좋아요 추가
-        if(likeValidation == false){
-
-            Like like = Like.builder()
-                    .user(user)
-                    .article(article)
-                    .build();
-
-            likeRepository.save(like);
-
-            //user likecnt +1증가
-            user.upLike();
-            userRepository.save(user);
-
-            //article likecnt +1증가
-            article.upLike();
-            articleRepository.save(article);
-
-            return true;
-        } else {     //좋아요 이미 되어 있는 글 => 좋아요 취소
-            //좋아요 삭제
-            likeRepository.deleteByIdAndArticleId(userId, articleId);
-
-            //user likecnt --
-            user.downLike();
-            userRepository.save(user);
-
-            //article likecnt --
-            article.downLike();
-            articleRepository.save(article);
-            return false;
+    //게시글 필진 String 값으로 반환
+    public List<String> editorToString(Article article){
+        List<ArticleAndEditor> findAllEditors = articleAndEditorRepository.findAllByArticle(article);
+        List<String> editors = new ArrayList<>();
+        for(int i=0; i<findAllEditors.size();i++){
+            editors.add(findAllEditors.get(i).getEditor().getName());
         }
+        return editors;
     }
 
     //필진 구독하기
@@ -265,17 +200,6 @@ public class MyPageService {
 
         subscribeRepository.save(subscribe);
     }
-
-    //게시글 필진 String 값으로 반환
-    public List<String> editorToString(Article article){
-        List<ArticleAndEditor> findAllEditors = articleAndEditorRepository.findAllByArticle(article);
-        List<String> editors = new ArrayList<>();
-        for(int i=0; i<findAllEditors.size();i++){
-            editors.add(findAllEditors.get(i).getEditor().getName());
-        }
-        return editors;
-    }
-
     //필진 글 보여주기
     public List<GetMyPageArticleRes> getEditorArticles(Integer userId, Integer editorId) {
         User user = USER_VALIDATION(userId);
