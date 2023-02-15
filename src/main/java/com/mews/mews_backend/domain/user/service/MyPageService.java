@@ -6,6 +6,8 @@ import com.mews.mews_backend.api.user.dto.Req.PatchUserProfileReq;
 import com.mews.mews_backend.api.user.dto.Res.GetMyPageArticleRes;
 import com.mews.mews_backend.api.user.dto.Res.GetMyPageRes;
 import com.mews.mews_backend.domain.article.entity.Article;
+import com.mews.mews_backend.domain.article.entity.ArticleAndEditor;
+import com.mews.mews_backend.domain.article.repository.ArticleAndEditorRepository;
 import com.mews.mews_backend.domain.article.repository.ArticleRepository;
 import com.mews.mews_backend.domain.editor.entity.Editor;
 import com.mews.mews_backend.domain.editor.repository.EditorRepository;
@@ -50,6 +52,7 @@ public class MyPageService {
     private final EditorRepository editorRepository;
     private final LikeRepository likeRepository;
     private final AmazonS3Client amazonS3Client;
+    private final ArticleAndEditorRepository articleAndEditorRepository;
 
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
@@ -170,12 +173,13 @@ public class MyPageService {
         List<GetMyPageArticleRes> getMyPageBookmarkRes = new ArrayList<>();
 
         for(Bookmark bookmark : findMyBookmark){
+            List<String> editors = editorToString(bookmark.getArticle());
             GetMyPageArticleRes dto = GetMyPageArticleRes.builder()
                     .id(bookmark.getArticle().getId())
                     .title(bookmark.getArticle().getTitle())
                     .likeCount(bookmark.getArticle().getLike_count())
-                    .editors("일단 X")
-                    .img("일단 X")
+                    .editors(editors)
+                    .img(bookmark.getArticle().getFileUrls())
                     .isBookmarked(true)
                     .isLiked(likeRepository.existsByArticleAndUser(bookmark.getArticle(), user))
                     .build();
@@ -192,12 +196,13 @@ public class MyPageService {
         List<GetMyPageArticleRes> getMyPageLikeRes = new ArrayList<>();
 
         for(Like likeArticle : findAllLike){
+            List<String> editors = editorToString(likeArticle.getArticle());
             GetMyPageArticleRes dto = GetMyPageArticleRes.builder()
                     .id(likeArticle.getArticle().getId())
                     .title(likeArticle.getArticle().getTitle())
                     .likeCount(likeArticle.getArticle().getLike_count())
-                    .editors("일단 X")
-                    .img("일단 X")
+                    .editors(editors)
+                    .img(likeArticle.getArticle().getFileUrls())
                     .isBookmarked(bookmarkRepository.existsByUserAndArticle(user, likeArticle.getArticle()))
                     .isLiked(true)
                     .build();
@@ -259,5 +264,39 @@ public class MyPageService {
                 .build();
 
         subscribeRepository.save(subscribe);
+    }
+
+    //게시글 필진 String 값으로 반환
+    public List<String> editorToString(Article article){
+        List<ArticleAndEditor> findAllEditors = articleAndEditorRepository.findAllByArticle(article);
+        List<String> editors = new ArrayList<>();
+        for(int i=0; i<findAllEditors.size();i++){
+            editors.add(findAllEditors.get(i).getEditor().getName());
+        }
+        return editors;
+    }
+
+    //필진 글 보여주기
+    public List<GetMyPageArticleRes> getEditorArticles(Integer userId, Integer editorId) {
+        User user = USER_VALIDATION(userId);
+
+        Editor editor = editorRepository.findById(editorId).orElseThrow();
+        List<ArticleAndEditor> findAllArticle = articleAndEditorRepository.findAllByEditorOrderByModifiedAt(editor);
+        List<GetMyPageArticleRes> getEditorArticleRes = new ArrayList<>();
+
+        for(ArticleAndEditor editorArticle : findAllArticle){
+            List<String> editors = editorToString(editorArticle.getArticle());
+            GetMyPageArticleRes dto = GetMyPageArticleRes.builder()
+                    .id(editorArticle.getArticle().getId())
+                    .title(editorArticle.getArticle().getTitle())
+                    .likeCount(editorArticle.getArticle().getLike_count())
+                    .editors(editors)
+                    .img(editorArticle.getArticle().getFileUrls())
+                    .isBookmarked(bookmarkRepository.existsByUserAndArticle(user, editorArticle.getArticle()))
+                    .isLiked(likeRepository.existsByArticleAndUser(editorArticle.getArticle(), user))
+                    .build();
+            getEditorArticleRes.add(dto);
+        }
+        return getEditorArticleRes;
     }
 }

@@ -89,8 +89,8 @@ public class MyPageController {
     }
 
     //필진 글 보여주기
-//    @GetMapping(value="/{userId}/editor/{editorId}")
-//    public ResponseEntity<List<GetMyPageArticleRes>> getEditorArticle(@PathVariable("userId") Integer userId, @PathVariable("editorId") Integer editorId){
-//        //return new ResponseEntity<>("GET EDIROT", HttpStatus.OK);
-//    }
+    @GetMapping(value="/{userId}/editor/{editorId}")
+    public ResponseEntity<List<GetMyPageArticleRes>> getEditorArticle(@PathVariable("userId") Integer userId, @PathVariable("editorId") Integer editorId){
+        return new ResponseEntity<>(myPageService.getEditorArticles(userId, editorId), HttpStatus.OK);
+    }
 }
