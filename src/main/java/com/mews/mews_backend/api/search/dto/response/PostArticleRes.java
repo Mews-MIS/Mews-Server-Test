@@ -11,7 +11,7 @@ public class PostArticleRes {
     private String title;
 
     public PostArticleRes(Article article) {
-        this.id = article.getArticle_id();
+        this.id = article.getId();
         this.title = article.getTitle();
     }
 }
