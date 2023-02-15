@@ -91,6 +91,12 @@ public class ArticleService {
         articleRepository.delete(article);
     }
 
+    // 해당 타입 게시글 전체 조회
+    public List<Article> getAllTypeArticle(String type){
+        List<Article> articleList = articleRepository.findAllByType(type);
+        return articleList;
+    }
+
     private Article buildArticle(PostArticleReq postArticleReq){
         Article article= Article.builder()
                 .title(postArticleReq.getTitle())

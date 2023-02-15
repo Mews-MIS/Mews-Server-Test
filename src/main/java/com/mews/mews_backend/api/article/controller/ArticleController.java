@@ -61,4 +61,10 @@ public class ArticleController {
         return ResponseEntity.ok("delete success");
     }
 
+    @GetMapping("/allType")
+    public ResponseEntity<List<Article>> getAllTypeArticle(@RequestParam("type") String type){
+        List<Article> articleList = articleService.getAllTypeArticle(type);
+        return ResponseEntity.ok(articleList);
+    }
+
 }
