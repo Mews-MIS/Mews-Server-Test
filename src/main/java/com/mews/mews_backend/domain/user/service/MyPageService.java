@@ -6,6 +6,8 @@ import com.mews.mews_backend.api.user.dto.Req.PatchUserProfileReq;
 import com.mews.mews_backend.api.user.dto.Res.GetMyPageArticleRes;
 import com.mews.mews_backend.api.user.dto.Res.GetMyPageRes;
 import com.mews.mews_backend.domain.article.entity.Article;
+import com.mews.mews_backend.domain.article.entity.ArticleAndEditor;
+import com.mews.mews_backend.domain.article.repository.ArticleAndEditorRepository;
 import com.mews.mews_backend.domain.article.repository.ArticleRepository;
 import com.mews.mews_backend.domain.editor.entity.Editor;
 import com.mews.mews_backend.domain.editor.repository.EditorRepository;
@@ -50,6 +52,7 @@ public class MyPageService {
     private final EditorRepository editorRepository;
     private final LikeRepository likeRepository;
     private final AmazonS3Client amazonS3Client;
+    private final ArticleAndEditorRepository articleAndEditorRepository;
 
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
@@ -128,41 +131,6 @@ public class MyPageService {
     }
 
 
-    //북마크 추가
-    public boolean insertBookmark(Integer userId, Integer articleId) {
-        User user = USER_VALIDATION(userId);
-
-        Article article = articleRepository.findById(articleId).orElseThrow();
-        boolean bookmarkValidation = bookmarkRepository.existsByUserAndArticle(user, article);
-
-
-        //북마크 안 되어 있는 글 => 북마크 추가
-        if(bookmarkValidation == false){
-            Bookmark bookmark = Bookmark.builder()
-                    .user(user)
-                    .article(article)
-                    .build();
-
-            bookmarkRepository.save(bookmark);
-
-            //user bookmarkcnt +1증가
-            user.upBookmark();
-            userRepository.save(user);
-
-            return true;
-        } else {
-            //북마크 삭제
-            bookmarkRepository.deleteByIdAndArticleId(userId, articleId);
-            //북마크cnt --
-            user.downBookmark();
-            userRepository.save(user);
-
-            return false;
-        }
-
-
-    }
-
     //내 북마크 글 가져오기
     public List<GetMyPageArticleRes> getMyBookmark(Integer userId){
         User user = USER_VALIDATION(userId);
@@ -171,12 +139,13 @@ public class MyPageService {
         List<GetMyPageArticleRes> getMyPageBookmarkRes = new ArrayList<>();
 
         for(Bookmark bookmark : findMyBookmark){
+            List<String> editors = editorToString(bookmark.getArticle());
             GetMyPageArticleRes dto = GetMyPageArticleRes.builder()
                     .id(bookmark.getArticle().getId())
                     .title(bookmark.getArticle().getTitle())
                     .likeCount(bookmark.getArticle().getLike_count())
-                    .editors("일단 X")
-                    .img("일단 X")
+                    .editors(editors)
+                    .img(bookmark.getArticle().getFileUrls())
                     .isBookmarked(true)
                     .isLiked(likeRepository.existsByArticleAndUser(bookmark.getArticle(), user))
                     .build();
@@ -193,12 +162,13 @@ public class MyPageService {
         List<GetMyPageArticleRes> getMyPageLikeRes = new ArrayList<>();
 
         for(Like likeArticle : findAllLike){
+            List<String> editors = editorToString(likeArticle.getArticle());
             GetMyPageArticleRes dto = GetMyPageArticleRes.builder()
                     .id(likeArticle.getArticle().getId())
                     .title(likeArticle.getArticle().getTitle())
                     .likeCount(likeArticle.getArticle().getLike_count())
-                    .editors("일단 X")
-                    .img("일단 X")
+                    .editors(editors)
+                    .img(likeArticle.getArticle().getFileUrls())
                     .isBookmarked(bookmarkRepository.existsByUserAndArticle(user, likeArticle.getArticle()))
                     .isLiked(true)
                     .build();
@@ -207,46 +177,15 @@ public class MyPageService {
         return getMyPageLikeRes;
     }
 
-    //좋아요
-    public boolean insertlikeArticle(Integer userId, Integer articleId){
-        User user = USER_VALIDATION(userId);
 
-        Article article = articleRepository.findById(articleId).orElseThrow();
-        boolean likeValidation = likeRepository.existsByArticleAndUser(article, user);
-
-
-        //좋아요 한 적 없는 글 => 좋아요 추가
-        if(likeValidation == false){
-
-            Like like = Like.builder()
-                    .user(user)
-                    .article(article)
-                    .build();
-
-            likeRepository.save(like);
-
-            //user likecnt +1증가
-            user.upLike();
-            userRepository.save(user);
-
-            //article likecnt +1증가
-            article.upLike();
-            articleRepository.save(article);
-
-            return true;
-        } else {     //좋아요 이미 되어 있는 글 => 좋아요 취소
-            //좋아요 삭제
-            likeRepository.deleteByIdAndArticleId(userId, articleId);
-
-            //user likecnt --
-            user.downLike();
-            userRepository.save(user);
-
-            //article likecnt --
-            article.downLike();
-            articleRepository.save(article);
-            return false;
+    //게시글 필진 String 값으로 반환
+    public List<String> editorToString(Article article){
+        List<ArticleAndEditor> findAllEditors = articleAndEditorRepository.findAllByArticle(article);
+        List<String> editors = new ArrayList<>();
+        for(int i=0; i<findAllEditors.size();i++){
+            editors.add(findAllEditors.get(i).getEditor().getName());
         }
+        return editors;
     }
 
     //필진 구독하기
@@ -260,5 +199,28 @@ public class MyPageService {
                 .build();
 
         subscribeRepository.save(subscribe);
+    }
+    //필진 글 보여주기
+    public List<GetMyPageArticleRes> getEditorArticles(Integer userId, Integer editorId) {
+        User user = USER_VALIDATION(userId);
+
+        Editor editor = editorRepository.findById(editorId).orElseThrow();
+        List<ArticleAndEditor> findAllArticle = articleAndEditorRepository.findAllByEditorOrderByModifiedAt(editor);
+        List<GetMyPageArticleRes> getEditorArticleRes = new ArrayList<>();
+
+        for(ArticleAndEditor editorArticle : findAllArticle){
+            List<String> editors = editorToString(editorArticle.getArticle());
+            GetMyPageArticleRes dto = GetMyPageArticleRes.builder()
+                    .id(editorArticle.getArticle().getId())
+                    .title(editorArticle.getArticle().getTitle())
+                    .likeCount(editorArticle.getArticle().getLike_count())
+                    .editors(editors)
+                    .img(editorArticle.getArticle().getFileUrls())
+                    .isBookmarked(bookmarkRepository.existsByUserAndArticle(user, editorArticle.getArticle()))
+                    .isLiked(likeRepository.existsByArticleAndUser(editorArticle.getArticle(), user))
+                    .build();
+            getEditorArticleRes.add(dto);
+        }
+        return getEditorArticleRes;
     }
 }
