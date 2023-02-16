@@ -25,15 +25,15 @@ public class SearchService {
         this.editorRepository = editorRepository;
     }
 
-    public List<PostArticleRes> findArticle(String string) {
-        return articleRepository.findAllByTitle(string)
+    public List<PostArticleRes> findArticle(String keyword) {
+        return articleRepository.findAllByTitle(keyword)
                 .stream()
                 .map(PostArticleRes::new)
                 .collect(Collectors.toList());
     }
 
-    public List<PostEditorRes> findEditor(String string) {
-        return editorRepository.findAllByName(string)
+    public List<PostEditorRes> findEditor(String keyword) {
+        return editorRepository.findAllByNameContains(keyword)
                 .stream()
                 .map(PostEditorRes::new)
                 .collect(Collectors.toList());
