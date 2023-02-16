@@ -1,43 +1,66 @@
 package com.mews.mews_backend.domain.editor.service;
 
-import com.mews.mews_backend.api.Editor.dto.request.PatchEditorReq;
-import com.mews.mews_backend.api.Editor.dto.request.PostEditorReq;
-import com.mews.mews_backend.api.Editor.dto.response.GetEditorRes;
-import com.mews.mews_backend.domain.calendar.entity.Calendar;
+import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.mews.mews_backend.api.editor.dto.request.PatchEditorReq;
+import com.mews.mews_backend.api.editor.dto.request.PostEditorReq;
+import com.mews.mews_backend.api.editor.dto.response.GetEditorRes;
 import com.mews.mews_backend.domain.editor.entity.Editor;
 import com.mews.mews_backend.domain.editor.repository.EditorRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
+import java.io.IOException;
+import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class EditorService {
 
     private final EditorRepository editorRepository;
+    private final AmazonS3Client amazonS3Client;
 
-    @Autowired
-    public EditorService(EditorRepository editorRepository) {
-        this.editorRepository = editorRepository;
-    }
+    @Value("${cloud.aws.s3.bucket}")
+    private String bucket;
 
     // Editor DB 등록
-    public void save(PostEditorReq postEditorReq) {
-        Editor editor = postEditorReq.toEntity(postEditorReq);
+    public void save(PostEditorReq postEditorReq, MultipartFile multipartFile) {
+        String img = null;
+        if(multipartFile != null & !multipartFile.isEmpty()) {
+            try {
+                img = updateImage(multipartFile);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        Editor editor = postEditorReq.toEntity(postEditorReq, img);
 
         editorRepository.save(editor);
     }
 
     // Editor DB 수정
-    public void update(PatchEditorReq patchEditorReq) {
+    public void update(PatchEditorReq patchEditorReq, MultipartFile multipartFile) {
         Editor editor = editorRepository.findById(patchEditorReq.getId()).get();
 
         String inputName = (patchEditorReq.getName() == null? editor.getName() : patchEditorReq.getName());
-        String inputImgUrl = (patchEditorReq.getImgUrl() == null? editor.getImgUrl() : patchEditorReq.getImgUrl());
         String inputIntroduction = (patchEditorReq.getIntroduction() == null? editor.getIntroduction() : patchEditorReq.getIntroduction());
+
+        String inputImgUrl = editor.getImgUrl();
+        if(multipartFile != null & !multipartFile.isEmpty()) {
+            try {
+                inputImgUrl = updateImage(multipartFile);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
 
         editorRepository.updateById(patchEditorReq.getId(), inputName, inputImgUrl, inputIntroduction);
     }
@@ -65,4 +88,18 @@ public class EditorService {
         return getEditorRes;
     }
 
+    //이미지 넣기
+    public String updateImage(MultipartFile multipartFile) throws IOException {
+        LocalDate now = LocalDate.now();
+        String uuid = UUID.randomUUID()+toString();
+        String fileName = uuid+"_"+multipartFile.getOriginalFilename();
+        String userImg = "user/" + now+"/"+ fileName;
+        ObjectMetadata objMeta = new ObjectMetadata();
+        objMeta.setContentLength(multipartFile.getInputStream().available());
+        amazonS3Client.putObject(bucket, userImg, multipartFile.getInputStream(), objMeta);
+
+        String img = amazonS3Client.getUrl(bucket, fileName).toString();
+
+        return img;
+    }
 }
