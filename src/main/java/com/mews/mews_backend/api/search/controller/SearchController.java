@@ -1,19 +1,15 @@
 package com.mews.mews_backend.api.search.controller;
 
-import com.mews.mews_backend.api.search.dto.response.PostArticleRes;
-import com.mews.mews_backend.api.search.dto.response.PostEditorRes;
-import com.mews.mews_backend.api.search.dto.response.PostSearchRes;
-import com.mews.mews_backend.domain.article.entity.Article;
-import com.mews.mews_backend.domain.article.service.ArticleService;
-import com.mews.mews_backend.domain.editor.service.EditorService;
+import com.mews.mews_backend.api.search.dto.response.GetArticleRes;
+import com.mews.mews_backend.api.search.dto.response.GetEditorRes;
+import com.mews.mews_backend.api.search.dto.response.GetSearchRes;
+import com.mews.mews_backend.domain.search.service.SearchRedisService;
 import com.mews.mews_backend.domain.search.service.SearchService;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -24,14 +20,25 @@ import java.util.List;
 public class SearchController {
 
     private final SearchService searchService;
+    private final SearchRedisService searchRedisService;
 
-    @PostMapping(value = "/{keyword}")
-    public ResponseEntity<PostSearchRes> Search(@PathVariable ("keyword") String string) {
-        List<PostArticleRes> postArticleResList = searchService.findArticle(string);
-        List<PostEditorRes> postEditorResList = searchService.findEditor(string);
+    @ApiOperation("검색")
+    @GetMapping(value = "/{keyword}")
+    public ResponseEntity<GetSearchRes> Search(@PathVariable("keyword") String searchWord) {
+        List<GetArticleRes> getArticleResList = searchService.findArticle(searchWord);
+        List<GetEditorRes> getEditorResList = searchService.findEditor(searchWord);
 
-        PostSearchRes postSearchRes = new PostSearchRes(postArticleResList, postEditorResList);
+        GetSearchRes getSearchRes = new GetSearchRes(getArticleResList, getEditorResList);
+        searchRedisService.increaseSearchWords(searchWord);
 
-        return ResponseEntity.ok(postSearchRes);
+        return ResponseEntity.ok(getSearchRes);
     }
+
+    @ApiOperation("인기 검색어 가져오기")
+    @GetMapping("/popular")
+    public ResponseEntity<List<String>> getPopularSearchWords(){
+        List<String> getPopularSearchWords = searchRedisService.getPopularSearchWords();
+        return ResponseEntity.ok(getPopularSearchWords);
+    }
+
 }
