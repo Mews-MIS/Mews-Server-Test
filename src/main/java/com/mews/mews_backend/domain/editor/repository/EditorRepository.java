@@ -14,8 +14,8 @@ import java.util.List;
 @EnableJpaRepositories
 public interface EditorRepository extends JpaRepository<Editor, Integer> {
 
-
-    List<Editor> findAllByName(String string);
+    // name like query
+    List<Editor> findAllByNameContains(String keyword);
 
     @Modifying
     @Query("update Editor e set e.name = :inputName, e.imgUrl = :inputImgUrl, e.introduction = :inputIntroduction where e.id = :inputId")

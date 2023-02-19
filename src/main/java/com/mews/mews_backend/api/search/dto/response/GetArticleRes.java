@@ -4,14 +4,16 @@ import com.mews.mews_backend.domain.article.entity.Article;
 import lombok.Getter;
 
 @Getter
-public class PostArticleRes {
+public class GetArticleRes {
 
     private Integer id;
 
+    private String imgUrl;
     private String title;
 
-    public PostArticleRes(Article article) {
-        this.id = article.getArticle_id();
+    public GetArticleRes(Article article) {
+        this.id = article.getId();
+        this.imgUrl = article.getFileUrls().get(0);
         this.title = article.getTitle();
     }
 }

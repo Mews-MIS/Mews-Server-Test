@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -22,4 +23,11 @@ public class PostArticleReq {
     @NotBlank
     @ApiModelProperty(notes = "타입", example = "article")
     private String type; // 타입
+
+    @ApiModelProperty(notes = "첨부파일 url", example = "[\"www.google.com\", \"www.naver.com'\"]")
+    private List<String> fileUrls; // 첨부파일 urls
+
+    //필진 리스트
+    @ApiModelProperty(notes = "필진id list", example="[1,2]")
+    private List<Integer> editors;
 }

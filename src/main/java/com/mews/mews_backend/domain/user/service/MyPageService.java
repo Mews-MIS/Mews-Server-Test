@@ -1,28 +1,42 @@
 package com.mews.mews_backend.domain.user.service;
 
-import com.mews.mews_backend.api.user.dto.GetMyPageBookmarkReq;
-import com.mews.mews_backend.api.user.dto.UserDto;
+import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.mews.mews_backend.api.user.dto.Req.PatchUserProfileReq;
+import com.mews.mews_backend.api.user.dto.Res.GetMyPageArticleRes;
+import com.mews.mews_backend.api.user.dto.Res.GetMyPageRes;
 import com.mews.mews_backend.domain.article.entity.Article;
+import com.mews.mews_backend.domain.article.entity.ArticleAndEditor;
+import com.mews.mews_backend.domain.article.repository.ArticleAndEditorRepository;
 import com.mews.mews_backend.domain.article.repository.ArticleRepository;
+import com.mews.mews_backend.domain.editor.entity.Editor;
+import com.mews.mews_backend.domain.editor.repository.EditorRepository;
 import com.mews.mews_backend.domain.user.entity.Bookmark;
+import com.mews.mews_backend.domain.user.entity.Like;
+import com.mews.mews_backend.domain.user.entity.Subscribe;
 import com.mews.mews_backend.domain.user.entity.User;
 import com.mews.mews_backend.domain.user.repository.BookmarkRepository;
+import com.mews.mews_backend.domain.user.repository.LikeRepository;
+import com.mews.mews_backend.domain.user.repository.SubscribeRepository;
 import com.mews.mews_backend.domain.user.repository.UserRepository;
 import com.mews.mews_backend.global.error.exception.BaseException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
-import static com.mews.mews_backend.global.error.ErrorCode.NOT_AUTHENTICATED_USER;
-import static com.mews.mews_backend.global.error.ErrorCode.USER_BOOKMARK_EXISTS;
+import static com.mews.mews_backend.global.error.ErrorCode.*;
 
 @Service
 @RequiredArgsConstructor
@@ -34,89 +48,179 @@ public class MyPageService {
     private final BookmarkRepository bookmarkRepository;
     private final ArticleRepository articleRepository;
 
-    //프로필 편집
-    public void updateUser(Integer userId, UserDto.updateProfile profile){
-        Optional<User> userResult = userRepository.findById(userId );
+    private final SubscribeRepository subscribeRepository;
+    private final EditorRepository editorRepository;
+    private final LikeRepository likeRepository;
+    private final AmazonS3Client amazonS3Client;
+    private final ArticleAndEditorRepository articleAndEditorRepository;
 
-        userResult.ifPresent(user -> {
-            //이름 바꾸기
-            if(profile.getUserName()!=null){
-                user.changeName(profile.getUserName());
-            }
-            //이미지 바꾸기
-            if(profile.getImgUrl()!=null){
-                user.changeImg(profile.getImgUrl());
-            }
-            //소개 바꾸기
-            if(profile.getIntroduction()!=null){
-                user.changeIntroduction(profile.getIntroduction());
-            }
-            //무조건 open 값 받아오기 - true:공개, false:비공개
-            user.changeIsOpen(profile.isOpen());
+    @Value("${cloud.aws.s3.bucket}")
+    private String bucket;
 
-            userRepository.save(user);
-        });
-    }
 
-    public void USER_VALIDATION(Integer userId){
-        //토큰 값의 유저와 userId의 유저가 일치하는지
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (!authentication.getName().equals(userRepository.findById(userId).orElseThrow().getUserEmail())) {
-            throw new BaseException(NOT_AUTHENTICATED_USER);
-        }
-    }
+    //프로필
+    public GetMyPageRes getUserInfo(Integer userId){
+        User user = USER_VALIDATION(userId);
 
-    public void USER_BOOKMARK_VALIDATION(Integer userId, Integer articleId){
-        List<Bookmark> bookmarkValidation = bookmarkRepository.existsByIdAndArticleId(userId, articleId);
-        if(!bookmarkValidation.isEmpty()){
-            throw new BaseException(USER_BOOKMARK_EXISTS);
-        }
-    }
-
-    //북마크 추가
-    public void insertBookmark(Integer userId, Integer articleId) {
-        log.info("=======예외 처리======");
-        //예외 처리 : 토큰 값의 유저와 userId 값이 일치하지 않으면 예외 발생
-        USER_VALIDATION(userId);
-        //예외 처리 : 이미 북마크된 아티클이면 예외 발생
-        USER_BOOKMARK_VALIDATION(userId, articleId);
-
-        //북마크 추가
-        User user = userRepository.findById(userId).orElseThrow();
-        Article article = articleRepository.findById(articleId).orElseThrow();
-
-        Bookmark bookmark = Bookmark.builder()
-                .user(user)
-                .article(article)
+        GetMyPageRes userDto = GetMyPageRes.builder()
+                .imgUrl(user.getImgUrl())
+                .userName(user.getUserName())
+                .introduction(user.getIntroduction())
+                .bookmarkCount(user.getBookmarkCount())
+                .likeCount(user.getLikeCount())
+                .subscribeCount(user.getSubscribeCount())
                 .build();
 
-        bookmarkRepository.save(bookmark);
-
-        //user bookmarkcnt +1증가
-        user.updateBookmark();
-        userRepository.save(user);
+        return userDto;
     }
+
+    //프로필 편집
+    public void updateUserInfo(Integer userId, PatchUserProfileReq profile, MultipartFile multipartFile){
+        User user = USER_VALIDATION(userId);
+
+        //이름 바꾸기
+        if(profile.getUserName()!=null){
+            user.changeName(profile.getUserName());
+        }
+        //이미지 바꾸기
+        if(multipartFile != null && !multipartFile.isEmpty()){
+            String img = null;
+            try {
+                img = updateImage(multipartFile);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+                user.changeImg(img);
+            }
+
+        //소개 바꾸기
+        if(profile.getIntroduction()!=null){
+            user.changeIntroduction(profile.getIntroduction());
+        }
+
+        //무조건 open 값 받아오기 - true:공개, false:비공개
+        user.changeIsOpen(profile.isOpen());
+
+        userRepository.save(user);
+    };
+
+    //이미지 넣기
+    public String updateImage(MultipartFile multipartFile) throws IOException {
+        LocalDate now = LocalDate.now();
+        String uuid = UUID.randomUUID()+toString();
+        String fileName = uuid+"_"+multipartFile.getOriginalFilename();
+        String userImg = "user/" + now+"/"+ fileName;
+        ObjectMetadata objMeta = new ObjectMetadata();
+        objMeta.setContentLength(multipartFile.getInputStream().available());
+        amazonS3Client.putObject(bucket, userImg, multipartFile.getInputStream(), objMeta);
+
+        String img = amazonS3Client.getUrl(bucket, fileName).toString();
+
+        return img;
+    }
+
+    //토큰 값의 유저와 userId의 유저가 일치하는지
+    public User USER_VALIDATION(Integer userId){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User user = userRepository.findById(userId).orElseThrow();
+        if (!authentication.getName().equals(user.getUserEmail())) {
+            throw new BaseException(NOT_AUTHENTICATED_USER);
+        }
+
+        return user;
+    }
+
 
     //내 북마크 글 가져오기
-    public List<GetMyPageBookmarkReq> getMyBookmark(Integer userId){
-        List<Bookmark> findMyBookmark = bookmarkRepository.findAllByUserId(userId);
-        List<GetMyPageBookmarkReq> getMyPageBookmarkReqs = new ArrayList<>();
+    public List<GetMyPageArticleRes> getMyBookmark(Integer userId){
+        User user = USER_VALIDATION(userId);
+
+        List<Bookmark> findMyBookmark = bookmarkRepository.findAllByUserOrderByModifiedAtDesc(user);
+        List<GetMyPageArticleRes> getMyPageBookmarkRes = new ArrayList<>();
 
         for(Bookmark bookmark : findMyBookmark){
-            GetMyPageBookmarkReq dto = GetMyPageBookmarkReq.builder()
-                    .id(bookmark.getArticle().getArticle_id())
+            List<String> editors = editorToString(bookmark.getArticle());
+            GetMyPageArticleRes dto = GetMyPageArticleRes.builder()
+                    .id(bookmark.getArticle().getId())
                     .title(bookmark.getArticle().getTitle())
                     .likeCount(bookmark.getArticle().getLike_count())
-                    .editors("일단 X")
-                    .img("일단 X")
+                    .editors(editors)
+                    .img(bookmark.getArticle().getFileUrls())
+                    .isBookmarked(true)
+                    .isLiked(likeRepository.existsByArticleAndUser(bookmark.getArticle(), user))
                     .build();
-            getMyPageBookmarkReqs.add(dto);
+            getMyPageBookmarkRes.add(dto);
         }
-        return getMyPageBookmarkReqs;
+        return getMyPageBookmarkRes;
     }
 
-    //북마크 취소
-    public void deleteBookmark(Integer userId, Integer articleId){
-        bookmarkRepository.deleteByIdAndArticleId(userId, articleId);
+    //내 좋아요 글 가져오기
+    public List<GetMyPageArticleRes> getLikeArticle(Integer userId){
+        User user = USER_VALIDATION(userId);
+
+        List<Like> findAllLike = likeRepository.findAllByUserOrderByModifiedAtDesc(user);
+        List<GetMyPageArticleRes> getMyPageLikeRes = new ArrayList<>();
+
+        for(Like likeArticle : findAllLike){
+            List<String> editors = editorToString(likeArticle.getArticle());
+            GetMyPageArticleRes dto = GetMyPageArticleRes.builder()
+                    .id(likeArticle.getArticle().getId())
+                    .title(likeArticle.getArticle().getTitle())
+                    .likeCount(likeArticle.getArticle().getLike_count())
+                    .editors(editors)
+                    .img(likeArticle.getArticle().getFileUrls())
+                    .isBookmarked(bookmarkRepository.existsByUserAndArticle(user, likeArticle.getArticle()))
+                    .isLiked(true)
+                    .build();
+            getMyPageLikeRes.add(dto);
+        }
+        return getMyPageLikeRes;
+    }
+
+
+    //게시글 필진 String 값으로 반환
+    public List<String> editorToString(Article article){
+        List<ArticleAndEditor> findAllEditors = articleAndEditorRepository.findAllByArticle(article);
+        List<String> editors = new ArrayList<>();
+        for(int i=0; i<findAllEditors.size();i++){
+            editors.add(findAllEditors.get(i).getEditor().getName());
+        }
+        return editors;
+    }
+
+    //필진 구독하기
+    public void insertEditor(Integer userId, Integer editorId){
+        User user = USER_VALIDATION(userId);
+        Editor editor = editorRepository.findById(editorId).orElseThrow();
+
+        Subscribe subscribe = Subscribe.builder()
+                .editor(editor)
+                .user(user)
+                .build();
+
+        subscribeRepository.save(subscribe);
+    }
+    //필진 글 보여주기
+    public List<GetMyPageArticleRes> getEditorArticles(Integer userId, Integer editorId) {
+        User user = USER_VALIDATION(userId);
+
+        Editor editor = editorRepository.findById(editorId).orElseThrow();
+        List<ArticleAndEditor> findAllArticle = articleAndEditorRepository.findAllByEditorOrderByModifiedAt(editor);
+        List<GetMyPageArticleRes> getEditorArticleRes = new ArrayList<>();
+
+        for(ArticleAndEditor editorArticle : findAllArticle){
+            List<String> editors = editorToString(editorArticle.getArticle());
+            GetMyPageArticleRes dto = GetMyPageArticleRes.builder()
+                    .id(editorArticle.getArticle().getId())
+                    .title(editorArticle.getArticle().getTitle())
+                    .likeCount(editorArticle.getArticle().getLike_count())
+                    .editors(editors)
+                    .img(editorArticle.getArticle().getFileUrls())
+                    .isBookmarked(bookmarkRepository.existsByUserAndArticle(user, editorArticle.getArticle()))
+                    .isLiked(likeRepository.existsByArticleAndUser(editorArticle.getArticle(), user))
+                    .build();
+            getEditorArticleRes.add(dto);
+        }
+        return getEditorArticleRes;
     }
 }

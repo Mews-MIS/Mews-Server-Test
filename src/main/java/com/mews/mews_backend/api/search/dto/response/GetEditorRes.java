@@ -4,7 +4,7 @@ import com.mews.mews_backend.domain.editor.entity.Editor;
 import lombok.Getter;
 
 @Getter
-public class PostEditorRes {
+public class GetEditorRes {
 
     private Integer id;
 
@@ -13,7 +13,7 @@ public class PostEditorRes {
     private String imgUrl;
 
     //Entity to DTO
-    public PostEditorRes(Editor editor) {
+    public GetEditorRes(Editor editor) {
         this.id = editor.getId();
         this.name = editor.getName();
         this.imgUrl = editor.getImgUrl();
