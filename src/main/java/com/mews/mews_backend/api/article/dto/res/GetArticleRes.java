@@ -42,7 +42,13 @@ public class GetArticleRes {
     @ApiModelProperty(notes = "댓글", example = "[]")
     private List<GetCommentRes> comments; // 뉴스 댓글
 
-    public static GetArticleRes from(Article article){
+    //북마크 여부
+    private boolean isBookmarked;
+
+    //좋아요 여부
+    private boolean isLiked;
+
+    public static GetArticleRes from(Article article, boolean isBookmarked, boolean isLiked){
         return GetArticleRes.builder()
                 .title(article.getTitle())
                 .content(article.getContent())
@@ -52,6 +58,8 @@ public class GetArticleRes {
                 .likeCount(article.getLike_count())
                 .views(article.getViews().getViews())
                 .comments(article.getComments().stream().map(GetCommentRes::new).collect(Collectors.toList()))
+                .isBookmarked(isBookmarked)
+                .isLiked(isLiked)
                 .build();
     }
 }

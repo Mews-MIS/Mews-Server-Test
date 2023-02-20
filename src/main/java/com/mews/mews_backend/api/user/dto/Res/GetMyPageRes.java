@@ -1,4 +1,4 @@
-package com.mews.mews_backend.api.user.dto;
+package com.mews.mews_backend.api.user.dto.Res;
 
 import lombok.*;
 

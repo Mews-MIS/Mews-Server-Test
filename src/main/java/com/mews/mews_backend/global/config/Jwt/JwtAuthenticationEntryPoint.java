@@ -20,6 +20,6 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
         // 유효한 자격증명을 제공하지 않고 접근하려 할때 401
         log.info("토큰 넣어주세요");
-        response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+        response.sendError(HttpServletResponse.SC_UNAUTHORIZED,"UnAuthorized");
     }
 }

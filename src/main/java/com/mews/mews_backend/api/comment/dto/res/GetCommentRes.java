@@ -34,7 +34,7 @@ public class GetCommentRes {
 
     public GetCommentRes(Comment comment) {
         this.userId = comment.getUser().getId();
-        this.articleId = comment.getArticle().getArticle_id();
+        this.articleId = comment.getArticle().getId();
         this.content = comment.getContent();
         this.modifiedAt = comment.getModifiedAt();
     }

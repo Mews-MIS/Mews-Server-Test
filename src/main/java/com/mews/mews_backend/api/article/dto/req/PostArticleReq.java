@@ -26,4 +26,8 @@ public class PostArticleReq {
 
     @ApiModelProperty(notes = "첨부파일 url", example = "[\"www.google.com\", \"www.naver.com'\"]")
     private List<String> fileUrls; // 첨부파일 urls
+
+    //필진 리스트
+    @ApiModelProperty(notes = "필진id list", example="[1,2]")
+    private List<Integer> editors;
 }
