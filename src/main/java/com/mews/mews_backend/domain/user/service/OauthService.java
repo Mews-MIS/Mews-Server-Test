@@ -188,7 +188,7 @@ public class OauthService {
         User user = User.builder()
                 .userName("mews_admin")
                 .userEmail("mewsAdmin")
-                .imgUrl(null)
+                .imgUrl("null")
                 .introduction(null)
                 .likeCount(0)
                 .bookmarkCount(0)
@@ -203,7 +203,8 @@ public class OauthService {
     }
 
     //어드민 로그인
-    public ResponseEntity<UserDto.tokenResponse> adminLogin(PostAdminLoginReq postAdminLoginReq) throws IOException {
+    @Transactional
+    public ResponseEntity<UserDto.tokenResponse> adminLogin(PostAdminLoginReq postAdminLoginReq)  {
         String id = postAdminLoginReq.getUserId();
         String password = postAdminLoginReq.getUserPassword();
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(id, password);

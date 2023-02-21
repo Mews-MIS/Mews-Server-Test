@@ -43,16 +43,17 @@ public class OauthController {
         return  oauthService.socialRegister(request);
     }
 
-    //어드민 회원가입
-    @PostMapping(value = "/admin/register")
-    public void adminRegister(){
-        oauthService.adminRegister();
-    }
-//    //어드민 로그인
-//    @PostMapping(value = "/admin/login")
-//    public void adiminLogin(@RequestBody PostAdminLoginReq postAdminLoginReq){
-//        oauthService.adminLogin(postAdminLoginReq);
+//    //어드민 회원가입
+//    @PostMapping(value = "/admin/register")
+//    public void adminRegister(){
+//        oauthService.adminRegister();
 //    }
+
+    //어드민 로그인
+    @PostMapping(value = "/admin/login")
+    public  ResponseEntity<UserDto.tokenResponse> adminLogin(@RequestBody PostAdminLoginReq postAdminLoginReq){
+        return oauthService.adminLogin(postAdminLoginReq);
+    }
 
     //토큰 재발급
     @GetMapping("/regenerateToken")
