@@ -28,6 +28,6 @@ public class GetCalendarOneRes {
         this.title = calendar.getTitle();
         this.category = calendar.getCategory();
         this.startDate = calendar.getStartDate();
-        this.endDate = calendar.getStartDate();
+        this.endDate = calendar.getEndDate();
     }
 }
