@@ -25,7 +25,4 @@ public class PatchCurationReq {
 
     @ApiModelProperty(notes = "아티클 리스트")
     private List<String> list;
-
-    @ApiModelProperty(notes = "공개 여부")
-    private Boolean open;
 }

@@ -29,18 +29,25 @@ public class Curation extends BaseTimeEntity {
     @Column(name = "open")
     private Boolean open;
 
+    @Column(name = "checked")
+    private Boolean checked;
+
     // DTO to Entity
     @Builder
-    public Curation(String title, List<String> list, Boolean open) {
+    public Curation(String title, List<String> list, Boolean open, Boolean checked) {
         this.title = title;
         this.list = list;
         this.open = open;
+        this.checked = checked;
     }
 
     public Curation update(String title, List<String> list) {
         this.title = title;
         this.list = list;
-
         return this;
+    }
+
+    public void updateChecked(Boolean checked){
+        this.checked=checked;
     }
 }
