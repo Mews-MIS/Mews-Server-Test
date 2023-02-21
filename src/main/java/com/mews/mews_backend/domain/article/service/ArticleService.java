@@ -124,6 +124,11 @@ public class ArticleService {
         return articleList;
     }
 
+    public List<Article> getFiveTopViewsArticle(){
+        List<Article> articleList = articleRepository.findTop5ByOrderByViewsViewsDesc();
+        return articleList;
+    }
+
     private Article buildArticle(PostArticleReq postArticleReq){
         Article article= Article.builder()
                 .title(postArticleReq.getTitle())
