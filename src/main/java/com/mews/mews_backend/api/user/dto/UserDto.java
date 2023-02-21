@@ -29,6 +29,7 @@ public class UserDto implements Serializable {
 
     }
 
+
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor

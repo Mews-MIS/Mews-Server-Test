@@ -1,5 +1,6 @@
 package com.mews.mews_backend.api.user.controller;
 
+import com.mews.mews_backend.api.user.dto.Req.PostAdminLoginReq;
 import com.mews.mews_backend.api.user.dto.UserDto;
 import com.mews.mews_backend.domain.user.service.OauthService;
 import lombok.RequiredArgsConstructor;
@@ -42,6 +43,17 @@ public class OauthController {
         return  oauthService.socialRegister(request);
     }
 
+    //어드민 회원가입
+    @PostMapping(value = "/admin/register")
+    public void adminRegister(){
+        oauthService.adminRegister();
+    }
+//    //어드민 로그인
+//    @PostMapping(value = "/admin/login")
+//    public void adiminLogin(@RequestBody PostAdminLoginReq postAdminLoginReq){
+//        oauthService.adminLogin(postAdminLoginReq);
+//    }
+
     //토큰 재발급
     @GetMapping("/regenerateToken")
     public ResponseEntity<UserDto.tokenResponse> reissue(
@@ -50,6 +62,7 @@ public class OauthController {
         log.info("refresh 토큰 재발급");
         return oauthService.reissue(rtk);
     }
+
 
 
 }

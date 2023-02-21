@@ -2,6 +2,7 @@ package com.mews.mews_backend.domain.user.service;
 
 import com.mews.mews_backend.api.user.dto.GoogleOauthToken;
 import com.mews.mews_backend.api.user.dto.GoogleUser;
+import com.mews.mews_backend.api.user.dto.Req.PostAdminLoginReq;
 import com.mews.mews_backend.api.user.dto.UserDto;
 import com.mews.mews_backend.domain.user.entity.User;
 import com.mews.mews_backend.domain.user.entity.UserType;
@@ -180,6 +181,45 @@ public class OauthService {
         Integer id = userRepository.save(user).getId();
 
         return Login(user.getUserName(),user.getUserEmail(), user.getImgUrl(), id);
+    }
+
+    //어드민 계정 생성
+    public void adminRegister(){
+        User user = User.builder()
+                .userName("mews_admin")
+                .userEmail("mewsAdmin")
+                .imgUrl(null)
+                .introduction(null)
+                .likeCount(0)
+                .bookmarkCount(0)
+                .subscribeCount(0)
+                .userType(UserType.ROLE_ADMIN)
+                .isOpen(false)
+                .social(passwordEncoder.encode("dgumewsadmin2023"))
+                .status("ACTIVE")
+                .build();
+
+        userRepository.save(user);
+    }
+
+    //어드민 로그인
+    public ResponseEntity<UserDto.tokenResponse> adminLogin(PostAdminLoginReq postAdminLoginReq) throws IOException {
+        String id = postAdminLoginReq.getUserId();
+        String password = postAdminLoginReq.getUserPassword();
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(id, password);
+        Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
+        log.info("authenticated 되었나용?"+ authentication.isAuthenticated());
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        String atk = tokenProvider.createToken(authentication);
+        String rtk = tokenProvider.createRefreshToken(id);
+        redisDao.setValues(id, rtk, Duration.ofDays(14));
+
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.add("Authorization", "Bearer " + atk);
+
+        return new ResponseEntity<>(UserDto.tokenResponse.response(
+                 atk, rtk
+        ), HttpStatus.OK);
     }
 
     //accessToken 재발급
