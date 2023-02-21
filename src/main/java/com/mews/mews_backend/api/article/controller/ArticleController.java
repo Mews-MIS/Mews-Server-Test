@@ -62,9 +62,17 @@ public class ArticleController {
         return ResponseEntity.ok("delete success");
     }
 
+    @ApiOperation("해당 카테고리 뉴스 전체 조회")
     @GetMapping("/allType")
     public ResponseEntity<List<Article>> getAllTypeArticle(@RequestParam("type") String type){
         List<Article> articleList = articleService.getAllTypeArticle(type);
+        return ResponseEntity.ok(articleList);
+    }
+
+    @ApiOperation("조회수 top 5 조회")
+    @GetMapping("/top")
+    public ResponseEntity<List<Article>> getFiveTopViewsArticle(){
+        List<Article> articleList = articleService.getFiveTopViewsArticle();
         return ResponseEntity.ok(articleList);
     }
 
