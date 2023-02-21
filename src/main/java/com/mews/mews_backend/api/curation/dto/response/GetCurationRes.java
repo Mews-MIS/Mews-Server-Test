@@ -20,15 +20,6 @@ public class GetCurationRes {
     @ApiModelProperty(notes = "아티클 리스트")
     private List<String> list;
 
-    @ApiModelProperty(notes = "큐레이션 본문")
-    private String body;
-
-    @ApiModelProperty(notes = "큐레이션 인터뷰")
-    private String interview;
-
-    @ApiModelProperty(notes = "첨부 파일 리스트")
-    private List<String> fileUrls;
-
     @ApiModelProperty(notes = "최종 수정 시각")
     private LocalDateTime modifiedAt;
 
@@ -36,9 +27,6 @@ public class GetCurationRes {
     public GetCurationRes(Curation curation) {
         this.title = curation.getTitle();
         this.list = curation.getList();
-        this.body = curation.getBody();
-        this.interview = curation.getInterview();
-        this.fileUrls = curation.getFileUrls();
         this.modifiedAt = curation.getModifiedAt();
     }
 }

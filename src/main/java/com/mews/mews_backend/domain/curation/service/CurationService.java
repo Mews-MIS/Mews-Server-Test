@@ -35,11 +35,8 @@ public class CurationService {
 
         String inputTitle = (patchCurationReq.getTitle() == null? curation.getTitle() : patchCurationReq.getTitle());
         List<String> inputLists = (patchCurationReq.getList() == null? curation.getList() : patchCurationReq.getList());
-        String inputBody = (patchCurationReq.getBody() == null? curation.getBody() : patchCurationReq.getBody());
-        String inputInterview = (patchCurationReq.getInterview() == null? curation.getInterview() : patchCurationReq.getInterview());
-        List<String> inputFileUrls = (patchCurationReq.getFileUrls() == null? curation.getFileUrls() : patchCurationReq.getFileUrls());
 
-        Curation newCuration = curation.update(inputTitle, inputLists, inputBody, inputInterview, inputFileUrls);
+        Curation newCuration = curation.update(inputTitle, inputLists);
         curationRepository.save(newCuration);
     }
 

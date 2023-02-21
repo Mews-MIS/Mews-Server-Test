@@ -47,6 +47,7 @@ public class CurationController {
         return ResponseEntity.ok("Delete Success");
     }
 
+
     @ApiOperation("큐레이션 전체글 가져오기")
     @GetMapping("/all")
     public ResponseEntity<List<Curation>> getAllCuration() {

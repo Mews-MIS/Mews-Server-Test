@@ -26,15 +26,6 @@ public class PatchCurationReq {
     @ApiModelProperty(notes = "아티클 리스트")
     private List<String> list;
 
-    @ApiModelProperty(notes = "큐레이션 본문")
-    private String body;
-
-    @ApiModelProperty(notes = "큐레이션 인터뷰")
-    private String interview;
-
-    @ApiModelProperty(notes = "첨부파일 목록")
-    private List<String> fileUrls;
-
     @ApiModelProperty(notes = "공개 여부")
     private Boolean open;
 }

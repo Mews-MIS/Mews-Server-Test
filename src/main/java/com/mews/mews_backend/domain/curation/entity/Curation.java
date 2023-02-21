@@ -26,36 +26,20 @@ public class Curation extends BaseTimeEntity {
     @Convert(converter = StringListConverter.class)
     private List<String> list;
 
-    @Column(name = "body")
-    private String body;
-
-    @Column(name = "interview")
-    private String interview;
-
-    @Column(name = "file")
-    @Convert(converter = StringListConverter.class)
-    private List<String> fileUrls;
-
     @Column(name = "open")
     private Boolean open;
 
     // DTO to Entity
     @Builder
-    public Curation(String title, List<String> list, String body, String interview, List<String> fileUrls, Boolean open) {
+    public Curation(String title, List<String> list, Boolean open) {
         this.title = title;
         this.list = list;
-        this.body = body;
-        this.interview = interview;
-        this.fileUrls = fileUrls;
         this.open = open;
     }
 
-    public Curation update(String title, List<String> list, String body, String interview, List<String> fileUrls) {
+    public Curation update(String title, List<String> list) {
         this.title = title;
         this.list = list;
-        this.body = body;
-        this.interview = interview;
-        this.fileUrls = fileUrls;
 
         return this;
     }
