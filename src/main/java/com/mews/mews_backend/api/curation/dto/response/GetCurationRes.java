@@ -3,6 +3,7 @@ package com.mews.mews_backend.api.curation.dto.response;
 import com.mews.mews_backend.domain.curation.entity.Curation;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -12,6 +13,7 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class GetCurationRes {
 
     @ApiModelProperty(notes = "큐레이션 제목")
