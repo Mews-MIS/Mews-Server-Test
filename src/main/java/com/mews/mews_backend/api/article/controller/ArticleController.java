@@ -3,6 +3,7 @@ package com.mews.mews_backend.api.article.controller;
 import com.mews.mews_backend.api.article.dto.req.PatchArticleReq;
 import com.mews.mews_backend.api.article.dto.req.PostArticleReq;
 import com.mews.mews_backend.api.article.dto.res.GetArticleRes;
+import com.mews.mews_backend.api.article.dto.res.GetMainArticleRes;
 import com.mews.mews_backend.domain.article.entity.Article;
 import com.mews.mews_backend.domain.article.service.ArticleService;
 import com.mews.mews_backend.domain.article.service.ViewsService;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -74,6 +76,15 @@ public class ArticleController {
     public ResponseEntity<List<Article>> getFiveTopViewsArticle(){
         List<Article> articleList = articleService.getFiveTopViewsArticle();
         return ResponseEntity.ok(articleList);
+    }
+
+    @ApiOperation("내가 구독한 게시글 조회")
+    @GetMapping("/{user_id}/subscribe")
+    public ResponseEntity<List<GetMainArticleRes>> getSubscribeArticle(@PathVariable("user_id") Integer id) {
+        List<GetMainArticleRes> getMainArticleRes = articleService.getSubscribeArticle(id);
+
+        return ResponseEntity.ok(getMainArticleRes);
+
     }
 
     //북마크 기능

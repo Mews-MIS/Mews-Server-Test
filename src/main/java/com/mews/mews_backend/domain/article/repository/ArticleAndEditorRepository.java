@@ -11,4 +11,5 @@ public interface ArticleAndEditorRepository  extends JpaRepository<ArticleAndEdi
 
     List<ArticleAndEditor> findAllByEditorOrderByModifiedAt(Editor editor);
     List<ArticleAndEditor> findAllByArticle(Article article);
+
 }
