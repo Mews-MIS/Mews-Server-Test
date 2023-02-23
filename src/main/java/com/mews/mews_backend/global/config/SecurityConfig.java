@@ -51,8 +51,9 @@ public class SecurityConfig  {
 
                 .and()
                 .authorizeRequests()
-                .antMatchers("/auth/**").permitAll()
-                .anyRequest().authenticated()
+                //.antMatchers("/auth/**").permitAll()
+                //.anyRequest().authenticated()
+                .anyRequest().permitAll()
 
                 .and()
                 .apply(new JwtSecurityConfig(tokenProvider, redisDao));
