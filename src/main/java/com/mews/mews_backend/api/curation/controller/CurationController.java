@@ -5,10 +5,12 @@ import com.mews.mews_backend.api.curation.dto.request.PatchCurationReq;
 import com.mews.mews_backend.api.curation.dto.request.PostCurationReq;
 import com.mews.mews_backend.api.curation.dto.response.GetAllCurationRes;
 import com.mews.mews_backend.api.curation.dto.response.GetCurationRes;
+import com.mews.mews_backend.api.curation.dto.response.GetCurationTitleRes;
 import com.mews.mews_backend.domain.curation.entity.Curation;
 import com.mews.mews_backend.domain.curation.service.CurationService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -70,5 +72,13 @@ public class CurationController {
         GetCurationRes getCurationRes = curationService.getCuration(id);
 
         return ResponseEntity.ok(getCurationRes);
+    }
+
+    @ApiOperation("Checked 큐레이션 글 목록 가져오기")
+    @GetMapping("/checked")
+    public ResponseEntity<List<GetCurationTitleRes>> getCheckedCuration() {
+        List<GetCurationTitleRes> getCurationTitleRes = curationService.getAllCuration().getChecked();
+
+        return ResponseEntity.ok(getCurationTitleRes);
     }
 }
