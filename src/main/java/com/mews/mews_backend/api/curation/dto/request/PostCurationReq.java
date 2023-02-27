@@ -26,6 +26,7 @@ public class PostCurationReq {
                 .title(postCurationReq.getTitle())
                 .list(postCurationReq.getList())
                 .open(Boolean.TRUE)
+                .checked(Boolean.FALSE)
                 .build();
 
         return curation;

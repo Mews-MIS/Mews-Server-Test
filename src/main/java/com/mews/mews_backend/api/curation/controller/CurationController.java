@@ -3,6 +3,7 @@ package com.mews.mews_backend.api.curation.controller;
 
 import com.mews.mews_backend.api.curation.dto.request.PatchCurationReq;
 import com.mews.mews_backend.api.curation.dto.request.PostCurationReq;
+import com.mews.mews_backend.api.curation.dto.response.GetAllCurationRes;
 import com.mews.mews_backend.api.curation.dto.response.GetCurationRes;
 import com.mews.mews_backend.domain.curation.entity.Curation;
 import com.mews.mews_backend.domain.curation.service.CurationService;
@@ -13,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -30,6 +32,14 @@ public class CurationController {
 
         return ResponseEntity.ok("Post Success");
     }
+
+    @ApiOperation("큐레이션 배치 선택 or 취소")
+    @PatchMapping("/checked/{id}")
+    public ResponseEntity<String> patchCuration(@PathVariable("id") Integer id, Boolean checked){
+        curationService.patchCurationChecked(id, checked);
+        return ResponseEntity.ok("Patch checked");
+    }
+
 
     @ApiOperation("큐레이션 글 수정")
     @PatchMapping("/update")
@@ -50,10 +60,8 @@ public class CurationController {
 
     @ApiOperation("큐레이션 전체글 가져오기")
     @GetMapping("/all")
-    public ResponseEntity<List<Curation>> getAllCuration() {
-        List<Curation> curations = curationService.getAllCuration();
-
-        return ResponseEntity.ok(curations);
+    public ResponseEntity<GetAllCurationRes> getAllCuration() {
+        return ResponseEntity.ok(curationService.getAllCuration());
     }
 
     @ApiOperation("특정 큐레이션 가져오기")

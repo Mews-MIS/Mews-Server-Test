@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -19,4 +20,7 @@ public interface CurationRepository extends JpaRepository<Curation, Integer> {
     @Modifying
     @Query("update Curation c set c.open = false where c.id = :inputId and c.open = true")
     void updateOpenById(@Param("inputId") Integer id);
+
+    @Query("select c from Curation as c where c.checked = true order by c.modifiedAt")
+    List<Curation> findAllChecked();
 }
