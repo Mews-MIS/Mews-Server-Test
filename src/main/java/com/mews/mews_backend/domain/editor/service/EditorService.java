@@ -2,9 +2,15 @@ package com.mews.mews_backend.domain.editor.service;
 
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.mews.mews_backend.api.article.dto.res.ArticleForEditor;
 import com.mews.mews_backend.api.editor.dto.request.PatchEditorReq;
 import com.mews.mews_backend.api.editor.dto.request.PostEditorReq;
+import com.mews.mews_backend.api.editor.dto.response.EditorForArticle;
+import com.mews.mews_backend.api.editor.dto.response.GetEditorAndArticleRes;
 import com.mews.mews_backend.api.editor.dto.response.GetEditorRes;
+import com.mews.mews_backend.domain.article.entity.Article;
+import com.mews.mews_backend.domain.article.entity.ArticleAndEditor;
+import com.mews.mews_backend.domain.article.repository.ArticleAndEditorRepository;
 import com.mews.mews_backend.domain.editor.entity.Editor;
 import com.mews.mews_backend.domain.editor.repository.EditorRepository;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.transaction.Transactional;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -26,6 +33,8 @@ public class EditorService {
 
     private final EditorRepository editorRepository;
     private final AmazonS3Client amazonS3Client;
+
+    private final ArticleAndEditorRepository articleAndEditorRepository;
 
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
@@ -101,5 +110,24 @@ public class EditorService {
         String img = amazonS3Client.getUrl(bucket, fileName).toString();
 
         return img;
+    }
+
+    public GetEditorAndArticleRes getArticle(Integer id) {
+        Editor editor = editorRepository.findById(id).orElseThrow();
+        List<ArticleAndEditor> articleAndEditorList= articleAndEditorRepository.findAllByEditorOrderByModifiedAt(editor);
+        List<ArticleForEditor> articleForEditors = new ArrayList<>();
+
+        for(ArticleAndEditor articleAndEditor : articleAndEditorList) {
+            List<EditorForArticle> editorForArticles = new ArrayList<>();
+            List<ArticleAndEditor> articleAndEditorList1 = articleAndEditorRepository.findAllByArticle(articleAndEditor.getArticle());
+            for(ArticleAndEditor articleAndEditor1 : articleAndEditorList1) {
+                editorForArticles.add(new EditorForArticle(articleAndEditor1.getEditor()));
+            }
+            articleForEditors.add(new ArticleForEditor(articleAndEditor.getArticle(), editorForArticles));
+        }
+
+        GetEditorAndArticleRes getEditorAndArticleRes = new GetEditorAndArticleRes(editor, articleForEditors);
+
+        return getEditorAndArticleRes;
     }
 }

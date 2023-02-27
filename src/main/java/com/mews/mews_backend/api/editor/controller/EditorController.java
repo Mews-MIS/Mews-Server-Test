@@ -3,6 +3,7 @@ package com.mews.mews_backend.api.editor.controller;
 
 import com.mews.mews_backend.api.editor.dto.request.PatchEditorReq;
 import com.mews.mews_backend.api.editor.dto.request.PostEditorReq;
+import com.mews.mews_backend.api.editor.dto.response.GetEditorAndArticleRes;
 import com.mews.mews_backend.api.editor.dto.response.GetEditorRes;
 import com.mews.mews_backend.domain.editor.service.EditorService;
 import io.swagger.annotations.Api;
@@ -12,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -62,5 +62,12 @@ public class EditorController {
         GetEditorRes getEditorRes = editorService.getOne(id);
 
         return ResponseEntity.ok(getEditorRes);
+    }
+
+    @GetMapping("/getArticle/{editor_id}")
+    public ResponseEntity<GetEditorAndArticleRes> getArticle(@PathVariable("editor_id") Integer id) {
+        GetEditorAndArticleRes getEditorAndArticleRes = editorService.getArticle(id);
+
+        return ResponseEntity.ok(getEditorAndArticleRes);
     }
 }
