@@ -204,12 +204,12 @@ public class OauthService {
 
     //어드민 로그인
     @Transactional
-    public ResponseEntity<UserDto.tokenResponse> adminLogin(PostAdminLoginReq postAdminLoginReq)  {
+    public ResponseEntity<UserDto.tokenResponse> adminLogin(PostAdminLoginReq postAdminLoginReq) {
         String id = postAdminLoginReq.getUserId();
         String password = postAdminLoginReq.getUserPassword();
+
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(id, password);
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
-        log.info("authenticated 되었나용?"+ authentication.isAuthenticated());
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String atk = tokenProvider.createToken(authentication);
         String rtk = tokenProvider.createRefreshToken(id);
