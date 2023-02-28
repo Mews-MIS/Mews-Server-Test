@@ -3,6 +3,7 @@ package com.mews.mews_backend.domain.article.service;
 import com.mews.mews_backend.api.article.dto.req.PatchArticleReq;
 import com.mews.mews_backend.api.article.dto.req.PostArticleReq;
 import com.mews.mews_backend.api.article.dto.res.GetArticleRes;
+import com.mews.mews_backend.api.article.dto.res.GetMainArticleRes;
 import com.mews.mews_backend.domain.article.entity.Article;
 import com.mews.mews_backend.domain.article.entity.ArticleAndEditor;
 import com.mews.mews_backend.domain.article.entity.Views;
@@ -29,10 +30,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import static com.mews.mews_backend.global.error.ErrorCode.NOT_AUTHENTICATED_USER;
+import static java.util.Arrays.stream;
 
 @Service
 @Transactional
@@ -46,13 +47,16 @@ public class ArticleService {
     private final ArticleAndEditorRepository articleAndEditorRepository;
     private final EditorRepository editorRepository;
 
+    private final SubscribeRepository subscribeRepository;
+
     @Autowired
     public ArticleService(ArticleRepository articleRepository, ViewsRepository viewsRepository,
                           BookmarkRepository bookmarkRepository,
                           UserRepository userRepository,
                           LikeRepository likeRepository,
                           ArticleAndEditorRepository articleAndEditorRepository,
-                          EditorRepository editorRepository) {
+                          EditorRepository editorRepository,
+                          SubscribeRepository subscribeRepository) {
         this.articleRepository = articleRepository;
         this.viewsRepository = viewsRepository;
         this.bookmarkRepository = bookmarkRepository;
@@ -60,6 +64,7 @@ public class ArticleService {
         this.likeRepository = likeRepository;
         this.articleAndEditorRepository = articleAndEditorRepository;
         this.editorRepository = editorRepository;
+        this.subscribeRepository = subscribeRepository;
     }
 
     // 뉴스, 조회수 db 등록
@@ -127,6 +132,47 @@ public class ArticleService {
     public List<Article> getFiveTopViewsArticle(){
         List<Article> articleList = articleRepository.findTop5ByOrderByViewsViewsDesc();
         return articleList;
+    }
+
+    public List<GetMainArticleRes> getSubscribeArticle(Integer id) {
+        List<GetMainArticleRes> getMainArticleRes = new ArrayList<>();
+        List<ArticleAndEditor> articleAndEditorList = new ArrayList<>();
+        HashSet<Integer> id_set = new HashSet<>();
+        // 구독한 필진 정보 찾기
+        List<Editor> editorList = editorRepository.findAllByUserId(id);
+        log.info("구독 필진 확인");
+
+        // 해당 필진이 작성한 기사 찾기
+        for(Editor editor : editorList) {
+            articleAndEditorList.addAll(articleAndEditorRepository.findAllByEditorOrderByModifiedAt(editor));
+            log.info("필진 작성 기사 확인");
+        }
+        for(ArticleAndEditor articleAndEditor : articleAndEditorList) {
+            id_set.add(articleAndEditor.getArticle().getId());
+            log.info("중복 제거 기사 아이디 뽑기");
+        }
+
+
+        for(Integer article_id : id_set) {
+            // user의 좋아요, 북마크 여부 확인
+            Boolean userBookmark = bookmarkRepository.existsByUserIdAndArticleId(id, article_id);
+            Boolean userLike = likeRepository.existsByUserIdAndArticleId(id, article_id);
+            log.info("좋아요, 북마크 여부 확인");
+
+            // 기사를 작성한 모든 필진 찾기
+            List<Editor> editors = editorRepository.findAllByArticleId(article_id);
+            log.info("기사 작성한 필진들 찾기");
+
+            // 기사 정보 가져오기
+            Article article = articleRepository.findById(article_id).orElseThrow(IllegalArgumentException::new);
+            log.info("기사 정보 가져오기");
+
+            // dto 생성 및 반환
+            GetMainArticleRes getMainArticleRes1 = new GetMainArticleRes(article, editors, userBookmark, userLike);
+            getMainArticleRes.add(getMainArticleRes1);
+        }
+
+        return getMainArticleRes;
     }
 
     private Article buildArticle(PostArticleReq postArticleReq){

@@ -22,6 +22,7 @@ public interface LikeRepository extends JpaRepository<Like, Integer> {
     @Query("select l from Like l where l.user.id = :userId ORDER BY l.modifiedAt DESC")
     List<Like> findAllByUserId(Integer userId);
 
+    Boolean existsByUserIdAndArticleId(Integer userId, Integer articleId);
 
     List<Like> findAllByUserOrderByModifiedAtDesc(User user);
 
