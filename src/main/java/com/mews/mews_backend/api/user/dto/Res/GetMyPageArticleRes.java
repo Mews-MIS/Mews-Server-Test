@@ -15,6 +15,8 @@ public class GetMyPageArticleRes {
     //id
     private Integer id;
 
+    //카테고리
+    private String type;
     //제목
     private String title;
 

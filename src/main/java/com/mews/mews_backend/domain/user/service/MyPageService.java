@@ -142,6 +142,7 @@ public class MyPageService {
             List<String> editors = editorToString(bookmark.getArticle());
             GetMyPageArticleRes dto = GetMyPageArticleRes.builder()
                     .id(bookmark.getArticle().getId())
+                    .type(bookmark.getArticle().getType())
                     .title(bookmark.getArticle().getTitle())
                     .likeCount(bookmark.getArticle().getLike_count())
                     .editors(editors)
@@ -165,6 +166,7 @@ public class MyPageService {
             List<String> editors = editorToString(likeArticle.getArticle());
             GetMyPageArticleRes dto = GetMyPageArticleRes.builder()
                     .id(likeArticle.getArticle().getId())
+                    .type(likeArticle.getArticle().getType())
                     .title(likeArticle.getArticle().getTitle())
                     .likeCount(likeArticle.getArticle().getLike_count())
                     .editors(editors)
@@ -212,6 +214,7 @@ public class MyPageService {
             List<String> editors = editorToString(editorArticle.getArticle());
             GetMyPageArticleRes dto = GetMyPageArticleRes.builder()
                     .id(editorArticle.getArticle().getId())
+                    .type(editorArticle.getArticle().getType())
                     .title(editorArticle.getArticle().getTitle())
                     .likeCount(editorArticle.getArticle().getLike_count())
                     .editors(editors)
