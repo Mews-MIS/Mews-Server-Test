@@ -17,6 +17,9 @@ public interface BookmarkRepository extends JpaRepository<Bookmark, Integer> {
 
     boolean existsByUserAndArticle(User user, Article article);
 
+
+    Boolean existsByUserIdAndArticleId(Integer userId, Integer articleId);
+
     List<Bookmark> findAllByUserOrderByModifiedAtDesc(User user);
 
     @Modifying
