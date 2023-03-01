@@ -65,22 +65,23 @@ public class SecurityConfig  {
 
     }
 
-    @Bean
-    public WebSecurityCustomizer webSecurityCustomizer() {
-        return web -> web.ignoring().antMatchers(
-                "/v3/api-docs",
-                "/swagger-resources/**",
-                "/swagger-ui/**",
-                "/swagger/**",
-                "/"
-        );
-    }
+//    @Bean
+//    public WebSecurityCustomizer webSecurityCustomizer() {
+//        return web -> web.ignoring().antMatchers(
+//                "/v3/api-docs",
+//                "/swagger-resources/**",
+//                "/swagger-ui/**",
+//                "/swagger/**",
+//                "/"
+//        );
+//    }
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.addExposedHeader("Authorization");
-        configuration.addAllowedOriginPattern("*");
+        configuration.addAllowedOrigin("http://localhost:3000");
+//        configuration.addAllowedOriginPattern("*");
         configuration.addAllowedHeader("*");
         configuration.addAllowedMethod("*");
         configuration.setAllowCredentials(true);
