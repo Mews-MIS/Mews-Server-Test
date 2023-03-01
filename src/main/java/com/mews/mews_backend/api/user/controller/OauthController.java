@@ -20,8 +20,8 @@ public class OauthController {
 
     private final OauthService oauthService;
 
-    @GetMapping(value = "/google")
     @CrossOrigin
+    @GetMapping(value = "/google")
     public void socialLoginType() {
         String socialLoginType = "google";
         log.info(">> 사용자로부터 SNS 로그인 요청을 받음 :: {} Social Login", "google");
