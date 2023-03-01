@@ -29,7 +29,7 @@ public class ArticleController {
 
     @ApiOperation("뉴스 게시글 작성")
     @PostMapping("/post")
-    public ResponseEntity<String> postArticle(@Valid @RequestBody PostArticleReq postArticleReq){
+    public ResponseEntity<String> postArticle(@RequestPart(value = "data") PostArticleReq postArticleReq){
         articleService.postArticle(postArticleReq);
         return ResponseEntity.ok("post success");
     }
@@ -52,7 +52,7 @@ public class ArticleController {
 
     @ApiOperation("뉴스 게시글 수정")
     @PatchMapping("/update")
-    public ResponseEntity<String> updateArticle(@Valid @RequestBody PatchArticleReq patchArticleReq){
+    public ResponseEntity<String> updateArticle(@RequestPart(value = "data") PatchArticleReq patchArticleReq){
         articleService.updateArticle(patchArticleReq);
         return ResponseEntity.ok("update success");
     }
