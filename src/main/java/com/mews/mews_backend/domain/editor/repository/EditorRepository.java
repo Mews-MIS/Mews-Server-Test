@@ -14,6 +14,10 @@ import java.util.List;
 @EnableJpaRepositories
 public interface EditorRepository extends JpaRepository<Editor, Integer> {
 
+    List<Editor> findAllByDeleted(Boolean bool);
+
+    Editor findByIdAndDeleted(Integer id, Boolean bool);
+
     // name like query
     List<Editor> findAllByNameContains(String keyword);
 
@@ -35,4 +39,8 @@ public interface EditorRepository extends JpaRepository<Editor, Integer> {
             "where e.editor_id in (select aae.editor_id from article_and_editor aae where aae.article_id = :id)"
             , nativeQuery = true)
     List<Editor> findAllByArticleId(@Param("id") Integer integer);
+
+    @Modifying
+    @Query(value = "update Editor e set e.deleted = true where e.id = :id")
+    void updateDeleteById(@Param("id") Integer id);
 }
