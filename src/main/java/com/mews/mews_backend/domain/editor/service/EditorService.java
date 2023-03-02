@@ -76,12 +76,12 @@ public class EditorService {
 
     // Editor DB 삭제
     public void delete(Integer id) {
-        editorRepository.deleteById(id);
+        editorRepository.updateDeleteById(id);
     }
 
     // Editor DB 전체 조회
     public List<GetEditorRes> getAll() {
-        List<GetEditorRes> getEditorRes = editorRepository.findAll().stream()
+        List<GetEditorRes> getEditorRes = editorRepository.findAllByDeleted(Boolean.FALSE).stream()
                 .map(GetEditorRes::new)
                 .collect(Collectors.toList());
 
@@ -90,7 +90,7 @@ public class EditorService {
 
     // 특정 필진 DB 조회
     public GetEditorRes getOne(Integer id) {
-        Editor editor = editorRepository.findById(id).get();
+        Editor editor = editorRepository.findByIdAndDeleted(id, Boolean.FALSE);
 
         GetEditorRes getEditorRes = new GetEditorRes(editor);
 
