@@ -117,11 +117,18 @@ public class ArticleService {
         articleRepository.save(newArticle);
     }
 
-    // 뉴스 삭제
+    // 뉴스 삭제 (논리적)
     public void deleteArticle(Integer articleId){
         Article article = articleRepository.findById(articleId).get();
-        articleRepository.delete(article);
+        article.deleteArticle();
+        articleRepository.save(article);
     }
+
+//    // 뉴스 삭제(물리적)
+//    public void deleteArticle(Integer articleId){
+//        Article article = articleRepository.findById(articleId).get();
+//        articleRepository.delete(article);
+//    }
 
     // 해당 타입 게시글 전체 조회
     public List<Article> getAllTypeArticle(String type){

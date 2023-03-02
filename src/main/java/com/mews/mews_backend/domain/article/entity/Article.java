@@ -27,6 +27,8 @@ public class Article extends BaseTimeEntity {
 
     private String type; // 콘텐츠 타입
 
+    private Boolean isDeleted; // 삭제 여부
+
     // 첨부파일 url
     @Column
     @Convert(converter = StringListConverter.class)
@@ -70,10 +72,19 @@ public class Article extends BaseTimeEntity {
         this.like_count = like_count;
         this.type = type;
         this.fileUrls = fileUrls;
+        this.isDeleted = false;
     }
 
     public void upLike(){this.like_count++;}
     public void downLike(){this.like_count--;}
+
+    public void deleteArticle(){
+        this.isDeleted = true;
+    }
+
+    public void restoreArticle(){
+        this.isDeleted = false;
+    }
 
     // like_count default 값 0으로 설정
     // insert 되기 전 실행
