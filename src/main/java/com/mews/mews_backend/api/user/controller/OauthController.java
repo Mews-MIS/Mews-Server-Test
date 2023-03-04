@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 @RequiredArgsConstructor
 @RequestMapping("/auth")
 @Slf4j
@@ -20,7 +20,6 @@ public class OauthController {
 
     private final OauthService oauthService;
 
-    @CrossOrigin
     @GetMapping(value = "/google")
     public void socialLoginType() {
         String socialLoginType = "google";
