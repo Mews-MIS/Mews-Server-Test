@@ -20,6 +20,7 @@ public enum ErrorCode {
     // Common
     NOT_EXIST_USER(HttpStatus.BAD_REQUEST, 2004,"사용자를 찾을 수 없습니다."),
     REQUEST_NOT_EXIST(HttpStatus.BAD_REQUEST, 2004,"값이 존재하지 않습니다."),
+    PROFILE_NOT_OPEN(HttpStatus.BAD_REQUEST, 2005,"비공개 프로필입니다."),
 
     // users
     EMPTY_USERNAME(HttpStatus.BAD_REQUEST, 2010, "유저 닉네임 값을 확인해주세요."),
