@@ -34,6 +34,11 @@ public class ArticleController {
     @ApiOperation("뉴스 게시글 작성")
     @PostMapping("/post")
     public ResponseEntity<String> postArticle(@RequestPart(value = "data", required = false) PostArticleReq postArticleReq){
+        System.out.println("postArticleReq.getTitle() = " + postArticleReq.getTitle());
+        System.out.println("postArticleReq.getTitle() = " + postArticleReq.getContent());
+        System.out.println("postArticleReq.getTitle() = " + postArticleReq.getType());
+        System.out.println("postArticleReq.getTitle() = " + postArticleReq.getEditors());
+        System.out.println("postArticleReq.getTitle() = " + postArticleReq.getFileUrls());
         articleService.postArticle(postArticleReq);
         return ResponseEntity.ok("post success");
     }
