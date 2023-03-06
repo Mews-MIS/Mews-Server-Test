@@ -48,7 +48,10 @@ public class GetArticleRes {
     //좋아요 여부
     private boolean isLiked;
 
-    public static GetArticleRes from(Article article, boolean isBookmarked, boolean isLiked){
+    // 필진 id 리스트
+    private List<Integer> editorIdList;
+
+    public static GetArticleRes from(Article article, boolean isBookmarked, boolean isLiked, List<Integer> editorIdList){
         return GetArticleRes.builder()
                 .title(article.getTitle())
                 .content(article.getContent())
@@ -60,6 +63,7 @@ public class GetArticleRes {
                 .comments(article.getComments().stream().map(GetCommentRes::new).collect(Collectors.toList()))
                 .isBookmarked(isBookmarked)
                 .isLiked(isLiked)
+                .editorIdList(editorIdList)
                 .build();
     }
 }

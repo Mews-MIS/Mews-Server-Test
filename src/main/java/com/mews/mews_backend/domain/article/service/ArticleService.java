@@ -112,7 +112,14 @@ public class ArticleService {
             isBookmarked = bookmarkRepository.existsByUserAndArticle(user, article);
             isLiked = likeRepository.existsByArticleAndUser(article, user);
         }
-        return GetArticleRes.from(article, isBookmarked, isLiked);
+
+        // 필진 id 탐색
+        List<ArticleAndEditor> articleAndEditorList = articleAndEditorRepository.findAllByArticle_Id(articleId);
+        List<Integer> editorIdList = new ArrayList<>();
+        for(ArticleAndEditor elem : articleAndEditorList)
+            editorIdList.add(elem.getEditor().getId());
+
+        return GetArticleRes.from(article, isBookmarked, isLiked, editorIdList);
     }
 
     // 뉴스 수정
