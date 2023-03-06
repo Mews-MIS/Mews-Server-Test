@@ -35,4 +35,6 @@ public interface ArticleRepository extends JpaRepository<Article, Integer> {
 
     List<Article> findTop5ByOrderByViewsViewsDesc();
 
+    Integer countByIsDeletedFalse();
+
 }

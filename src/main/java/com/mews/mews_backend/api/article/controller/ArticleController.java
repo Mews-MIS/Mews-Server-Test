@@ -2,11 +2,13 @@ package com.mews.mews_backend.api.article.controller;
 
 import com.mews.mews_backend.api.article.dto.req.PatchArticleReq;
 import com.mews.mews_backend.api.article.dto.req.PostArticleReq;
+import com.mews.mews_backend.api.article.dto.res.GetAllArticleRes;
 import com.mews.mews_backend.api.article.dto.res.GetArticleRes;
 import com.mews.mews_backend.api.article.dto.res.GetMainArticleRes;
 import com.mews.mews_backend.domain.article.entity.Article;
 import com.mews.mews_backend.domain.article.service.ArticleService;
 import com.mews.mews_backend.domain.article.service.ViewsService;
+import com.nimbusds.jose.util.Pair;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +19,9 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -36,9 +40,12 @@ public class ArticleController {
 
     @ApiOperation("뉴스 전체 조회(페이지네이션)")
     @GetMapping("/all")
-    public ResponseEntity<List<Article>> getAllArticle(@Positive @RequestParam Integer page){
+    public ResponseEntity<GetAllArticleRes> getAllArticle(@Positive @RequestParam Integer page){
         List<Article> articles = articleService.getAllArticle(page-1); // 0번 페이지부터 시작하므로 -1
-        return ResponseEntity.ok(articles);
+        Integer pageCount = articleService.getPageCount();
+
+        GetAllArticleRes getAllArticleRes = GetAllArticleRes.from(pageCount, articles);
+        return ResponseEntity.ok(getAllArticleRes);
     }
 
     @ApiOperation("뉴스 게시글 조회(조회수 증가)")
