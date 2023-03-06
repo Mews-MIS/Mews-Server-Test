@@ -1,5 +1,6 @@
 package com.mews.mews_backend.api.curation.dto.response;
 
+import com.mews.mews_backend.api.article.dto.res.GetCurationArticleRes;
 import com.mews.mews_backend.domain.curation.entity.Curation;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -20,15 +21,15 @@ public class GetCurationRes {
     private String title;
 
     @ApiModelProperty(notes = "아티클 리스트")
-    private List<String> list;
+    private List<GetCurationArticleRes> list;
 
     @ApiModelProperty(notes = "최종 수정 시각")
     private LocalDateTime modifiedAt;
 
     // Entity To DTO
-    public GetCurationRes(Curation curation) {
+    public GetCurationRes(Curation curation, List<GetCurationArticleRes> getCurationArticleRes) {
         this.title = curation.getTitle();
-        this.list = curation.getList();
+        this.list = getCurationArticleRes;
         this.modifiedAt = curation.getModifiedAt();
     }
 }

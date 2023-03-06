@@ -43,7 +43,7 @@ public class EditorController {
         return ResponseEntity.ok("Patch Success");
     }
 
-    @DeleteMapping("/delete/{editor_id}")
+    @PatchMapping("/delete/{editor_id}")
     public ResponseEntity<String> deleteEditor(@PathVariable("editor_id") Integer id) {
         editorService.delete(id);
 

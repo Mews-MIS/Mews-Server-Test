@@ -26,10 +26,13 @@ public class Editor extends BaseTimeEntity {
     @Column(name = "introduction")
     private String introduction;
 
+    private Boolean deleted;
+
     @Builder
     public Editor(String name, String imgUrl, String introduction) {
         this.name = name;
         this.imgUrl = imgUrl;
         this.introduction = introduction;
+        this.deleted = Boolean.FALSE;
     }
 }

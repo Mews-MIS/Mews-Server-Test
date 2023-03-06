@@ -63,4 +63,6 @@ public class MyPageController {
     public ResponseEntity<List<GetMyPageArticleRes>> getEditorArticle(@PathVariable("userId") Integer userId, @PathVariable("editorId") Integer editorId){
         return new ResponseEntity<>(myPageService.getEditorArticles(userId, editorId), HttpStatus.OK);
     }
+
+
 }

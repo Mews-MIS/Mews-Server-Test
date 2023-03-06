@@ -104,9 +104,14 @@ public class ArticleService {
     public GetArticleRes viewArticle(Integer articleId){
         Article article = articleRepository.findById(articleId).get();
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User user = userRepository.findByUserEmail(authentication.getName()).orElseThrow();
-        boolean isBookmarked = bookmarkRepository.existsByUserAndArticle(user, article);
-        boolean isLiked = likeRepository.existsByArticleAndUser(article, user);
+        boolean isBookmarked = false;
+        boolean isLiked = false;
+
+        if(!(authentication.getName().equals("anonymousUser"))){
+            User user = userRepository.findByUserEmail(authentication.getName()).orElseThrow();
+            isBookmarked = bookmarkRepository.existsByUserAndArticle(user, article);
+            isLiked = likeRepository.existsByArticleAndUser(article, user);
+        }
 
         // 필진 id 탐색
         List<ArticleAndEditor> articleAndEditorList = articleAndEditorRepository.findAllByArticle_Id(articleId);

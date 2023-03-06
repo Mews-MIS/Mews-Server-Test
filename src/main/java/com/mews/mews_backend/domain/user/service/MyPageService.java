@@ -58,9 +58,24 @@ public class MyPageService {
     private String bucket;
 
 
-    //프로필
-    public GetMyPageRes getUserInfo(Integer userId){
-        User user = USER_VALIDATION(userId);
+    //로그인 상태에서 - 프로필
+    public GetMyPageRes getUserInfo(Integer userId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User user = userRepository.findByUserEmail(authentication.getName()).orElseThrow();
+
+        if (user.getId() == userId) { //내 계정일 경우
+            return getMyPageRes(user);
+        } else {   //타인 계정일 경우
+            user = userRepository.findById(userId).orElseThrow();
+            if (user.isOpen() == false) {
+                throw new BaseException(PROFILE_NOT_OPEN);
+            } else {
+                return getMyPageRes(user);
+            }
+        }
+    }
+
+    public GetMyPageRes getMyPageRes(User user){
 
         GetMyPageRes userDto = GetMyPageRes.builder()
                 .imgUrl(user.getImgUrl())
@@ -131,12 +146,24 @@ public class MyPageService {
     }
 
 
-    //내 북마크 글 가져오기
+    //북마크 글 가져오기
     public List<GetMyPageArticleRes> getMyBookmark(Integer userId){
-        User user = USER_VALIDATION(userId);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User user = userRepository.findByUserEmail(authentication.getName()).orElseThrow();
 
-        List<Bookmark> findMyBookmark = bookmarkRepository.findAllByUserOrderByModifiedAtDesc(user);
+        List<Bookmark> findMyBookmark = new ArrayList<>() ;
         List<GetMyPageArticleRes> getMyPageBookmarkRes = new ArrayList<>();
+
+        if(user.getId() == userId){ //내 계정일 경우
+            findMyBookmark = bookmarkRepository.findAllByUserOrderByModifiedAtDesc(user);
+        } else { //타인 계정
+            user = userRepository.findById(userId).orElseThrow();
+            if(user.isOpen()==false){
+                throw new BaseException(PROFILE_NOT_OPEN);
+            } else {
+                findMyBookmark = bookmarkRepository.findAllByUserOrderByModifiedAtDesc(user);
+            }
+        }
 
         for(Bookmark bookmark : findMyBookmark){
             List<String> editors = editorToString(bookmark.getArticle());
@@ -147,7 +174,7 @@ public class MyPageService {
                     .likeCount(bookmark.getArticle().getLike_count())
                     .editors(editors)
                     .img(bookmark.getArticle().getFileUrls())
-                    .isBookmarked(true)
+                    .isBookmarked(bookmarkRepository.existsByUserAndArticle(user,bookmark.getArticle()))
                     .isLiked(likeRepository.existsByArticleAndUser(bookmark.getArticle(), user))
                     .build();
             getMyPageBookmarkRes.add(dto);
@@ -155,12 +182,24 @@ public class MyPageService {
         return getMyPageBookmarkRes;
     }
 
-    //내 좋아요 글 가져오기
+    //좋아요 글 가져오기
     public List<GetMyPageArticleRes> getLikeArticle(Integer userId){
-        User user = USER_VALIDATION(userId);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User user = userRepository.findByUserEmail(authentication.getName()).orElseThrow();
 
-        List<Like> findAllLike = likeRepository.findAllByUserOrderByModifiedAtDesc(user);
+        List<Like> findAllLike = new ArrayList<>();
         List<GetMyPageArticleRes> getMyPageLikeRes = new ArrayList<>();
+
+        if(user.getId() == userId){
+            findAllLike = likeRepository.findAllByUserOrderByModifiedAtDesc(user);
+        }else {
+            user = userRepository.findById(userId).orElseThrow();
+            if(user.isOpen()==false){
+                throw new BaseException(PROFILE_NOT_OPEN);
+            } else{
+                findAllLike = likeRepository.findAllByUserOrderByModifiedAtDesc(user);
+            }
+        }
 
         for(Like likeArticle : findAllLike){
             List<String> editors = editorToString(likeArticle.getArticle());
@@ -172,7 +211,7 @@ public class MyPageService {
                     .editors(editors)
                     .img(likeArticle.getArticle().getFileUrls())
                     .isBookmarked(bookmarkRepository.existsByUserAndArticle(user, likeArticle.getArticle()))
-                    .isLiked(true)
+                    .isLiked(likeRepository.existsByArticleAndUser(likeArticle.getArticle(), user))
                     .build();
             getMyPageLikeRes.add(dto);
         }
