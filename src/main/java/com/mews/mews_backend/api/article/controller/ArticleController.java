@@ -33,7 +33,7 @@ public class ArticleController {
 
     @ApiOperation("뉴스 게시글 작성")
     @PostMapping("/post")
-    public ResponseEntity<String> postArticle(@RequestPart(value = "data") PostArticleReq postArticleReq){
+    public ResponseEntity<String> postArticle(@RequestPart(value = "data", required = false) PostArticleReq postArticleReq){
         articleService.postArticle(postArticleReq);
         return ResponseEntity.ok("post success");
     }
