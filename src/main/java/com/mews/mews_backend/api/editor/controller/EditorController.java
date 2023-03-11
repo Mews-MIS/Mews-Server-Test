@@ -27,7 +27,7 @@ public class EditorController {
     // 필진 등록 API
     @PostMapping("/register")
     public ResponseEntity<String> registerEditor(@RequestPart(value = "data") PostEditorReq postEditorReq,
-                                                 @RequestPart(value = "file", required = false) MultipartFile multipartFile) {
+                                                 @RequestParam(value = "file", required = false) MultipartFile multipartFile) {
         log.info("필진 등록");
         editorService.save(postEditorReq, multipartFile);
 
@@ -36,8 +36,9 @@ public class EditorController {
 
     @PatchMapping("/update")
     public ResponseEntity<String> updateEditor(@RequestPart(value = "data") PatchEditorReq patchEditorReq,
-                                               @RequestPart(value = "file", required = false) MultipartFile multipartFile) {
+                                               @RequestParam(value = "file", required = false) MultipartFile multipartFile) {
         log.info("필진 정보 수정");
+
         editorService.update(patchEditorReq, multipartFile);
 
         return ResponseEntity.ok("Patch Success");
