@@ -19,7 +19,6 @@ import java.io.IOException;
 public class OauthController {
 
     private final OauthService oauthService;
-
     @GetMapping(value = "/google")
     public void socialLoginType() {
         String socialLoginType = "google";
@@ -37,9 +36,9 @@ public class OauthController {
 
     //회원가입
     @PostMapping(value = "/sign-up")
-    public ResponseEntity<UserDto.socialLoginResponse> signUp(@RequestBody final UserDto.register request) throws IOException {
-        log.info("회원가입 진행");
-        //TODO 회원가입 변경사항 처리
+    public ResponseEntity<UserDto.socialLoginResponse> signUp(
+            @RequestBody final UserDto.register request) throws IOException
+    {
         return  oauthService.socialRegister(request);
     }
 
@@ -51,7 +50,9 @@ public class OauthController {
 
     //어드민 로그인
     @PostMapping(value = "/admin/login")
-    public  ResponseEntity<UserDto.tokenResponse> adminLogin(@RequestBody PostAdminLoginReq postAdminLoginReq){
+    public  ResponseEntity<UserDto.tokenResponse> adminLogin(
+            @RequestBody PostAdminLoginReq postAdminLoginReq)
+    {
         return oauthService.adminLogin(postAdminLoginReq);
     }
 

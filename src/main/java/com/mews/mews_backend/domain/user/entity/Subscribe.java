@@ -27,4 +27,11 @@ public class Subscribe extends BaseTimeEntity {
     @JoinColumn(name="editor_id")
     private Editor editor;
 
+    public static Subscribe createSubscribe(User user, Editor editor){
+        return Subscribe.builder()
+                .editor(editor)
+                .user(user)
+                .build();
+    }
+
 }

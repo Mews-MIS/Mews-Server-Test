@@ -62,11 +62,15 @@ public class OauthService {
         }
     }
 
-    public ResponseEntity<UserDto.socialLoginResponse> Login(String name, String email, String img, int id) throws IOException {
+    public ResponseEntity<UserDto.socialLoginResponse> Login(
+            String name, String email, String img, int id) throws IOException
+    {
+        // (1) authentication 객체 생성 후 SecurityContext에 등록
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(email, "google");
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
-        log.info("authenticated 되었나용?"+ authentication.isAuthenticated());
         SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        // (2) 유저 토큰 생성
         String atk = tokenProvider.createToken(authentication);
         String rtk = tokenProvider.createRefreshToken(email);
         redisDao.setValues(email, rtk, Duration.ofDays(14));
@@ -85,47 +89,33 @@ public class OauthService {
     }
 
     public ResponseEntity<UserDto.socialLoginResponse> oauthLogin(String socialLoginType, String code) throws IOException {
-        //구글로 일회성 코드를 보내 액세스 토큰이 담긴 응답객체를 받아옴
+        // (1) 구글로 일회성 코드를 보내 액세스 토큰이 담긴 응답객체를 받아옴
         ResponseEntity<String> accessTokenResponse = this.requestAccessToken(code);
-        //응답 객체가 JSON형식으로 되어 있으므로, 이를 deserialization해서 자바 객체에 담을 것이다.
+
+        // (2) 응답 객체가 JSON형식으로 되어 있으므로, 이를 deserialization해서 자바 객체에 담을 것이다.
         GoogleOauthToken oAuthToken = googleOauth.getAccessToken(accessTokenResponse);
 
-        //액세스 토큰을 다시 구글로 보내 구글에 저장된 사용자 정보가 담긴 응답 객체를 받아온다.
+        // (3) 액세스 토큰을 다시 구글로 보내 구글에 저장된 사용자 정보가 담긴 응답 객체를 받아온다.
         ResponseEntity<String> userInfoResponse = googleOauth.requestUserInfo(oAuthToken);
-        //다시 JSON 형식의 응답 객체를 자바 객체로 역직렬화한다.
+
+        // (4) 다시 JSON 형식의 응답 객체를 자바 객체로 역직렬화한다.
         GoogleUser googleUser = googleOauth.getUserInfo(userInfoResponse);
 
-        String email = googleUser.getEmail();
-        String name = googleUser.getName();
-        String img = googleUser.getPicture();
+        // (5) 로그인 처리
+        Optional<User> findUser = userRepository.findByUserEmail(googleUser.getEmail());
 
-        Optional<User> findUser = userRepository.findByUserEmail(email);
-        // 첫 로그인시 default 값으로 회원가입
+        // (5)-1 첫 로그인시 default 값으로 회원가입
         if (findUser.isEmpty()) {
-            log.info("새 유저 회원가입");
-            User newUser = User.builder()
-                    .userName(name)
-                    .userEmail(email)
-                    .imgUrl(img)
-                    .introduction("")
-                    .likeCount(0)
-                    .bookmarkCount(0)
-                    .subscribeCount(0)
-                    .userType(UserType.ROLE_USER)
-                    .isOpen(true)
-                    .social(passwordEncoder.encode("google"))
-                    .status("ACTIVE")
-                    .build();
+
+            User newUser = User.createUser(googleUser, passwordEncoder);
 
             Integer id = userRepository.save(newUser).getId();
 
             return Login(newUser.getUserName(),newUser.getUserEmail(), newUser.getImgUrl(), id);
 
-        } else { //이메일이 존재할 시 바로 로그인
-            log.info("이메일 존재함");
-            // 이메일이 존재할시 로그인
+        } else { //(5)-2 이메일이 존재할 시 바로 로그인
             User user = findUser.orElseThrow();
-            return Login(name, email, img, user.getId());
+            return Login(user.getUserName(), user.getUserEmail(), user.getImgUrl(), user.getId());
         }
     }
 

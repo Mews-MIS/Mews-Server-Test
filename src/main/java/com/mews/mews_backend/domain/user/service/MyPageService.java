@@ -46,8 +46,6 @@ public class MyPageService {
 
     private final UserRepository userRepository;
     private final BookmarkRepository bookmarkRepository;
-    private final ArticleRepository articleRepository;
-
     private final SubscribeRepository subscribeRepository;
     private final EditorRepository editorRepository;
     private final LikeRepository likeRepository;
@@ -60,44 +58,28 @@ public class MyPageService {
 
     //로그인 상태에서 - 프로필
     public GetMyPageRes getUserInfo(Integer userId) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User user = userRepository.findByUserEmail(authentication.getName()).orElseThrow();
+        //(1) 유저 정보 가져오기
+        User user = getSecurityContextUser();
 
-        if (user.getId() == userId) { //내 계정일 경우
-            return getMyPageRes(user);
-        } else {   //타인 계정일 경우
+        //(2)-1 내 정보 반환
+        if (user.getId() == userId) { return GetMyPageRes.response(user);}
+        else {  //(2)-2 타인정보 반환
             user = userRepository.findById(userId).orElseThrow();
+
             if (user.isOpen() == false) {
                 throw new BaseException(PROFILE_NOT_OPEN);
-            } else {
-                return getMyPageRes(user);
-            }
+            } else { return GetMyPageRes.response(user); }
         }
-    }
-
-    public GetMyPageRes getMyPageRes(User user){
-
-        GetMyPageRes userDto = GetMyPageRes.builder()
-                .imgUrl(user.getImgUrl())
-                .userName(user.getUserName())
-                .introduction(user.getIntroduction())
-                .bookmarkCount(user.getBookmarkCount())
-                .likeCount(user.getLikeCount())
-                .subscribeCount(user.getSubscribeCount())
-                .build();
-
-        return userDto;
     }
 
     //프로필 편집
     public void updateUserInfo(Integer userId, PatchUserProfileReq profile, MultipartFile multipartFile){
         User user = USER_VALIDATION(userId);
 
-        //이름 바꾸기
-        if(profile.getUserName()!=null){
-            user.changeName(profile.getUserName());
-        }
-        //이미지 바꾸기
+        //(1) 유저 이름 변경
+        if(profile.getUserName()!=null){user.changeName(profile.getUserName());}
+
+        //(2) 유저 프로필 이미지 변경
         if(multipartFile != null && !multipartFile.isEmpty()){
             String img = null;
             try {
@@ -108,7 +90,7 @@ public class MyPageService {
                 user.changeImg(img);
             }
 
-        //소개 바꾸기
+        //(3) 유저 자기소개 변경
         if(profile.getIntroduction()!=null){
             user.changeIntroduction(profile.getIntroduction());
         }
@@ -119,7 +101,7 @@ public class MyPageService {
         userRepository.save(user);
     };
 
-    //이미지 넣기
+    //이미지 변경
     public String updateImage(MultipartFile multipartFile) throws IOException {
         LocalDate now = LocalDate.now();
         String uuid = UUID.randomUUID()+toString();
@@ -132,6 +114,13 @@ public class MyPageService {
         String img = amazonS3Client.getUrl(bucket, fileName).toString();
 
         return img;
+    }
+
+
+    //SecurityContext에 등록된 유저정보 가져오기
+    public User getSecurityContextUser(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return userRepository.findByUserEmail(authentication.getName()).orElseThrow();
     }
 
     //토큰 값의 유저와 userId의 유저가 일치하는지
@@ -148,13 +137,14 @@ public class MyPageService {
 
     //북마크 글 가져오기
     public List<GetMyPageArticleRes> getMyBookmark(Integer userId){
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User user = userRepository.findByUserEmail(authentication.getName()).orElseThrow();
+        //(1) 유저 정보 가져오기
+        User user = getSecurityContextUser();
 
+        //(2) 북마크 정보 가져오기
         List<Bookmark> findMyBookmark = new ArrayList<>() ;
         List<GetMyPageArticleRes> getMyPageBookmarkRes = new ArrayList<>();
 
-        if(user.getId() == userId){ //내 계정일 경우
+        if(user.getId() == userId){ //내 계정
             findMyBookmark = bookmarkRepository.findAllByUserOrderByModifiedAtDesc(user);
         } else { //타인 계정
             user = userRepository.findById(userId).orElseThrow();
@@ -182,19 +172,20 @@ public class MyPageService {
         return getMyPageBookmarkRes;
     }
 
-    //좋아요 글 가져오기
+    // 좋아요 글 가져오기
     public List<GetMyPageArticleRes> getLikeArticle(Integer userId){
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User user = userRepository.findByUserEmail(authentication.getName()).orElseThrow();
+        //(1) 유저 정보 가져오기
+        User user = getSecurityContextUser();
 
+        //(2) 좋아요 글 가져오기
         List<Like> findAllLike = new ArrayList<>();
         List<GetMyPageArticleRes> getMyPageLikeRes = new ArrayList<>();
 
-        if(user.getId() == userId){
+        if(user.getId() == userId){ //(2)-1 내 좋아요 글
             findAllLike = likeRepository.findAllByUserOrderByModifiedAtDesc(user);
         }else {
             user = userRepository.findById(userId).orElseThrow();
-            if(user.isOpen()==false){
+            if(user.isOpen()==false){//(2)-2 타인 계정 글
                 throw new BaseException(PROFILE_NOT_OPEN);
             } else{
                 findAllLike = likeRepository.findAllByUserOrderByModifiedAtDesc(user);
@@ -231,20 +222,19 @@ public class MyPageService {
 
     //필진 구독하기
     public void insertEditor(Integer userId, Integer editorId){
-        User user = USER_VALIDATION(userId);
+        User user = getSecurityContextUser();
         Editor editor = editorRepository.findById(editorId).orElseThrow();
 
-        Subscribe subscribe = Subscribe.builder()
-                .editor(editor)
-                .user(user)
-                .build();
-
-        subscribeRepository.save(subscribe);
+        subscribeRepository.save(Subscribe.createSubscribe(user, editor));
     }
+
+
     //필진 글 보여주기
     public List<GetMyPageArticleRes> getEditorArticles(Integer userId, Integer editorId) {
+        //(1) 유저 정보 가져오기
         User user = USER_VALIDATION(userId);
 
+        //(2) 에디터 글 가져오기
         Editor editor = editorRepository.findById(editorId).orElseThrow();
         List<ArticleAndEditor> findAllArticle = articleAndEditorRepository.findAllByEditorOrderByModifiedAt(editor);
         List<GetMyPageArticleRes> getEditorArticleRes = new ArrayList<>();

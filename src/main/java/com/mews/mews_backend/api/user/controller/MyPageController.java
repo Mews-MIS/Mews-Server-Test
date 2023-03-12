@@ -31,7 +31,7 @@ public class MyPageController {
     @PatchMapping(value="/profile/{userId}")
     public ResponseEntity<String> updateUserProfile(@PathVariable("userId") Integer userId,
                                                @RequestPart(value = "data") PatchUserProfileReq profile,
-                                               @RequestPart(value="file", required = false) MultipartFile multipartFile) {
+                                                       @RequestPart(value="file", required = false) MultipartFile multipartFile) {
         myPageService.updateUserInfo(userId, profile, multipartFile);
         return new ResponseEntity<>("UPDATE USERPROFILE", HttpStatus.OK);
     }
