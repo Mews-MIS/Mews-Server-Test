@@ -23,7 +23,8 @@ SpringBoot
 
 
 ## 시스템 아키텍처
-  
+![Group 1](https://user-images.githubusercontent.com/43109589/224528215-337127ad-b57a-4557-8fe9-41c499f0cc74.jpg)
+
 
 ## Pacakge View
 ![act drawio](https://user-images.githubusercontent.com/76556999/224527310-4cc7a3c8-d040-4c7a-a243-ad72c8be4c90.png)
