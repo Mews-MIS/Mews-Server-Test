@@ -1,6 +1,7 @@
 package com.mews.mews_backend.domain.user.entity;
 
 import com.mews.mews_backend.api.user.dto.GoogleUser;
+import com.mews.mews_backend.api.user.dto.UserDto;
 import com.mews.mews_backend.domain.common.BaseTimeEntity;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
@@ -79,12 +80,12 @@ public class User extends BaseTimeEntity {
     public void upLike(){this.likeCount++;}
     public void downLike(){this.likeCount--;}
 
-    public static User createUser (GoogleUser googleUser, PasswordEncoder passwordEncoder) {
+    public static User createUser (UserDto.register register, PasswordEncoder passwordEncoder) {
 
         return User.builder()
-                .userName(googleUser.getName())
-                .userEmail(googleUser.getEmail())
-                .imgUrl(googleUser.getEmail())
+                .userName(register.getUserName())
+                .userEmail(register.getUserEmail())
+                .imgUrl(register.getImgUrl())
                 .introduction("")
                 .likeCount(0)
                 .bookmarkCount(0)
