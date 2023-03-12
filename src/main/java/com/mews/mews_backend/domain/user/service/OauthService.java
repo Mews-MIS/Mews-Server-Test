@@ -88,36 +88,36 @@ public class OauthService {
         return googleOauth.requestAccessToken(code);
     }
 
-    public ResponseEntity<UserDto.socialLoginResponse> oauthLogin(String socialLoginType, String code) throws IOException {
-        // (1) 구글로 일회성 코드를 보내 액세스 토큰이 담긴 응답객체를 받아옴
-        ResponseEntity<String> accessTokenResponse = this.requestAccessToken(code);
-
-        // (2) 응답 객체가 JSON형식으로 되어 있으므로, 이를 deserialization해서 자바 객체에 담을 것이다.
-        GoogleOauthToken oAuthToken = googleOauth.getAccessToken(accessTokenResponse);
-
-        // (3) 액세스 토큰을 다시 구글로 보내 구글에 저장된 사용자 정보가 담긴 응답 객체를 받아온다.
-        ResponseEntity<String> userInfoResponse = googleOauth.requestUserInfo(oAuthToken);
-
-        // (4) 다시 JSON 형식의 응답 객체를 자바 객체로 역직렬화한다.
-        GoogleUser googleUser = googleOauth.getUserInfo(userInfoResponse);
-
-        // (5) 로그인 처리
-        Optional<User> findUser = userRepository.findByUserEmail(googleUser.getEmail());
-
-        // (5)-1 첫 로그인시 default 값으로 회원가입
-        if (findUser.isEmpty()) {
-
-            User newUser = User.createUser(googleUser, passwordEncoder);
-
-            Integer id = userRepository.save(newUser).getId();
-
-            return Login(newUser.getUserName(),newUser.getUserEmail(), newUser.getImgUrl(), id);
-
-        } else { //(5)-2 이메일이 존재할 시 바로 로그인
-            User user = findUser.orElseThrow();
-            return Login(user.getUserName(), user.getUserEmail(), user.getImgUrl(), user.getId());
-        }
-    }
+//    public ResponseEntity<UserDto.socialLoginResponse> oauthLogin(String socialLoginType, String code) throws IOException {
+//        // (1) 구글로 일회성 코드를 보내 액세스 토큰이 담긴 응답객체를 받아옴
+//        ResponseEntity<String> accessTokenResponse = this.requestAccessToken(code);
+//
+//        // (2) 응답 객체가 JSON형식으로 되어 있으므로, 이를 deserialization해서 자바 객체에 담을 것이다.
+//        GoogleOauthToken oAuthToken = googleOauth.getAccessToken(accessTokenResponse);
+//
+//        // (3) 액세스 토큰을 다시 구글로 보내 구글에 저장된 사용자 정보가 담긴 응답 객체를 받아온다.
+//        ResponseEntity<String> userInfoResponse = googleOauth.requestUserInfo(oAuthToken);
+//
+//        // (4) 다시 JSON 형식의 응답 객체를 자바 객체로 역직렬화한다.
+//        GoogleUser googleUser = googleOauth.getUserInfo(userInfoResponse);
+//
+//        // (5) 로그인 처리
+//        Optional<User> findUser = userRepository.findByUserEmail(googleUser.getEmail());
+//
+//        // (5)-1 첫 로그인시 default 값으로 회원가입
+//        if (findUser.isEmpty()) {
+//
+//            User newUser = User.createUser(googleUser, passwordEncoder);
+//
+//            Integer id = userRepository.save(newUser).getId();
+//
+//            return Login(newUser.getUserName(),newUser.getUserEmail(), newUser.getImgUrl(), id);
+//
+//        } else { //(5)-2 이메일이 존재할 시 바로 로그인
+//            User user = findUser.orElseThrow();
+//            return Login(user.getUserName(), user.getUserEmail(), user.getImgUrl(), user.getId());
+//        }
+//    }
 
     public void REGISTER_VALIDATION(UserDto.register request) {
 
@@ -149,28 +149,25 @@ public class OauthService {
 
 
     public ResponseEntity<UserDto.socialLoginResponse> socialRegister(UserDto.register request) throws IOException {
-        log.info("service 안에 들어옴");
-
         //validation 처리
         REGISTER_VALIDATION(request);
 
-        User user = User.builder()
-                .userName(request.getUserName())
-                .userEmail(request.getUserEmail())
-                .imgUrl(request.getImgUrl())
-                .introduction(request.getIntroduction())
-                .likeCount(0)
-                .bookmarkCount(0)
-                .subscribeCount(0)
-                .userType(UserType.ROLE_USER)
-                .isOpen(true)
-                .social(passwordEncoder.encode("google"))
-                .status("ACTIVE")
-                .build();
+        // (1) 유저 DB에 존재하는지 확인
+        Optional<User> findUser = userRepository.findByUserEmail(request.getUserEmail());
 
-        Integer id = userRepository.save(user).getId();
+        // (2)-1 첫 로그인시 default 값으로 회원가입
+        if (findUser.isEmpty()) {
 
-        return Login(user.getUserName(),user.getUserEmail(), user.getImgUrl(), id);
+            User newUser = User.createUser(request, passwordEncoder);
+
+            Integer id = userRepository.save(newUser).getId();
+
+            return Login(newUser.getUserName(),newUser.getUserEmail(), newUser.getImgUrl(), id);
+
+        } else { //(2)-2 이메일이 존재할 시 바로 로그인
+            User user = findUser.orElseThrow();
+            return Login(user.getUserName(), user.getUserEmail(), user.getImgUrl(), user.getId());
+        }
     }
 
     //어드민 계정 생성
