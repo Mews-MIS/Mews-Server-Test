@@ -38,6 +38,7 @@ public class EditorController {
     public ResponseEntity<String> updateEditor(@RequestPart(value = "data") PatchEditorReq patchEditorReq,
                                                @RequestPart(value = "file", required = false) MultipartFile multipartFile) {
         log.info("필진 정보 수정");
+
         editorService.update(patchEditorReq, multipartFile);
 
         return ResponseEntity.ok("Patch Success");

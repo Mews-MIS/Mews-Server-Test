@@ -42,7 +42,7 @@ public class EditorService {
     // Editor DB 등록
     public void save(PostEditorReq postEditorReq, MultipartFile multipartFile) {
         String img = null;
-        if(multipartFile != null & !multipartFile.isEmpty()) {
+        if(multipartFile != null && !multipartFile.isEmpty()) {
             try {
                 img = updateImage(multipartFile);
             } catch (IOException e) {
@@ -63,7 +63,7 @@ public class EditorService {
         String inputIntroduction = (patchEditorReq.getIntroduction() == null? editor.getIntroduction() : patchEditorReq.getIntroduction());
 
         String inputImgUrl = editor.getImgUrl();
-        if(multipartFile != null & !multipartFile.isEmpty()) {
+        if(multipartFile != null && !multipartFile.isEmpty()) {
             try {
                 inputImgUrl = updateImage(multipartFile);
             } catch (IOException e) {
