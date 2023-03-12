@@ -136,11 +136,6 @@ public class OauthService {
             throw new BaseException(INVALID_EMAIL);
         }
 
-        //2-3. 이메일 중복 체크
-        if(userRepository.existsByUserEmail(request.getUserEmail())) {
-            throw new BaseException(USER_EMAIL_EXISTS);
-        }
-
         //3. 프로필 이미지
         if(request.getImgUrl()==null) {
             throw new BaseException(EMPTY_IMG);
@@ -149,8 +144,6 @@ public class OauthService {
 
 
     public ResponseEntity<UserDto.socialLoginResponse> socialRegister(UserDto.register request) throws IOException {
-        //validation 처리
-        REGISTER_VALIDATION(request);
 
         // (1) 유저 DB에 존재하는지 확인
         Optional<User> findUser = userRepository.findByUserEmail(request.getUserEmail());
@@ -164,7 +157,7 @@ public class OauthService {
 
             return Login(newUser.getUserName(),newUser.getUserEmail(), newUser.getImgUrl(), id);
 
-        } else { //(2)-2 이메일이 존재할 시 바로 로그인
+        } else { //(5)-2 이메일이 존재할 시 바로 로그인
             User user = findUser.orElseThrow();
             return Login(user.getUserName(), user.getUserEmail(), user.getImgUrl(), user.getId());
         }
