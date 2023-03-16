@@ -89,7 +89,7 @@ public class ArticleService {
     // 뉴스 조회(페이지네이션)
     public List<Article> getAllArticle(Integer page){
         PageRequest pageRequest = PageRequest.of(page, 10); // size 10으로 고정
-        Page<Article> articleResPage = articleRepository.findAllByIsDeletedFalseOrderById(pageRequest);
+        Page<Article> articleResPage = articleRepository.findAllByIsDeletedFalseOrderByModifiedAtDesc(pageRequest);
         List<Article> articles = articleResPage.getContent();
         return articles;
     }

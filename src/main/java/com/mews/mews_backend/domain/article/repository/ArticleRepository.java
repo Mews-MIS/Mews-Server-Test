@@ -29,7 +29,7 @@ public interface ArticleRepository extends JpaRepository<Article, Integer> {
             "where a.title like %:searchKeyword%", nativeQuery = true)
     List<Article> findAllByKeyword(@Param("searchKeyword") String keyword);
 
-    Page<Article> findAllByIsDeletedFalseOrderById(Pageable pageable);
+    Page<Article> findAllByIsDeletedFalseOrderByModifiedAtDesc(Pageable pageable);
 
     List<Article> findAllByType(String type);
 
