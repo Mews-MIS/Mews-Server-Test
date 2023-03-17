@@ -144,7 +144,6 @@ public class OauthService {
 
 
     public ResponseEntity<UserDto.socialLoginResponse> socialRegister(UserDto.register request) throws IOException {
-
         // (1) 유저 DB에 존재하는지 확인
         Optional<User> findUser = userRepository.findByUserEmail(request.getUserEmail());
 

@@ -56,7 +56,6 @@ public class UserService {
 
     //회원탈퇴
     public ResponseEntity<String> delete(String auth) {
-        log.info("회원탈퇴 가능??");
         String atk = auth.substring(7);
 
         String email = SecurityContextHolder.getContext()

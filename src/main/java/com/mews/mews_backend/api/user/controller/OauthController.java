@@ -20,21 +20,6 @@ public class OauthController {
 
     private final OauthService oauthService;
 
-//    @GetMapping(value = "/google")
-//    public void socialLoginType() {
-//        String socialLoginType = "google";
-//        log.info(">> 사용자로부터 SNS 로그인 요청을 받음 :: {} Social Login", "google");
-//        oauthService.request(socialLoginType);
-//    }
-//
-//    @GetMapping(value = "/google/callback")
-//    public ResponseEntity<UserDto.socialLoginResponse> callback(
-//            @RequestParam(name = "code") String code) throws IOException {
-//        String socialLoginType = "google";
-//        log.info(">> 소셜 로그인 API 서버로부터 받은 code :: {}", code);
-//        return oauthService.oauthLogin(socialLoginType,code);
-//    }
-
     //회원가입
     @PostMapping(value = "/login")
     public ResponseEntity<UserDto.socialLoginResponse> userLogin(
@@ -42,12 +27,6 @@ public class OauthController {
     {
         return  oauthService.socialRegister(request);
     }
-
-//    //어드민 회원가입
-//    @PostMapping(value = "/admin/register")
-//    public void adminRegister(){
-//        oauthService.adminRegister();
-//    }
 
     //어드민 로그인
     @PostMapping(value = "/admin/login")
