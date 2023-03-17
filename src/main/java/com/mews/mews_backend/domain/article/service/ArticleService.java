@@ -3,6 +3,7 @@ package com.mews.mews_backend.domain.article.service;
 import com.mews.mews_backend.api.article.dto.req.PatchArticleReq;
 import com.mews.mews_backend.api.article.dto.req.PostArticleReq;
 import com.mews.mews_backend.api.article.dto.res.GetArticleRes;
+import com.mews.mews_backend.api.article.dto.res.GetCheckArticle;
 import com.mews.mews_backend.api.article.dto.res.GetMainArticleRes;
 import com.mews.mews_backend.domain.article.entity.Article;
 import com.mews.mews_backend.domain.article.entity.ArticleAndEditor;
@@ -198,6 +199,13 @@ public class ArticleService {
         }
 
         return getMainArticleRes;
+    }
+
+    public GetCheckArticle checkArticleLike(Integer articleId, Integer userId) {
+        Boolean bookmark = (bookmarkRepository.existsByUserIdAndArticleId(userId, articleId) == Boolean.TRUE ? Boolean.TRUE : Boolean.FALSE);
+        Boolean like = (likeRepository.existsByUserIdAndArticleId(userId, articleId) == Boolean.TRUE ? Boolean.TRUE : Boolean.FALSE);
+
+        return new GetCheckArticle(bookmark, like);
     }
 
     private Article buildArticle(PostArticleReq postArticleReq){
