@@ -65,7 +65,6 @@ public class MyPageService {
         if (user.getId() == userId) { return GetMyPageRes.response(user);}
         else {  //(2)-2 타인정보 반환
             user = userRepository.findById(userId).orElseThrow();
-
             if (user.isOpen() == false) {
                 throw new BaseException(PROFILE_NOT_OPEN);
             } else { return GetMyPageRes.response(user); }
