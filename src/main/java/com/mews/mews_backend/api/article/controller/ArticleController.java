@@ -4,6 +4,7 @@ import com.mews.mews_backend.api.article.dto.req.PatchArticleReq;
 import com.mews.mews_backend.api.article.dto.req.PostArticleReq;
 import com.mews.mews_backend.api.article.dto.res.GetAllArticleRes;
 import com.mews.mews_backend.api.article.dto.res.GetArticleRes;
+import com.mews.mews_backend.api.article.dto.res.GetCheckArticle;
 import com.mews.mews_backend.api.article.dto.res.GetMainArticleRes;
 import com.mews.mews_backend.domain.article.entity.Article;
 import com.mews.mews_backend.domain.article.service.ArticleService;
@@ -92,6 +93,14 @@ public class ArticleController {
 
         return ResponseEntity.ok(getMainArticleRes);
 
+    }
+
+    @ApiOperation("유저의 게시글 좋아요/북마크 여부 조회")
+    @GetMapping("/{article_id}/user/{user_id}/check")
+    public ResponseEntity<GetCheckArticle> getCheckArticleLike(@PathVariable("article_id") Integer articleId, @PathVariable("user_id") Integer userId) {
+        GetCheckArticle getCheckArticle = articleService.checkArticleLike(articleId, userId);
+
+        return ResponseEntity.ok(getCheckArticle);
     }
 
     //북마크 기능
