@@ -5,6 +5,7 @@ import com.mews.mews_backend.api.editor.dto.request.PatchEditorReq;
 import com.mews.mews_backend.api.editor.dto.request.PostEditorReq;
 import com.mews.mews_backend.api.editor.dto.response.GetEditorAndArticleRes;
 import com.mews.mews_backend.api.editor.dto.response.GetEditorRes;
+import com.mews.mews_backend.api.editor.dto.response.GetEditorSubRes;
 import com.mews.mews_backend.domain.editor.service.EditorService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -60,10 +61,10 @@ public class EditorController {
     }
 
     @GetMapping("/getone/{editor_id}")
-    public ResponseEntity<GetEditorRes> getEditor(@PathVariable("editor_id") Integer id) {
-        GetEditorRes getEditorRes = editorService.getOne(id);
+    public ResponseEntity<GetEditorSubRes> getEditor(@PathVariable("editor_id") Integer id) {
+        GetEditorSubRes getEditorSubRes = editorService.getOne(id);
 
-        return ResponseEntity.ok(getEditorRes);
+        return ResponseEntity.ok(getEditorSubRes);
     }
 
 
