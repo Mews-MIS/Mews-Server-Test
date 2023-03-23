@@ -1,13 +1,15 @@
 package com.mews.mews_backend.domain.user.entity;
 
+import com.mews.mews_backend.api.user.dto.GoogleUser;
+import com.mews.mews_backend.api.user.dto.UserDto;
 import com.mews.mews_backend.domain.common.BaseTimeEntity;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 import java.util.Set;
 
 @AllArgsConstructor
@@ -71,11 +73,29 @@ public class User extends BaseTimeEntity {
 
     //북마크 추가 및 취소
     public void upBookmark(){this.bookmarkCount++;}
+
     public void downBookmark(){this.bookmarkCount--;}
 
     //좋아요 추가 및 취소
     public void upLike(){this.likeCount++;}
     public void downLike(){this.likeCount--;}
+
+    public static User createUser (UserDto.register register, PasswordEncoder passwordEncoder) {
+
+        return User.builder()
+                .userName(register.getUserName())
+                .userEmail(register.getUserEmail())
+                .imgUrl(register.getImgUrl())
+                .introduction("")
+                .likeCount(0)
+                .bookmarkCount(0)
+                .subscribeCount(0)
+                .userType(UserType.ROLE_USER)
+                .isOpen(true)
+                .social(passwordEncoder.encode("google"))
+                .status("ACTIVE")
+                .build();
+    }
     public User(String userEmail, String userName, Set<GrantedAuthority> singleton) {
     }
 }

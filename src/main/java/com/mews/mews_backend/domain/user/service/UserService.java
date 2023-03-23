@@ -34,6 +34,7 @@ public class UserService {
     private final UserRepository userRepository;
 
     private final RedisDao redisDao;
+
     // 로그아웃
     public ResponseEntity<String> logout(String auth) {
         String atk = auth.substring(7);
@@ -55,7 +56,6 @@ public class UserService {
 
     //회원탈퇴
     public ResponseEntity<String> delete(String auth) {
-        log.info("회원탈퇴 가능??");
         String atk = auth.substring(7);
 
         String email = SecurityContextHolder.getContext()

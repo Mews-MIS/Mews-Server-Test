@@ -7,6 +7,7 @@ import com.mews.mews_backend.api.editor.dto.response.GetEditorAndArticleRes;
 import com.mews.mews_backend.api.editor.dto.response.GetEditorRes;
 import com.mews.mews_backend.domain.editor.service.EditorService;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -38,6 +39,7 @@ public class EditorController {
     public ResponseEntity<String> updateEditor(@RequestPart(value = "data") PatchEditorReq patchEditorReq,
                                                @RequestPart(value = "file", required = false) MultipartFile multipartFile) {
         log.info("필진 정보 수정");
+
         editorService.update(patchEditorReq, multipartFile);
 
         return ResponseEntity.ok("Patch Success");
@@ -64,10 +66,19 @@ public class EditorController {
         return ResponseEntity.ok(getEditorRes);
     }
 
+
     @GetMapping("/getArticle/{editor_id}")
     public ResponseEntity<GetEditorAndArticleRes> getArticle(@PathVariable("editor_id") Integer id) {
         GetEditorAndArticleRes getEditorAndArticleRes = editorService.getArticle(id);
 
         return ResponseEntity.ok(getEditorAndArticleRes);
+    }
+
+    @ApiOperation("유저의 필진 구독 여부 확인")
+    @GetMapping("/{editor_id}/user/{user_id}/check")
+    public ResponseEntity<Boolean> getSubEditor(@PathVariable("editor_id") Integer editorId, @PathVariable("user_id") Integer userId) {
+        Boolean checkSub = editorService.checkSub(editorId, userId);
+
+        return ResponseEntity.ok(checkSub);
     }
 }

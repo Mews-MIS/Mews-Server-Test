@@ -29,10 +29,12 @@ public interface ArticleRepository extends JpaRepository<Article, Integer> {
             "where a.title like %:searchKeyword%", nativeQuery = true)
     List<Article> findAllByKeyword(@Param("searchKeyword") String keyword);
 
-    Page<Article> findAllByOrderById(Pageable pageable);
+    Page<Article> findAllByIsDeletedFalseOrderByModifiedAtDesc(Pageable pageable);
 
     List<Article> findAllByType(String type);
 
     List<Article> findTop5ByOrderByViewsViewsDesc();
+
+    Integer countByIsDeletedFalse();
 
 }

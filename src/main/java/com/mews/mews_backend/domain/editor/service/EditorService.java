@@ -13,6 +13,7 @@ import com.mews.mews_backend.domain.article.entity.ArticleAndEditor;
 import com.mews.mews_backend.domain.article.repository.ArticleAndEditorRepository;
 import com.mews.mews_backend.domain.editor.entity.Editor;
 import com.mews.mews_backend.domain.editor.repository.EditorRepository;
+import com.mews.mews_backend.domain.user.repository.SubscribeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -36,13 +37,15 @@ public class EditorService {
 
     private final ArticleAndEditorRepository articleAndEditorRepository;
 
+    private final SubscribeRepository subscribeRepository;
+
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
 
     // Editor DB 등록
     public void save(PostEditorReq postEditorReq, MultipartFile multipartFile) {
         String img = null;
-        if(multipartFile != null & !multipartFile.isEmpty()) {
+        if(multipartFile != null && !multipartFile.isEmpty()) {
             try {
                 img = updateImage(multipartFile);
             } catch (IOException e) {
@@ -63,7 +66,7 @@ public class EditorService {
         String inputIntroduction = (patchEditorReq.getIntroduction() == null? editor.getIntroduction() : patchEditorReq.getIntroduction());
 
         String inputImgUrl = editor.getImgUrl();
-        if(multipartFile != null & !multipartFile.isEmpty()) {
+        if(multipartFile != null && !multipartFile.isEmpty()) {
             try {
                 inputImgUrl = updateImage(multipartFile);
             } catch (IOException e) {
@@ -129,5 +132,11 @@ public class EditorService {
         GetEditorAndArticleRes getEditorAndArticleRes = new GetEditorAndArticleRes(editor, articleForEditors);
 
         return getEditorAndArticleRes;
+    }
+
+    public Boolean checkSub(Integer editorId, Integer userId) {
+        Boolean check = (subscribeRepository.existsByEditorIdAndUserId(editorId, userId) ? Boolean.TRUE : Boolean.FALSE);
+
+        return check;
     }
 }

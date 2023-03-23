@@ -3,6 +3,7 @@ package com.mews.mews_backend.domain.article.service;
 import com.mews.mews_backend.api.article.dto.req.PatchArticleReq;
 import com.mews.mews_backend.api.article.dto.req.PostArticleReq;
 import com.mews.mews_backend.api.article.dto.res.GetArticleRes;
+import com.mews.mews_backend.api.article.dto.res.GetCheckArticle;
 import com.mews.mews_backend.api.article.dto.res.GetMainArticleRes;
 import com.mews.mews_backend.domain.article.entity.Article;
 import com.mews.mews_backend.domain.article.entity.ArticleAndEditor;
@@ -89,19 +90,37 @@ public class ArticleService {
     // 뉴스 조회(페이지네이션)
     public List<Article> getAllArticle(Integer page){
         PageRequest pageRequest = PageRequest.of(page, 10); // size 10으로 고정
-        Page<Article> articleResPage = articleRepository.findAllByOrderById(pageRequest);
+        Page<Article> articleResPage = articleRepository.findAllByIsDeletedFalseOrderByModifiedAtDesc(pageRequest);
         List<Article> articles = articleResPage.getContent();
         return articles;
+    }
+
+    // 전체 페이지 개수 구하기
+    public Integer getPageCount(){
+        Integer newsCount = articleRepository.countByIsDeletedFalse();
+        return (newsCount / 10) + 1;
     }
 
     // 뉴스 조회
     public GetArticleRes viewArticle(Integer articleId){
         Article article = articleRepository.findById(articleId).get();
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User user = userRepository.findByUserEmail(authentication.getName()).orElseThrow();
-        boolean isBookmarked = bookmarkRepository.existsByUserAndArticle(user, article);
-        boolean isLiked = likeRepository.existsByArticleAndUser(article, user);
-        return GetArticleRes.from(article, isBookmarked, isLiked);
+        boolean isBookmarked = false;
+        boolean isLiked = false;
+
+        if(!(authentication.getName().equals("anonymousUser"))){
+            User user = userRepository.findByUserEmail(authentication.getName()).orElseThrow();
+            isBookmarked = bookmarkRepository.existsByUserAndArticle(user, article);
+            isLiked = likeRepository.existsByArticleAndUser(article, user);
+        }
+
+        // 필진 id 탐색
+        List<ArticleAndEditor> articleAndEditorList = articleAndEditorRepository.findAllByArticle_Id(articleId);
+        List<Integer> editorIdList = new ArrayList<>();
+        for(ArticleAndEditor elem : articleAndEditorList)
+            editorIdList.add(elem.getEditor().getId());
+
+        return GetArticleRes.from(article, isBookmarked, isLiked, editorIdList);
     }
 
     // 뉴스 수정
@@ -180,6 +199,13 @@ public class ArticleService {
         }
 
         return getMainArticleRes;
+    }
+
+    public GetCheckArticle checkArticleLike(Integer articleId, Integer userId) {
+        Boolean bookmark = (bookmarkRepository.existsByUserIdAndArticleId(userId, articleId) == Boolean.TRUE ? Boolean.TRUE : Boolean.FALSE);
+        Boolean like = (likeRepository.existsByUserIdAndArticleId(userId, articleId) == Boolean.TRUE ? Boolean.TRUE : Boolean.FALSE);
+
+        return new GetCheckArticle(bookmark, like);
     }
 
     private Article buildArticle(PostArticleReq postArticleReq){
