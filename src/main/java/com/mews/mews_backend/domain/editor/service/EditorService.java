@@ -8,14 +8,19 @@ import com.mews.mews_backend.api.editor.dto.request.PostEditorReq;
 import com.mews.mews_backend.api.editor.dto.response.EditorForArticle;
 import com.mews.mews_backend.api.editor.dto.response.GetEditorAndArticleRes;
 import com.mews.mews_backend.api.editor.dto.response.GetEditorRes;
+import com.mews.mews_backend.api.editor.dto.response.GetEditorSubRes;
 import com.mews.mews_backend.domain.article.entity.Article;
 import com.mews.mews_backend.domain.article.entity.ArticleAndEditor;
 import com.mews.mews_backend.domain.article.repository.ArticleAndEditorRepository;
 import com.mews.mews_backend.domain.editor.entity.Editor;
 import com.mews.mews_backend.domain.editor.repository.EditorRepository;
+import com.mews.mews_backend.domain.user.entity.User;
 import com.mews.mews_backend.domain.user.repository.SubscribeRepository;
+import com.mews.mews_backend.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -38,6 +43,8 @@ public class EditorService {
     private final ArticleAndEditorRepository articleAndEditorRepository;
 
     private final SubscribeRepository subscribeRepository;
+
+    private final UserRepository userRepository;
 
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
@@ -92,12 +99,19 @@ public class EditorService {
     }
 
     // 특정 필진 DB 조회
-    public GetEditorRes getOne(Integer id) {
+    public GetEditorSubRes getOne(Integer id) {
+        Boolean checkSub = Boolean.FALSE;
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Editor editor = editorRepository.findByIdAndDeleted(id, Boolean.FALSE);
 
-        GetEditorRes getEditorRes = new GetEditorRes(editor);
+        if(!(authentication.getName().equals("anonymousUser"))) {
+            User user = userRepository.findByUserEmail(authentication.getName()).orElseThrow();
+            checkSub = subscribeRepository.existsByEditorIdAndUserId(id, user.getId());
+        }
 
-        return getEditorRes;
+        GetEditorSubRes getEditorSubRes = new GetEditorSubRes(editor, checkSub);
+
+        return getEditorSubRes;
     }
 
     //이미지 넣기
