@@ -18,15 +18,15 @@ import java.util.List;
 @EnableJpaRepositories
 public interface ArticleRepository extends JpaRepository<Article, Integer> {
 
-    @Query(value = "select a.id, a.created_at, a.modified_at, a.content, a.file_urls, a.like_count, a.title, a.type, a.views_id " +
+    @Query(value = "select a.id, a.created_at, a.modified_at, a.content, a.file_urls, a.like_count, a.title, a.type, a.views_id, a.is_deleted " +
             "from article a " +
             "left join article_and_editor aae on a.id = aae.article_id " +
             "left join editor e on aae.editor_id = e.editor_id " +
-            "where e.name like %:searchKeyword% " +
+            "where e.name like %:searchKeyword% and a.is_deleted = false" + "\n" +
             "union " +
-            "select a.id, a.created_at, a.modified_at, a.content, a.file_urls, a.like_count, a.title, a.type, a.views_id " +
+            "select a.id, a.created_at, a.modified_at, a.content, a.file_urls, a.like_count, a.title, a.type, a.views_id, a.is_deleted " +
             "from article a " +
-            "where a.title like %:searchKeyword%", nativeQuery = true)
+            "where a.title like %:searchKeyword% and a.is_deleted = false", nativeQuery = true)
     List<Article> findAllByKeyword(@Param("searchKeyword") String keyword);
 
     Page<Article> findAllByIsDeletedFalseOrderByModifiedAtDesc(Pageable pageable);
