@@ -34,23 +34,6 @@ public class SearchService {
     }
 
     public List<GetArticleRes> findArticle(String keyword) {
-//        순차 검색 방식 JPA
-//        // 아티클 제목 유사도로 검색
-//        List<GetArticleRes> getArticleResList = articleRepository.findAllByTitleContains(keyword)
-//                .stream()
-//                .map(GetArticleRes::new)
-//                .collect(Collectors.toList());
-//
-//        // 필진 제목 유사도로 검색
-//        List<Editor> editorList = editorRepository.findAllByNameContains(keyword);
-//        for(Editor editor : editorList) {
-//            List<ArticleAndEditor> articleAndEditorList = articleAndEditorRepository.findAllByEditorOrderByModifiedAt(editor);
-//
-//            for(ArticleAndEditor articleAndEditor : articleAndEditorList) {
-//                getArticleResList.add(new GetArticleRes(articleAndEditor.getArticle()));
-//            }
-//        }
-
         // 삼중 조인 쿼리 사용
         List<GetArticleRes> getArticleResList = articleRepository.findAllByKeyword(keyword)
                 .stream()
