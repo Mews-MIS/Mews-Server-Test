@@ -21,6 +21,6 @@ public interface CurationRepository extends JpaRepository<Curation, Integer> {
     @Query("update Curation c set c.open = false where c.id = :inputId and c.open = true")
     void updateOpenById(@Param("inputId") Integer id);
 
-    @Query("select c from Curation as c where c.checked = true order by c.modifiedAt")
+    @Query("select c from Curation as c where c.checked = true and c.open=true order by c.modifiedAt")
     List<Curation> findAllChecked();
 }
