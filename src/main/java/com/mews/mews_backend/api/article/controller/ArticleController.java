@@ -2,10 +2,7 @@ package com.mews.mews_backend.api.article.controller;
 
 import com.mews.mews_backend.api.article.dto.req.PatchArticleReq;
 import com.mews.mews_backend.api.article.dto.req.PostArticleReq;
-import com.mews.mews_backend.api.article.dto.res.GetAllArticleRes;
-import com.mews.mews_backend.api.article.dto.res.GetArticleRes;
-import com.mews.mews_backend.api.article.dto.res.GetCheckArticle;
-import com.mews.mews_backend.api.article.dto.res.GetMainArticleRes;
+import com.mews.mews_backend.api.article.dto.res.*;
 import com.mews.mews_backend.domain.article.entity.Article;
 import com.mews.mews_backend.domain.article.service.ArticleService;
 import com.mews.mews_backend.domain.article.service.ViewsService;
@@ -42,7 +39,7 @@ public class ArticleController {
     @ApiOperation("뉴스 전체 조회(페이지네이션)")
     @GetMapping("/all")
     public ResponseEntity<GetAllArticleRes> getAllArticle(@Positive @RequestParam Integer page){
-        List<Article> articles = articleService.getAllArticle(page-1); // 0번 페이지부터 시작하므로 -1
+        List<GetPageArticleRes> articles = articleService.getAllArticle(page-1); // 0번 페이지부터 시작하므로 -1
         Integer pageCount = articleService.getPageCount();
 
         GetAllArticleRes getAllArticleRes = GetAllArticleRes.from(pageCount, articles);
