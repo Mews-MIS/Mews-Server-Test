@@ -93,16 +93,26 @@ public class ArticleService {
         Page<Article> articleResPage = articleRepository.findAllByIsDeletedFalseOrderByModifiedAtDesc(pageRequest);
         List<Article> articles = articleResPage.getContent();
 
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        boolean isBookmarked = false;
+        boolean isLiked = false;
+
         List<GetPageArticleRes> getPageArticleRes = new ArrayList<>();
         for(Article article : articles) {
-            List<ArticleAndEditor> articleAndEditors = articleAndEditorRepository.findAllByArticle(article);
 
+            List<ArticleAndEditor> articleAndEditors = articleAndEditorRepository.findAllByArticle(article);
             List<Editor> editors = new ArrayList<>();
             for(ArticleAndEditor articleAndEditor : articleAndEditors) {
                 editors.add(articleAndEditor.getEditor());
             }
 
-            getPageArticleRes.add(new GetPageArticleRes(article, editors));
+            if(!(authentication.getName().equals("anonymousUser"))){
+                User user = userRepository.findByUserEmail(authentication.getName()).orElseThrow();
+                isBookmarked = bookmarkRepository.existsByUserAndArticle(user, article);
+                isLiked = likeRepository.existsByArticleAndUser(article, user);
+            }
+
+            getPageArticleRes.add(new GetPageArticleRes(article, editors,isLiked,isBookmarked));
         }
 
         return getPageArticleRes;

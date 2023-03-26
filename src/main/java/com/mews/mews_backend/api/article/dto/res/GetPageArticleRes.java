@@ -13,8 +13,16 @@ public class GetPageArticleRes {
 
     private List<Editor> editorList;
 
-    public GetPageArticleRes(Article article, List<Editor> editors) {
+    //북마크 여부
+    private boolean isBookmarked;
+
+    //좋아요 여부
+    private boolean isLiked;
+
+    public GetPageArticleRes(Article article, List<Editor> editors, boolean isLiked,boolean isBookmarked) {
         this.article = article;
         this.editorList = editors;
+        this.isLiked = isLiked;
+        this.isBookmarked = isBookmarked;
     }
 }

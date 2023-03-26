@@ -17,7 +17,6 @@ public interface CurationRepository extends JpaRepository<Curation, Integer> {
 
     Curation findByIdAndOpen(Integer id, Boolean open);
 
-    @Query("select c from Curation as c where c.open =true order by c.modifiedAt")
     List<Curation> findAllByOpenTrue();
 
     @Modifying
