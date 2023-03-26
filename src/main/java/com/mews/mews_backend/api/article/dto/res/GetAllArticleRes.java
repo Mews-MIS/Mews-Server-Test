@@ -14,9 +14,9 @@ import java.util.List;
 @Getter
 public class GetAllArticleRes {
     Integer pageCount;
-    List<Article> articles;
+    List<GetPageArticleRes> articles;
 
-    public static GetAllArticleRes from(Integer pageCount, List<Article> articles){
+    public static GetAllArticleRes from(Integer pageCount, List<GetPageArticleRes> articles){
         return GetAllArticleRes.builder()
                 .pageCount(pageCount)
                 .articles(articles)

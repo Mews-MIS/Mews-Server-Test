@@ -5,6 +5,7 @@ import com.mews.mews_backend.api.article.dto.req.PostArticleReq;
 import com.mews.mews_backend.api.article.dto.res.GetArticleRes;
 import com.mews.mews_backend.api.article.dto.res.GetCheckArticle;
 import com.mews.mews_backend.api.article.dto.res.GetMainArticleRes;
+import com.mews.mews_backend.api.article.dto.res.GetPageArticleRes;
 import com.mews.mews_backend.domain.article.entity.Article;
 import com.mews.mews_backend.domain.article.entity.ArticleAndEditor;
 import com.mews.mews_backend.domain.article.entity.Views;
@@ -15,7 +16,6 @@ import com.mews.mews_backend.domain.editor.entity.Editor;
 import com.mews.mews_backend.domain.editor.repository.EditorRepository;
 import com.mews.mews_backend.domain.user.entity.Bookmark;
 import com.mews.mews_backend.domain.user.entity.Like;
-import com.mews.mews_backend.domain.user.entity.Subscribe;
 import com.mews.mews_backend.domain.user.entity.User;
 import com.mews.mews_backend.domain.user.repository.BookmarkRepository;
 import com.mews.mews_backend.domain.user.repository.LikeRepository;
@@ -88,11 +88,24 @@ public class ArticleService {
     }
 
     // 뉴스 조회(페이지네이션)
-    public List<Article> getAllArticle(Integer page){
+    public List<GetPageArticleRes> getAllArticle(Integer page){
         PageRequest pageRequest = PageRequest.of(page, 10); // size 10으로 고정
         Page<Article> articleResPage = articleRepository.findAllByIsDeletedFalseOrderByModifiedAtDesc(pageRequest);
         List<Article> articles = articleResPage.getContent();
-        return articles;
+
+        List<GetPageArticleRes> getPageArticleRes = new ArrayList<>();
+        for(Article article : articles) {
+            List<ArticleAndEditor> articleAndEditors = articleAndEditorRepository.findAllByArticle(article);
+
+            List<Editor> editors = new ArrayList<>();
+            for(ArticleAndEditor articleAndEditor : articleAndEditors) {
+                editors.add(articleAndEditor.getEditor());
+            }
+
+            getPageArticleRes.add(new GetPageArticleRes(article, editors));
+        }
+
+        return getPageArticleRes;
     }
 
     // 전체 페이지 개수 구하기
@@ -166,16 +179,13 @@ public class ArticleService {
         HashSet<Integer> id_set = new HashSet<>();
         // 구독한 필진 정보 찾기
         List<Editor> editorList = editorRepository.findAllByUserId(id);
-        log.info("구독 필진 확인");
 
         // 해당 필진이 작성한 기사 찾기
         for(Editor editor : editorList) {
             articleAndEditorList.addAll(articleAndEditorRepository.findAllByEditorOrderByModifiedAt(editor));
-            log.info("필진 작성 기사 확인");
         }
         for(ArticleAndEditor articleAndEditor : articleAndEditorList) {
             id_set.add(articleAndEditor.getArticle().getId());
-            log.info("중복 제거 기사 아이디 뽑기");
         }
 
 
@@ -183,15 +193,12 @@ public class ArticleService {
             // user의 좋아요, 북마크 여부 확인
             Boolean userBookmark = bookmarkRepository.existsByUserIdAndArticleId(id, article_id);
             Boolean userLike = likeRepository.existsByUserIdAndArticleId(id, article_id);
-            log.info("좋아요, 북마크 여부 확인");
 
             // 기사를 작성한 모든 필진 찾기
             List<Editor> editors = editorRepository.findAllByArticleId(article_id);
-            log.info("기사 작성한 필진들 찾기");
 
             // 기사 정보 가져오기
             Article article = articleRepository.findById(article_id).orElseThrow(IllegalArgumentException::new);
-            log.info("기사 정보 가져오기");
 
             // dto 생성 및 반환
             GetMainArticleRes getMainArticleRes1 = new GetMainArticleRes(article, editors, userBookmark, userLike);
