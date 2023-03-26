@@ -73,7 +73,7 @@ public class CurationService {
         }
 
         // 모든 큐레이션
-        List<Curation> findAllCuration = curationRepository.findAll();
+        List<Curation> findAllCuration = curationRepository.findAllByOpenTrue();
         List<GetCurationTitleRes> curations = new ArrayList<>();
 
         for(Curation curation : findAllCuration){
