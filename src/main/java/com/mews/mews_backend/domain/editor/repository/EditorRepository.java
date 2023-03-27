@@ -28,7 +28,7 @@ public interface EditorRepository extends JpaRepository<Editor, Integer> {
                        @Param("inputImgUrl") String inputImgUrl,
                        @Param("inputIntroduction") String inputIntroduction);
 
-    @Query(value = "select e.editor_id, e.created_at, e.modified_at, e.img_url, e.introduction, e.name " +
+    @Query(value = "select e.editor_id, e.created_at, e.modified_at, e.img_url, e.introduction, e.name, e.deleted " +
             "from editor e " +
             "where e.editor_id in (select s.editor_id from subscribe s where s.user_id = :id) "
             , nativeQuery = true)
