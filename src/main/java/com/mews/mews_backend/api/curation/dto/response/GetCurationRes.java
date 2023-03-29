@@ -17,6 +17,9 @@ import java.util.List;
 @Builder
 public class GetCurationRes {
 
+    @ApiModelProperty(notes = "큐레이션 ID")
+    private Integer id;
+
     @ApiModelProperty(notes = "큐레이션 제목")
     private String title;
 
@@ -28,6 +31,7 @@ public class GetCurationRes {
 
     // Entity To DTO
     public GetCurationRes(Curation curation, List<GetCurationArticleRes> getCurationArticleRes) {
+        this.id = curation.getId();
         this.title = curation.getTitle();
         this.list = getCurationArticleRes;
         this.modifiedAt = curation.getModifiedAt();
