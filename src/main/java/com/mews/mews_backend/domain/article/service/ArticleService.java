@@ -190,14 +190,15 @@ public class ArticleService {
         // 구독한 필진 정보 찾기
         List<Editor> editorList = editorRepository.findAllByUserId(id);
 
-        // 해당 필진이 작성한 기사 찾기
+        // 해당 필진이 작성한 기사 찾기 (삭제 여부 확인)
         for(Editor editor : editorList) {
-            articleAndEditorList.addAll(articleAndEditorRepository.findAllByEditorOrderByModifiedAt(editor));
+            for(ArticleAndEditor articleAndEditor : articleAndEditorRepository.findAllByEditorOrderByModifiedAt(editor)) {
+                if(articleAndEditor.getArticle().getIsDeleted() == false) {
+                    articleAndEditorList.add(articleAndEditor);
+                    id_set.add(articleAndEditor.getArticle().getId());
+                }
+            }
         }
-        for(ArticleAndEditor articleAndEditor : articleAndEditorList) {
-            id_set.add(articleAndEditor.getArticle().getId());
-        }
-
 
         for(Integer article_id : id_set) {
             // user의 좋아요, 북마크 여부 확인
