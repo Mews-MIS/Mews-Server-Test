@@ -34,7 +34,7 @@ public interface EditorRepository extends JpaRepository<Editor, Integer> {
             , nativeQuery = true)
     List<Editor> findAllByUserId(@Param("id")Integer id);
 
-    @Query(value = "select e.editor_id, e.created_at, e.modified_at, e.img_url, e.introduction, e.name " +
+    @Query(value = "select e.editor_id, e.created_at, e.modified_at, e.img_url, e.introduction, e.name, e.deleted    " +
             "from editor e " +
             "where e.editor_id in (select aae.editor_id from article_and_editor aae where aae.article_id = :id)"
             , nativeQuery = true)
