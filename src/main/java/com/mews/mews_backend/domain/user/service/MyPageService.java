@@ -254,4 +254,11 @@ public class MyPageService {
         }
         return getEditorArticleRes;
     }
+
+    // 구독한 필진 정보 불러오긱
+    public List<Editor> getSubscribeEditorList(Integer id) {
+        List<Editor> editors = editorRepository.findAllByUserId(id);
+
+        return editors;
+    }
 }

@@ -4,7 +4,9 @@ import com.mews.mews_backend.api.user.dto.Req.PatchUserProfileReq;
 import com.mews.mews_backend.api.user.dto.Res.GetMyPageArticleRes;
 import com.mews.mews_backend.api.user.dto.Res.GetMyPageRes;
 import com.mews.mews_backend.api.user.dto.UserDto;
+import com.mews.mews_backend.domain.editor.entity.Editor;
 import com.mews.mews_backend.domain.user.service.MyPageService;
+import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -64,5 +66,13 @@ public class MyPageController {
         return new ResponseEntity<>(myPageService.getEditorArticles(userId, editorId), HttpStatus.OK);
     }
 
+    //구독한 필진 정보 보여주기
+    @GetMapping(value = "/{userId}/mysubeditor")
+    @ApiOperation("구독한 필진 정보 보여주기")
+    public ResponseEntity<List<Editor>> getSubscribeEditorList(@PathVariable("userId") Integer id) {
+        List<Editor> editors = myPageService.getSubscribeEditorList(id);
+
+        return ResponseEntity.ok(editors);
+    }
 
 }
