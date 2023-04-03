@@ -22,6 +22,8 @@ public class GetMyPageRes {
 
     private  int subscribeCount;
 
+    private boolean isOpen;
+
     public static GetMyPageRes response(User user) {
         return GetMyPageRes.builder()
                 .imgUrl(user.getImgUrl())
@@ -30,6 +32,7 @@ public class GetMyPageRes {
                 .bookmarkCount(user.getBookmarkCount())
                 .likeCount(user.getLikeCount())
                 .subscribeCount(user.getSubscribeCount())
+                .isOpen(user.isOpen())
                 .build();
     }
 
