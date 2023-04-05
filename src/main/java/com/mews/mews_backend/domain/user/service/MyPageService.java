@@ -1,7 +1,10 @@
 package com.mews.mews_backend.domain.user.service;
 
+import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.mews.mews_backend.api.user.dto.Req.PatchUserProfileReq;
 import com.mews.mews_backend.api.user.dto.Res.GetMyPageArticleRes;
 import com.mews.mews_backend.api.user.dto.Res.GetMyPageRes;
@@ -107,8 +110,10 @@ public class MyPageService {
         String fileName = uuid+"_"+multipartFile.getOriginalFilename();
         String userImg = "user/" + now+"/"+ fileName;
         ObjectMetadata objMeta = new ObjectMetadata();
+        objMeta.setContentType(multipartFile.getContentType());
         objMeta.setContentLength(multipartFile.getInputStream().available());
-        amazonS3Client.putObject(bucket, userImg, multipartFile.getInputStream(), objMeta);
+        amazonS3Client.putObject(new PutObjectRequest(bucket, userImg, multipartFile.getInputStream(), objMeta)
+                        .withCannedAcl(CannedAccessControlList.PublicRead));
 
         String img = amazonS3Client.getUrl(bucket, fileName).toString();
 
