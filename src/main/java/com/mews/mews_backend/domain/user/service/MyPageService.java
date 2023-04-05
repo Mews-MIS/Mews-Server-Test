@@ -220,11 +220,30 @@ public class MyPageService {
     }
 
     //필진 구독하기
-    public void insertEditor(Integer userId, Integer editorId){
+    public String insertEditor(Integer userId, Integer editorId){
         User user = getSecurityContextUser();
+
+        boolean isSubscribed = subscribeRepository.existsByEditorIdAndUserId(editorId,userId);
         Editor editor = editorRepository.findById(editorId).orElseThrow();
 
-        subscribeRepository.save(Subscribe.createSubscribe(user, editor));
+        if(isSubscribed == false){
+            //유저가 구독한 editor 저장
+            subscribeRepository.save(Subscribe.createSubscribe(user, editor));
+            //user subscribecnt ++
+            user.upSubscribe();
+            userRepository.save(user);
+
+            return "ADD SUBSCRIBE";
+        } else {
+            //유저가 구독한 editor 삭제
+            subscribeRepository.deleteByEditorIdAndUserId(editorId, userId);
+            //유저가 구독한 editor 취소
+            user.downSubscribe();
+            userRepository.save(user);
+
+            return "DELETE SUBSCRIBE";
+        }
+
     }
 
 

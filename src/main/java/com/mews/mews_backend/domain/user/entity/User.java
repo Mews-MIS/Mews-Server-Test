@@ -76,6 +76,10 @@ public class User extends BaseTimeEntity {
 
     public void downBookmark(){this.bookmarkCount--;}
 
+    //구독 추가 및 취소
+    public void upSubscribe() {this.subscribeCount++;}
+    public void downSubscribe() {this.subscribeCount--;}
+
     //좋아요 추가 및 취소
     public void upLike(){this.likeCount++;}
     public void downLike(){this.likeCount--;}

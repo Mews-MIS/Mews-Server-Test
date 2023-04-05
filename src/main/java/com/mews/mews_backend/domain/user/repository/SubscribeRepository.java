@@ -11,4 +11,6 @@ import java.util.List;
 public interface SubscribeRepository  extends JpaRepository<Subscribe, Integer> {
 
     Boolean existsByEditorIdAndUserId(Integer editorId, Integer userId);
+
+    void deleteByEditorIdAndUserId(Integer editorId, Integer userId);
 }
