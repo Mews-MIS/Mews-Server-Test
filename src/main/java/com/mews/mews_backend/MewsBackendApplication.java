@@ -14,6 +14,7 @@ public class MewsBackendApplication {
 
 		SpringApplication.run(MewsBackendApplication.class, args);
 		// 메모리 사용량 출력
+		// test
 		long heapSize = Runtime.getRuntime().totalMemory();
 		System.out.println("HEAP Size(M) : "+ heapSize / (1024*1024) + " MB");
 	}
