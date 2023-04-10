@@ -58,6 +58,9 @@ public class MyPageService {
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
 
+    @Value("${cloud.aws.uploadUrl}")
+    private String baseUrl;
+
 
     //로그인 상태에서 - 프로필
     public GetMyPageRes getUserInfo(Integer userId) {
@@ -109,13 +112,15 @@ public class MyPageService {
         String uuid = UUID.randomUUID()+toString();
         String fileName = uuid+"_"+multipartFile.getOriginalFilename();
         String userImg = "user/" + now+"/"+ fileName;
+
         ObjectMetadata objMeta = new ObjectMetadata();
         objMeta.setContentType(multipartFile.getContentType());
         objMeta.setContentLength(multipartFile.getInputStream().available());
+
         amazonS3Client.putObject(new PutObjectRequest(bucket, userImg, multipartFile.getInputStream(), objMeta)
                         .withCannedAcl(CannedAccessControlList.PublicRead));
 
-        String img = amazonS3Client.getUrl(bucket, fileName).toString();
+        String img = baseUrl+userImg;
 
         return img;
     }
