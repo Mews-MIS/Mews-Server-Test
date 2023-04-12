@@ -90,7 +90,7 @@ public class EditorService {
         editorRepository.updateDeleteById(id);
 
         // 삭제된 Editor 구독 Cnt 감소
-        userRepository.updateCntById(id);
+        userRepository.updateSubCntById(id);
     }
 
     // Editor DB 전체 조회
