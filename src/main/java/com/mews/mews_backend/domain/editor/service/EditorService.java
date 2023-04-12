@@ -86,7 +86,11 @@ public class EditorService {
 
     // Editor DB 삭제
     public void delete(Integer id) {
+
         editorRepository.updateDeleteById(id);
+
+        // 삭제된 Editor 구독 Cnt 감소
+        userRepository.updateCntById(id);
     }
 
     // Editor DB 전체 조회
