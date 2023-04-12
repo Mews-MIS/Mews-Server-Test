@@ -164,6 +164,10 @@ public class ArticleService {
         Article article = articleRepository.findById(articleId).get();
         article.deleteArticle();
         articleRepository.save(article);
+
+        // 좋아요 수, 북마크 수 cnt 감소
+        userRepository.updateLikeCntById(articleId);
+        userRepository.updateBookmarkCntById(articleId);
     }
 
 //    // 뉴스 삭제(물리적)
