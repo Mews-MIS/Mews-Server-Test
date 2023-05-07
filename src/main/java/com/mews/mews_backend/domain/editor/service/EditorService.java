@@ -1,7 +1,9 @@
 package com.mews.mews_backend.domain.editor.service;
 
 import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.mews.mews_backend.api.article.dto.res.ArticleForEditor;
 import com.mews.mews_backend.api.editor.dto.request.PatchEditorReq;
 import com.mews.mews_backend.api.editor.dto.request.PostEditorReq;
@@ -48,6 +50,9 @@ public class EditorService {
 
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
+
+    @Value("${cloud.aws.uploadUrl}")
+    private String baseUrl;
 
     // Editor DB 등록
     public void save(PostEditorReq postEditorReq, MultipartFile multipartFile) {
@@ -124,11 +129,15 @@ public class EditorService {
         String uuid = UUID.randomUUID()+toString();
         String fileName = uuid+"_"+multipartFile.getOriginalFilename();
         String userImg = "user/" + now+"/"+ fileName;
-        ObjectMetadata objMeta = new ObjectMetadata();
-        objMeta.setContentLength(multipartFile.getInputStream().available());
-        amazonS3Client.putObject(bucket, userImg, multipartFile.getInputStream(), objMeta);
 
-        String img = amazonS3Client.getUrl(bucket, fileName).toString();
+        ObjectMetadata objMeta = new ObjectMetadata();
+        objMeta.setContentType(multipartFile.getContentType());
+        objMeta.setContentLength(multipartFile.getInputStream().available());
+
+        amazonS3Client.putObject(new PutObjectRequest(bucket, userImg, multipartFile.getInputStream(), objMeta)
+                .withCannedAcl(CannedAccessControlList.PublicRead));
+
+        String img = baseUrl+userImg;
 
         return img;
     }
